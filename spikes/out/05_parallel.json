@@ -1,0 +1,29 @@
+{
+  "total_wall_seconds": 71.0,
+  "results": [
+    {
+      "site": "lemonde",
+      "session_id": "7c75725b-76d5-474e-950d-129b900953a6",
+      "status": "idle",
+      "wall_seconds": 71.0,
+      "answer": "I navigated to https://www.lemonde.fr and encountered a cookie consent dialog. The dialog presented two visible buttons: \"Accepter et continuer\" (Accept and continue) and \"S'abonner\" (Subscribe). There was no visible \"Refuse\" or \"Reject\" button in the initial view. The dialog text mentioned that cookie management can be accessed via \"Gestion des cookies\" (Cookie management) at the bottom of the page, but I was unable to locate or click such an option before the budget was exhausted. I did not accept any cookies. The cookie consent modal only offered an accept option and a subscription option, with no obvious refuse button visible in the dialog.",
+      "event_count": 70
+    },
+    {
+      "site": "leboncoin",
+      "session_id": "136d2d8e-6d86-4fde-abb8-891d1a690dba",
+      "status": "idle",
+      "wall_seconds": 32.4,
+      "answer": "I refused all non-essential cookies on leboncoin.fr with just two clicks: (1) I clicked \"Continuer sans accepter\" (Continue without accepting) on the first cookie consent modal, and (2) I clicked \"I refuse\" on the second \"Cookies for good\" modal that appeared. No cookies were accepted.",
+      "event_count": 27
+    },
+    {
+      "site": "marmiton",
+      "session_id": "31f12208-a087-4d81-9333-1e5c2a472284",
+      "status": "idle",
+      "wall_seconds": 23.8,
+      "answer": "I navigated to https://www.marmiton.org and refused all cookies by clicking the \"Je n'accepte rien\" button in the cookie consent dialog — that was the only click I made.",
+      "event_count": 19
+    }
+  ]
+}

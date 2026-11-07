@@ -1,0 +1,29 @@
+{
+  "model": "holo4-35b-a3b",
+  "response_format": "json_schema",
+  "content": "{\n  \"has_banner\": true,\n  \"dark_patterns\": [\n    \"forced action\",\n    \"asymmetric button styling\",\n    \"hidden reject option\"\n  ],\n  \"asymmetry_notes\": \"The 'Accepter et continuer' button is prominently styled as the primary action, while the 'S'abonner' button is secondary and less visible. The reject option is not clearly presented as an alternative to accepting.\",\n  \"confidence\": 0.85\n}",
+  "usage": {
+    "completion_tokens": 399,
+    "prompt_tokens": 1527,
+    "total_tokens": 1926,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 292,
+      "rejected_prediction_tokens": null,
+      "text_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 1056,
+      "image_tokens": null,
+      "text_tokens": null,
+      "created_cache_tokens": 0,
+      "multimodal_tokens": {
+        "image": 1444
+      }
+    }
+  },
+  "model_tag": "holo4-35b-a3b"
+}

@@ -2,3 +2,7 @@
 .env.*
 .devin/config.local.json
 .DS_Store
+.venv/
+__pycache__/
+*.pyc
+spikes/out/**/*.png

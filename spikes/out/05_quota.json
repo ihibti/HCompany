@@ -1,0 +1,15 @@
+{
+  "session_quota": {
+    "scope": "org",
+    "limit": 3,
+    "active": 0,
+    "available": 3
+  },
+  "token_quota": {
+    "limit": 60000000,
+    "used": 949855,
+    "remaining": 59050145,
+    "window_start": "2026-11-07T00:00:00Z",
+    "window_end": "2026-12-07T00:00:00Z"
+  }
+}

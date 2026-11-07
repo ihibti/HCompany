@@ -1,0 +1,25 @@
+{
+  "live_view_url_event_emitted": false,
+  "sessions_checked": [
+    "136d2d8e-6d86-4fde-abb8-891d1a690dba",
+    "31f12208-a087-4d81-9333-1e5c2a472284",
+    "556829a8-da23-40c6-baee-7c547aca1828",
+    "7c75725b-76d5-474e-950d-129b900953a6",
+    "ae3488d1-12cb-42d1-ba2a-382db6ad774f",
+    "bfa592c9-1cba-4886-bba4-56a286249beb",
+    "c49866cf-3730-454e-acf7-792e8f706d84"
+  ],
+  "agent_view_url": "https://platform.hcompany.ai/agents/sessions/bfa592c9-1cba-4886-bba4-56a286249beb",
+  "agent_view_headers": {
+    "x-frame-options": "DENY",
+    "content-security-policy": "default-src 'self'; ...; frame-src 'none'; frame-ancestors 'none'; ..."
+  },
+  "iframe_embeddable": false,
+  "share_url_probe": {
+    "share_url": "/share/api/v1/trajectories/bfa592c9-1cba-4886-bba4-56a286249beb",
+    "status": 200,
+    "content_type": "application/json",
+    "note": "JSON trajectory data, not an HTML view; unshared after probe"
+  },
+  "conclusion": "No embeddable live view; build live feed from session events + authenticated screenshot downloads."
+}
