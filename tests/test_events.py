@@ -172,3 +172,38 @@ def test_non_dict_args_wrapped():
     j = _journey(events)
     assert j.steps[0].args == {"value": "raw-string"}
     assert j.steps[0].element is None
+
+
+def test_step_from_policy_event_helper():
+    from datetime import datetime, timezone
+
+    from escapehatch.events import step_from_policy_event
+
+    obs = {
+        "kind": "observation_event",
+        "image": {"source": "https://img/x.png"},
+        "metadata": {"url": "https://site.test/", "title": "Home"},
+    }
+    policy = {
+        "kind": "policy_event",
+        "reasoning_content": "why",
+        "content": "msg",
+        "tool_reqs": [
+            {"tool_name": "click_web", "args": {"x": 1, "y": 2, "element": "OK"}, "id": "a"},
+            {"tool_name": "answer", "args": {"content": "done"}, "id": "b"},
+            {"tool_name": "scroll_web", "args": {"direction": "down"}, "id": "c"},
+        ],
+    }
+    ts = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    steps = step_from_policy_event(policy, obs, index=5, ts=ts)
+    assert [s.action for s in steps] == ["click_web", "scroll_web"]
+    assert [s.index for s in steps] == [5, 6]
+    assert all(s.url == "https://site.test/" for s in steps)
+    assert all(s.screenshot_url == "https://img/x.png" for s in steps)
+    assert steps[0].element == "OK"
+    assert steps[0].reasoning == "why"
+
+    # no observation yet -> null url/title/screenshot
+    steps_none = step_from_policy_event(policy, None, 0, ts)
+    assert steps_none[0].url is None
+    assert steps_none[0].screenshot_url is None

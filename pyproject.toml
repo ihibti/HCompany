@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-escapehatch = "escapehatch:main"
+escapehatch = "escapehatch.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
@@ -34,3 +34,4 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["src"]

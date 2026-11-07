@@ -61,6 +61,42 @@ def _last_observation(events: list[dict]) -> dict[str, Any] | None:
     return None
 
 
+def step_from_policy_event(
+    policy_data: dict[str, Any],
+    last_obs: dict[str, Any] | None,
+    index: int,
+    ts: datetime,
+) -> list[Step]:
+    """Turn one policy_event's tool_reqs into Steps bound to the last observation.
+
+    The ``answer`` tool is excluded (it is the final report, not an action).
+    Custom tools such as ``request_confirmation`` are kept: they are UX evidence.
+    """
+    meta = (last_obs or {}).get("metadata") or {}
+    image = (last_obs or {}).get("image") or {}
+    steps: list[Step] = []
+    for tr in policy_data.get("tool_reqs") or []:
+        tool_name = tr.get("tool_name")
+        if tool_name == "answer":
+            continue
+        args = tr.get("args") or {}
+        steps.append(
+            Step(
+                index=index + len(steps),
+                action=tool_name or "unknown",
+                args=args if isinstance(args, dict) else {"value": args},
+                element=args.get("element") if isinstance(args, dict) else None,
+                reasoning=policy_data.get("reasoning_content"),
+                message=policy_data.get("content") or None,
+                url=meta.get("url"),
+                title=meta.get("title"),
+                screenshot_url=image.get("source"),
+                timestamp=ts,
+            )
+        )
+    return steps
+
+
 def journey_from_events(
     events: list[dict],
     *,
@@ -95,27 +131,7 @@ def journey_from_events(
         if kind == "observation_event":
             last_obs = data
         elif kind == "policy_event":
-            meta = (last_obs or {}).get("metadata") or {}
-            image = (last_obs or {}).get("image") or {}
-            for tr in data.get("tool_reqs") or []:
-                tool_name = tr.get("tool_name")
-                if tool_name == "answer":
-                    continue
-                args = tr.get("args") or {}
-                steps.append(
-                    Step(
-                        index=len(steps),
-                        action=tool_name or "unknown",
-                        args=args if isinstance(args, dict) else {"value": args},
-                        element=args.get("element") if isinstance(args, dict) else None,
-                        reasoning=data.get("reasoning_content"),
-                        message=data.get("content") or None,
-                        url=meta.get("url"),
-                        title=meta.get("title"),
-                        screenshot_url=image.get("source"),
-                        timestamp=ts,
-                    )
-                )
+            steps.extend(step_from_policy_event(data, last_obs, len(steps), ts))
 
     parsed_answer: AgentAnswer | None = None
     if answer is not None:

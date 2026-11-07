@@ -1,16 +1,16 @@
 """Pure friction scoring: how much effort leaving takes vs entering."""
 
 from escapehatch.events import ACTION_KIND
-from escapehatch.models import Effort, Finding, Journey, Outcome, Score
+from escapehatch.models import Effort, Finding, Journey, Outcome, Score, Step
 from escapehatch.prompts import Task
 
 
-def effort(journey: Journey) -> Effort:
+def effort_steps(steps: list[Step]) -> Effort:
     interactions = 0
     navigations = 0
     detours = 0
     go_to_count = 0
-    for step in journey.steps:
+    for step in steps:
         kind = ACTION_KIND.get(step.action, "other")
         if kind == "interaction":
             interactions += 1
@@ -29,6 +29,10 @@ def effort(journey: Journey) -> Effort:
         detours=detours,
         total=interactions + navigations + detours,
     )
+
+
+def effort(journey: Journey) -> Effort:
+    return effort_steps(journey.steps)
 
 
 def _grade(friction: int) -> str:
