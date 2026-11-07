@@ -1,0 +1,59 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "title": "Honest",
+      "start_path": "level1/index.html",
+      "signup_path": "level1/signup.html",
+      "success_path": "level1/cancelled.html",
+      "trap_paths": [],
+      "min_leave_interactions": 2,
+      "min_enter_interactions": 1,
+      "patterns": []
+    },
+    {
+      "level": 2,
+      "title": "Confirmshaming",
+      "start_path": "level2/index.html",
+      "signup_path": "level2/signup.html",
+      "success_path": "level2/cancelled.html",
+      "trap_paths": ["level2/kept.html"],
+      "min_leave_interactions": 3,
+      "min_enter_interactions": 1,
+      "patterns": ["asymmetric_choice", "confirmshaming", "misdirection"]
+    },
+    {
+      "level": 3,
+      "title": "Hidden option",
+      "start_path": "level3/index.html",
+      "signup_path": "level3/signup.html",
+      "success_path": "level3/cancelled.html",
+      "trap_paths": ["level3/kept.html"],
+      "min_leave_interactions": 6,
+      "min_enter_interactions": 1,
+      "patterns": ["hidden_option", "misdirection", "asymmetric_choice", "obstruction"]
+    },
+    {
+      "level": 4,
+      "title": "Obstruction",
+      "start_path": "level4/index.html",
+      "signup_path": "level4/signup.html",
+      "success_path": "level4/cancelled.html",
+      "trap_paths": ["level4/kept.html", "level4/downgraded.html"],
+      "min_leave_interactions": 5,
+      "min_enter_interactions": 1,
+      "patterns": ["obstruction", "preselection", "false_urgency", "trick_question", "misdirection", "sneaking"]
+    },
+    {
+      "level": 5,
+      "title": "Boss",
+      "start_path": "level5/index.html",
+      "signup_path": "level5/signup.html",
+      "success_path": "level5/cancelled.html",
+      "trap_paths": ["level5/kept.html", "level5/paused.html"],
+      "min_leave_interactions": 9,
+      "min_enter_interactions": 1,
+      "patterns": ["obstruction", "nagging", "sneaking", "misdirection"]
+    }
+  ]
+}

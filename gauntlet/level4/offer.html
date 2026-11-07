@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One last offer — Netflux</title>
+<link rel="stylesheet" href="../assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <div class="acct-card" style="max-width:640px;margin:50px auto">
+    <h2>Hold on — we have something for you</h2>
+    <p style="color:var(--muted);font-size:14px">Before your subscription ends, how about a better deal?</p>
+
+    <div class="countdown" id="countdown">This offer expires in 01:00</div>
+
+    <div class="check-row">
+      <input type="checkbox" id="keep-basic" checked>
+      <label for="keep-basic" style="margin:0;color:var(--text)">Keep my profile and stay on Netflux Basic (free) — I understand my Premium plan will end</label>
+    </div>
+
+    <div style="display:flex;gap:14px;margin-top:22px">
+      <button class="btn btn-secondary" id="btn-confirm" style="background:#3a3a3a;color:#fff">Confirm</button>
+      <button class="btn btn-primary" id="btn-stay" style="background:var(--nf-red)">Stay</button>
+    </div>
+    <p style="font-size:12px;color:#777;margin-top:14px">By continuing you agree to our Terms. Charges may apply.</p>
+  </div>
+</main>
+<div data-nf-footer></div>
+<script src="../assets/app.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // false urgency countdown
+    var el = document.getElementById("countdown");
+    var left = 60;
+    setInterval(function () {
+      left = Math.max(0, left - 1);
+      var m = String(Math.floor(left / 60)).padStart(2, "0");
+      var s = String(left % 60).padStart(2, "0");
+      el.textContent = "This offer expires in " + m + ":" + s;
+    }, 1000);
+
+    document.getElementById("btn-stay").addEventListener("click", function () {
+      window.location.href = "kept.html";
+    });
+    document.getElementById("btn-confirm").addEventListener("click", function () {
+      var keep = document.getElementById("keep-basic").checked;
+      window.location.href = keep ? "downgraded.html" : "cancelled.html";
+    });
+  });
+</script>
+</body>
+</html>

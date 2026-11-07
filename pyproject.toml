@@ -8,10 +8,15 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.162.2",
     "hai-agents>=1.4.3",
     "httpx>=0.28.1",
+    "jinja2>=3.1.6",
     "openai>=3.46.0",
+    "pillow>=13.0.0",
     "pydantic>=2.14.3",
+    "sse-starlette>=3.7.0",
+    "uvicorn[standard]>=0.54.0",
 ]
 
 [project.scripts]
@@ -24,4 +29,8 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
 ]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Help Center — Netflux</title>
+<link rel="stylesheet" href="../assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <div class="acct-card" style="max-width:720px">
+    <h2>Help Center</h2>
+    <p style="color:var(--muted);font-size:14px">Find answers about your account, billing and watchlist.</p>
+
+    <div class="faq" style="margin-top:20px">
+      <details>
+        <summary>How do I change my plan?</summary>
+        <div class="faq-body">Go to your Account page and choose "Manage plan" to upgrade or downgrade between Basic, Standard and Premium.</div>
+      </details>
+      <details>
+        <summary>How do I update my payment method?</summary>
+        <div class="faq-body">Open Account → Payment methods and add a new card. Your billing date stays the same.</div>
+      </details>
+      <details>
+        <summary>Billing &amp; membership</summary>
+        <div class="faq-body">
+          Your subscription renews automatically each month. To review charges, open Account → Billing history.
+          <br><br>
+          <span style="font-size:12px;color:#777">Looking to make changes to your membership?
+          If you wish to <a href="#" id="end-membership" style="color:#8b8b8b;text-decoration:underline">end your membership</a>, our retention team would love to help — click here to see how.</span>
+        </div>
+      </details>
+      <details>
+        <summary>How do I reset my password?</summary>
+        <div class="faq-body">Use "Forgot password" on the sign-in page. A reset link is emailed to you within a few minutes.</div>
+      </details>
+      <details>
+        <summary>Can I download shows to watch offline?</summary>
+        <div class="faq-body">Yes — Premium includes downloads on up to 2 devices.</div>
+      </details>
+    </div>
+  </div>
+</main>
+
+<div class="nf-modal-backdrop" id="retention-modal">
+  <div class="nf-modal">
+    <button class="x" id="modal-x" title="Close">×</button>
+    <h3>Wait! Here's a FREE month 🎁</h3>
+    <p>Before you go — we'd love to keep you. Take a whole month of Netflux Premium on us, on top of your current plan. No strings attached.</p>
+    <p style="margin-top:14px"><a href="kept.html" class="btn btn-primary" style="display:inline-block">Claim my free month</a></p>
+    <p style="margin-top:18px;font-size:13px"><a href="confirm.html" id="continue-cancel" style="color:#8b8b8b">Continue to cancel instead</a></p>
+  </div>
+</div>
+
+<div data-nf-footer></div>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/cookies.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var modal = document.getElementById("retention-modal");
+    document.getElementById("end-membership").addEventListener("click", function (e) {
+      e.preventDefault();
+      modal.classList.add("open");
+    });
+    // The × is NOT a close button: it accepts the retention offer.
+    document.getElementById("modal-x").addEventListener("click", function () {
+      window.location.href = "kept.html";
+    });
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) window.location.href = "kept.html";
+    });
+  });
+</script>
+</body>
+</html>

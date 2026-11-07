@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch Gauntlet — Netflux</title>
+<link rel="stylesheet" href="assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <section class="nf-hero" style="background:linear-gradient(120deg,#3d0a12,#1a0508)">
+    <h1>The Netflux Gauntlet</h1>
+    <p>Five fictional subscription flows of increasing hostility. Each level is a real web app an agent must fight through to cancel. Pick a level to play it by hand, or point an Escape Hatch agent at <code>levelN/</code>.</p>
+  </section>
+
+  <div class="acct-card">
+    <h2>Levels</h2>
+    <p style="color:var(--muted);font-size:14px">Leave flow starts at <code>levelN/index.html</code> (logged-in account). Enter flow starts at <code>levelN/signup.html</code>. Ground truth: <a href="levels.json" style="color:#7db4ff">levels.json</a>.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:10px">
+      <tr style="color:var(--muted);text-align:left"><th style="padding:8px 0">#</th><th style="padding:8px 0">Level</th><th style="padding:8px 0">Traps</th><th style="padding:8px 0"></th></tr>
+      <tr><td style="padding:8px 0">1</td><td><a href="level1/">Honest</a></td><td style="color:var(--muted)">none — clear cancel button</td><td><a href="level1/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level1/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">2</td><td><a href="level2/">Confirmshaming</a></td><td style="color:var(--muted)">big keep-offer, swapped buttons</td><td><a href="level2/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level2/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">3</td><td><a href="level3/">Hidden option</a></td><td style="color:var(--muted)">buried help link, fake close ×, cookie banner</td><td><a href="level3/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level3/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">4</td><td><a href="level4/">Obstruction</a></td><td style="color:var(--muted)">survey, countdown, pre-ticked box, trick question</td><td><a href="level4/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level4/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">5</td><td><a href="level5/">Boss</a></td><td style="color:var(--muted)">password re-entry, 3-intent chatbot, fake pause</td><td><a href="level5/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level5/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+    </table>
+  </div>
+
+  <div class="acct-card">
+    <h2>Playing by hand</h2>
+    <p style="color:var(--muted);font-size:14px">Level 5 asks for account re-entry before the chat. Demo credentials for manual play: <code>demo@netflux.test</code> / <code>Hatch-2026</code> (agents receive them in the task prompt; they are not shown on the level pages).</p>
+  </div>
+</main>
+<div data-nf-footer></div>
+<script src="assets/app.js" defer></script>
+</body>
+</html>

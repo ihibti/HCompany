@@ -1,0 +1,390 @@
+[
+  {
+    "type": "RequestStartEvent",
+    "timestamp": "2026-11-07T21:37:31.346711Z",
+    "data": {}
+  },
+  {
+    "type": "RequestStartDispatchedEvent",
+    "timestamp": "2026-11-07T21:37:32.643459Z",
+    "data": {
+      "status": "finished"
+    }
+  },
+  {
+    "type": "AgentStartedEvent",
+    "timestamp": "2026-11-07T21:37:36.343054Z",
+    "data": {}
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:38.378345Z",
+    "data": {
+      "kind": "message_event",
+      "caller_id": "user",
+      "content": [
+        "Go to https://www.marmiton.org and refuse all non-essential cookies with the fewest clicks possible. Do not accept. Report each click you made in one sentence."
+      ]
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:41.196840Z",
+    "data": {
+      "kind": "observation_event",
+      "type": "web",
+      "image": {
+        "source": "https://agp.eu.hcompany.ai/api/v1/trajectories/31f12208-a087-4d81-9333-1e5c2a472284/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/31f12208-a087-4d81-9333-1e5c2a472284/screenshot-78100e73-7bab-44ae-9e70-e4aa6d4b04ad.png",
+        "type": "url",
+        "media_type": "image/png"
+      },
+      "metadata": {
+        "url": "https://www.bing.com/",
+        "tabs": [
+          "0"
+        ],
+        "text": "",
+        "title": "Search - Microsoft Bing",
+        "page_size": [
+          1185,
+          2400
+        ],
+        "current_tab": "0",
+        "viewport_size": [
+          1200,
+          1200
+        ],
+        "cursor_position": [
+          0,
+          0
+        ],
+        "scroll_position": [
+          0,
+          0
+        ]
+      },
+      "text": null
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:43.895294Z",
+    "data": {
+      "kind": "policy_event",
+      "reasoning_content": "I need to navigate to marmiton.org and refuse all non-essential cookies. Let me start by going to the site.\n",
+      "content": "",
+      "tool_reqs": [
+        {
+          "tool_name": "go_to_web",
+          "args": {
+            "url": "https://www.marmiton.org"
+          },
+          "id": "chatcmpl-tool-b93178e8321a95a8"
+        }
+      ],
+      "validation_errors": []
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:45.657020Z",
+    "data": {
+      "kind": "tool_result",
+      "tool_req": {
+        "tool_name": "go_to_web",
+        "args": {
+          "url": "https://www.marmiton.org"
+        },
+        "id": "chatcmpl-tool-b93178e8321a95a8"
+      },
+      "truncated": false,
+      "result": null,
+      "output_artifact_path": null
+    }
+  },
+  {
+    "type": "MetricsUpdateEvent",
+    "timestamp": "2026-11-07T21:37:45.788305Z",
+    "data": {
+      "metrics": {
+        "steps": 1,
+        "cost_per_model": [
+          {
+            "name": "holo4-35b-a3b",
+            "input_tokens": 9232,
+            "cached_tokens": 2112,
+            "output_tokens": 62,
+            "reasoning_tokens": 27,
+            "input_cost": 0.00219936,
+            "output_cost": 7e-05,
+            "reasoning_cost": 5.4e-05,
+            "total_cost": 0.00232336
+          }
+        ],
+        "input_cost": 0.00219936,
+        "output_cost": 7e-05,
+        "reasoning_cost": 5.4e-05,
+        "total_cost": 0.00232336
+      }
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:46.258418Z",
+    "data": {
+      "kind": "observation_event",
+      "type": "web",
+      "image": {
+        "source": "https://agp.eu.hcompany.ai/api/v1/trajectories/31f12208-a087-4d81-9333-1e5c2a472284/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/31f12208-a087-4d81-9333-1e5c2a472284/screenshot-9f36a6df-7729-412a-8dc0-d58173279374.png",
+        "type": "url",
+        "media_type": "image/png"
+      },
+      "metadata": {
+        "url": "https://www.marmiton.org/",
+        "tabs": [
+          "0"
+        ],
+        "text": "",
+        "title": "Marmiton : 78459 recettes de cuisine commentées et notées pour toutes les cuisines !",
+        "page_size": [
+          1200,
+          9917
+        ],
+        "current_tab": "0",
+        "viewport_size": [
+          1200,
+          1200
+        ],
+        "cursor_position": [
+          0,
+          0
+        ],
+        "scroll_position": [
+          0,
+          0
+        ]
+      },
+      "text": null
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:49.167487Z",
+    "data": {
+      "kind": "policy_event",
+      "reasoning_content": "I can see the cookie consent dialog on Marmiton. There are three options:\n1. \"Paramétrer\" (Configure) - this would let me customize which cookies to accept/refuse\n2. \"Je n'accepte rien\" (I accept nothing) - this refuses all cookies\n3. \"J'accepte tout\" (I accept all) - this accepts all cookies\n\nThe task says to refuse all non-essential cookies with the fewest clicks possible, and not to accept. The most direct option is \"Je n'accepte rien\" which means \"I accept nothing\" - this would refuse all cookies in a single click. That's the fewest clicks possible.\n",
+      "content": "",
+      "tool_reqs": [
+        {
+          "tool_name": "click_web",
+          "args": {
+            "x": 0.456,
+            "y": 0.792,
+            "element": "The \"Je n'accepte rien\" button in the cookie consent dialog"
+          },
+          "id": "chatcmpl-tool-9176fe464bfde427"
+        }
+      ],
+      "validation_errors": []
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:50.401757Z",
+    "data": {
+      "kind": "tool_result",
+      "tool_req": {
+        "tool_name": "click_web",
+        "args": {
+          "x": 0.456,
+          "y": 0.792,
+          "element": "The \"Je n'accepte rien\" button in the cookie consent dialog"
+        },
+        "id": "chatcmpl-tool-9176fe464bfde427"
+      },
+      "truncated": false,
+      "result": null,
+      "output_artifact_path": null
+    }
+  },
+  {
+    "type": "MetricsUpdateEvent",
+    "timestamp": "2026-11-07T21:37:50.524954Z",
+    "data": {
+      "metrics": {
+        "steps": 2,
+        "cost_per_model": [
+          {
+            "name": "holo4-35b-a3b",
+            "input_tokens": 20135,
+            "cached_tokens": 10560,
+            "output_tokens": 275,
+            "reasoning_tokens": 171,
+            "input_cost": 0.0031893000000000004,
+            "output_cost": 0.000208,
+            "reasoning_cost": 0.000342,
+            "total_cost": 0.0037393
+          }
+        ],
+        "input_cost": 0.0031893000000000004,
+        "output_cost": 0.000208,
+        "reasoning_cost": 0.000342,
+        "total_cost": 0.0037393
+      }
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:51.045153Z",
+    "data": {
+      "kind": "observation_event",
+      "type": "web",
+      "image": {
+        "source": "https://agp.eu.hcompany.ai/api/v1/trajectories/31f12208-a087-4d81-9333-1e5c2a472284/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/31f12208-a087-4d81-9333-1e5c2a472284/screenshot-ee255329-706f-4490-89e7-c9a0633ccd6f.png",
+        "type": "url",
+        "media_type": "image/png"
+      },
+      "metadata": {
+        "url": "https://www.marmiton.org/",
+        "tabs": [
+          "0"
+        ],
+        "text": "",
+        "title": "Marmiton : 78459 recettes de cuisine commentées et notées pour toutes les cuisines !",
+        "page_size": [
+          1200,
+          10607
+        ],
+        "current_tab": "0",
+        "viewport_size": [
+          1200,
+          1200
+        ],
+        "cursor_position": [
+          547,
+          950
+        ],
+        "scroll_position": [
+          0,
+          0
+        ]
+      },
+      "text": null
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:54.101060Z",
+    "data": {
+      "kind": "policy_event",
+      "reasoning_content": "The cookie refusal was successful. The dialog now shows a confirmation message: \"Vous avez choisi de refuser les cookies, notamment ceux pour réaliser de la mesure d'audience, de la personnalisation des publicités et/ou du contenu éditorial et pour réaliser des mesures de performance.\" (You have chosen to refuse cookies, including those for audience measurement, personalization of ads and/or editorial content, and for performance measurements.)\n\nThere are two buttons: \"Je change d'avis et j'accepte tous les cookies\" (I change my mind and accept all cookies) and \"Je m'abonne pour un mois\" (I subscribe for one month). Neither of these needs to be clicked - the task was to refuse cookies, which is done. I should report the single click I made.\n",
+      "content": "",
+      "tool_reqs": [
+        {
+          "tool_name": "answer",
+          "args": {
+            "content": "I navigated to https://www.marmiton.org and refused all cookies by clicking the \"Je n'accepte rien\" button in the cookie consent dialog — that was the only click I made.",
+            "outcome": "success"
+          },
+          "id": "chatcmpl-tool-b73cfe103de25aa8"
+        }
+      ],
+      "validation_errors": []
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:54.201090Z",
+    "data": {
+      "kind": "tool_result",
+      "tool_req": {
+        "tool_name": "answer",
+        "args": {
+          "content": "I navigated to https://www.marmiton.org and refused all cookies by clicking the \"Je n'accepte rien\" button in the cookie consent dialog — that was the only click I made.",
+          "outcome": "success"
+        },
+        "id": "chatcmpl-tool-b73cfe103de25aa8"
+      },
+      "result": "Answer sent",
+      "truncated": false,
+      "output_artifact_path": null
+    }
+  },
+  {
+    "type": "AgentEvent",
+    "timestamp": "2026-11-07T21:37:54.238060Z",
+    "data": {
+      "kind": "answer_event",
+      "answer": "I navigated to https://www.marmiton.org and refused all cookies by clicking the \"Je n'accepte rien\" button in the cookie consent dialog — that was the only click I made.",
+      "outcome": "success"
+    }
+  },
+  {
+    "type": "MetricsUpdateEvent",
+    "timestamp": "2026-11-07T21:37:54.267465Z",
+    "data": {
+      "metrics": {
+        "steps": 3,
+        "cost_per_model": [
+          {
+            "name": "holo4-35b-a3b",
+            "input_tokens": 32861,
+            "cached_tokens": 21120,
+            "output_tokens": 521,
+            "reasoning_tokens": 337,
+            "input_cost": 0.0041559,
+            "output_cost": 0.000368,
+            "reasoning_cost": 0.000674,
+            "total_cost": 0.0051979
+          }
+        ],
+        "input_cost": 0.0041559,
+        "output_cost": 0.000368,
+        "reasoning_cost": 0.000674,
+        "total_cost": 0.0051979
+      }
+    }
+  },
+  {
+    "type": "MetricsUpdateEvent",
+    "timestamp": "2026-11-07T21:37:54.404701Z",
+    "data": {
+      "metrics": {
+        "steps": 3,
+        "cost_per_model": [
+          {
+            "name": "holo4-35b-a3b",
+            "input_tokens": 32861,
+            "cached_tokens": 21120,
+            "output_tokens": 521,
+            "reasoning_tokens": 337,
+            "input_cost": 0.0041559,
+            "output_cost": 0.000368,
+            "reasoning_cost": 0.000674,
+            "total_cost": 0.0051979
+          }
+        ],
+        "input_cost": 0.0041559,
+        "output_cost": 0.000368,
+        "reasoning_cost": 0.000674,
+        "total_cost": 0.0051979
+      }
+    }
+  },
+  {
+    "type": "ActiveStateChangeEvent",
+    "timestamp": "2026-11-07T21:37:54.438801Z",
+    "data": {
+      "state": "idle",
+      "pending_tool_calls": null,
+      "pending_approvals": null
+    }
+  },
+  {
+    "type": "AgentCompletionEvent",
+    "timestamp": "2026-11-07T21:37:55.869421Z",
+    "data": {
+      "reason": "finished"
+    }
+  }
+]
