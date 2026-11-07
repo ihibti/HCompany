@@ -136,6 +136,7 @@ async def classify_step(
         },
         temperature=0.0,
         max_tokens=2048,
+        timeout=120,
     )
     content = resp.choices[0].message.content or "{}"
     try:
