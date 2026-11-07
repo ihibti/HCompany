@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Happiness — Netflux</title>
+<link rel="stylesheet" href="../assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <div class="chat-wrap">
+    <h2 style="margin-bottom:6px">Chat with Nina · Customer Happiness</h2>
+    <p style="color:var(--muted);font-size:13px;margin-top:0">Typically replies in a few seconds.</p>
+
+    <div class="chat-log" id="chat-log"></div>
+
+    <div class="chat-input">
+      <input type="text" id="chat-text" placeholder="Type your message…" autocomplete="off">
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
+</main>
+<div data-nf-footer></div>
+<script src="../assets/app.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var log = document.getElementById("chat-log");
+    var input = document.getElementById("chat-text");
+    var intents = 0;
+
+    var INTENT_RE = /\b(cancel\w*|résili\w*|resili\w*|stop|end|annul\w*|unsubscrib\w*|résiliation|keep.*account.*no)\b/i;
+
+    function addMsg(who, text, quick) {
+      var div = document.createElement("div");
+      div.className = "msg " + who;
+      div.textContent = text;
+      if (quick && quick.length) {
+        var qr = document.createElement("div");
+        qr.className = "quick-replies";
+        quick.forEach(function (q) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = q.label;
+          b.addEventListener("click", function () { q.action(); });
+          qr.appendChild(b);
+        });
+        div.appendChild(qr);
+      }
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function nina(text, quick) { addMsg("bot", text, quick); }
+    function user(text) { addMsg("user", text); }
+
+    function go(url) { window.location.href = url; }
+
+    nina("Hi! I'm Nina from Customer Happiness 😊 How can I help you today?");
+
+    function reply(text) {
+      var hasIntent = INTENT_RE.test(text);
+      user(text);
+      if (hasIntent) intents += 1;
+
+      if (intents >= 3) {
+        nina("All done! I've paused your account for 3 months 🎉 You can resume anytime from your account page.", [
+          { label: "Go to my account", action: function () { go("paused.html"); } }
+        ]);
+        return;
+      }
+      if (intents === 2) {
+        nina("I really don't want to lose you — how about 3 months of Premium completely free? That's $47.97 of value, on us!", [
+          { label: "Sure, give me 3 months free", action: function () { go("kept.html"); } },
+          { label: "Tell me more", action: function () { nina("3 months free, then back to $15.99/month. You keep 4K and offline downloads. Shall we do it?"); } },
+          { label: "No thanks", action: function () { nina("No problem! What else can I help with?"); } }
+        ]);
+        return;
+      }
+      if (intents === 1) {
+        nina("I'm so sorry to hear that! Before you go — how about 50% off Premium for the next 6 months?", [
+          { label: "Tell me more", action: function () { nina("It's just $7.99/month for 6 months. You keep everything you love. Interested?"); } },
+          { label: "No thanks", action: function () { nina("Totally understand! Anything else I can help with today?"); } }
+        ]);
+        return;
+      }
+      nina("Happy to help! You can ask me about your plan, billing, downloads — or let me know what you need.");
+    }
+
+    document.getElementById("chat-send").addEventListener("click", function () {
+      var t = input.value.trim();
+      if (!t) return;
+      input.value = "";
+      reply(t);
+    });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") document.getElementById("chat-send").click();
+    });
+  });
+</script>
+</body>
+</html>

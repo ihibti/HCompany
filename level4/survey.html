@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Before you go — Netflux</title>
+<link rel="stylesheet" href="../assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <div class="acct-card" style="max-width:640px">
+    <h2>We're sorry to see you go</h2>
+    <p style="color:var(--muted);font-size:14px">Help us improve by answering two quick questions. It takes less than a minute.</p>
+
+    <form id="survey" class="nf-form" style="margin-top:18px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">1. To proceed, please confirm your decision:</div>
+      <div class="radio-row"><input type="radio" name="decision" value="keep" id="d-keep"><label for="d-keep" style="margin:0">Yes, I want to keep my subscription</label></div>
+      <div class="radio-row"><input type="radio" name="decision" value="leave" id="d-leave"><label for="d-leave" style="margin:0">No, I do not want to keep my subscription</label></div>
+
+      <div style="font-size:15px;font-weight:700;margin:20px 0 6px">2. What is the main reason you are leaving?</div>
+      <div class="radio-row"><input type="radio" name="reason" value="price" id="r-price"><label for="r-price" style="margin:0">It's too expensive</label></div>
+      <div class="radio-row"><input type="radio" name="reason" value="content" id="r-content"><label for="r-content" style="margin:0">Not enough content I like</label></div>
+      <div class="radio-row"><input type="radio" name="reason" value="other" id="r-other"><label for="r-other" style="margin:0">Other</label></div>
+
+      <div style="margin-top:22px;display:flex;gap:12px;align-items:center">
+        <button type="submit" class="btn btn-primary" id="survey-submit" disabled>Continue</button>
+        <a href="index.html" class="btn btn-ghost">Never mind, take me back</a>
+      </div>
+    </form>
+  </div>
+</main>
+<div data-nf-footer></div>
+<script src="../assets/app.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var submit = document.getElementById("survey-submit");
+    function check() {
+      var decision = document.querySelector('input[name="decision"]:checked');
+      var reason = document.querySelector('input[name="reason"]:checked');
+      submit.disabled = !(decision && reason);
+    }
+    document.querySelectorAll('input[type="radio"]').forEach(function (r) {
+      r.addEventListener("change", check);
+    });
+    document.getElementById("survey").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var decision = document.querySelector('input[name="decision"]:checked');
+      if (decision && decision.value === "keep") { window.location.href = "kept.html"; return; }
+      window.location.href = "offer.html";
+    });
+  });
+</script>
+</body>
+</html>
