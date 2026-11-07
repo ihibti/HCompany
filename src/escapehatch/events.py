@@ -106,6 +106,7 @@ def journey_from_events(
     agent: str,
     session_status: str,
     answer: dict | None,
+    duration_s: float | None = None,
 ) -> Journey:
     steps: list[Step] = []
     last_obs: dict[str, Any] | None = None
@@ -151,7 +152,8 @@ def journey_from_events(
     else:
         outcome = Outcome.FAILED
 
-    duration_s = (timestamps[-1] - timestamps[0]).total_seconds() if len(timestamps) >= 2 else None
+    if duration_s is None and len(timestamps) >= 2:
+        duration_s = (timestamps[-1] - timestamps[0]).total_seconds()
 
     final_obs = _last_observation(events)
     final_meta = (final_obs or {}).get("metadata") or {}

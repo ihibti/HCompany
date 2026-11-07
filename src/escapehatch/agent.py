@@ -204,9 +204,8 @@ async def run_journey(
         agent=agent,
         session_status=session_status,
         answer=answer,
+        duration_s=round(time.monotonic() - t0, 1),
     )
-    if journey.duration_s is None:
-        journey.duration_s = round(time.monotonic() - t0, 1)
     logger.info(
         "journey %s task=%s status=%s outcome=%s steps=%d cost=%s dur=%.0fs",
         run.session_id, task.value, session_status, journey.outcome.value,

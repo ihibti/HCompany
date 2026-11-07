@@ -161,9 +161,15 @@ class TestPatternRecall:
     def test_empty_findings(self, levels):
         level = _level(levels, 2)
         precision, recall = pattern_recall([], level)
-        assert precision == 0.0 and recall == 0.0
+        # vacuous precision, zero recall
+        assert precision == 1.0 and recall == 0.0
 
     def test_level_with_no_truth(self, levels):
         level = _level(levels, 1)  # honest level, no patterns
         precision, recall = pattern_recall([], level)
+        assert precision == 1.0 and recall == 1.0
+
+    def test_predictions_with_no_truth(self, levels):
+        level = _level(levels, 1)  # honest level, no patterns
+        precision, recall = pattern_recall([self._f("nagging")], level)
         assert precision == 0.0 and recall == 1.0

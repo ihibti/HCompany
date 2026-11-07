@@ -78,7 +78,9 @@ def pattern_recall(findings: list[Finding], level: GauntletLevel) -> tuple[float
     """(precision, recall) of detected pattern ids vs the level's ground truth."""
     predicted = {f.pattern for f in findings}
     truth = set(level.patterns)
+    if not predicted and not truth:
+        return 1.0, 1.0
     tp = len(predicted & truth)
-    precision = tp / len(predicted) if predicted else 0.0
+    precision = tp / len(predicted) if predicted else 1.0
     recall = tp / len(truth) if truth else 1.0
     return precision, recall

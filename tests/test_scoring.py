@@ -80,11 +80,28 @@ class TestScoreMath:
         enter = make_journey(["click_web"], task=Task.SUBSCRIBE)
         s = score(leave, enter, [])
         assert s.asymmetry_ratio == 7.0
-        # base 36 + asym min(20, 60) = 20 -> 56
+        # base 36 + asym min(20, 5*(7-1-1)=25) = 20 -> 56
         assert s.friction == 56
         assert s.headline == "Leaving takes 7 actions. Subscribing takes 1."
 
-    def test_asymmetry_no_bonus_when_ratio_le_1(self):
+    def test_asymmetry_free_confirmation_step(self):
+        # leave 2 vs enter 1: the extra step is a legitimate confirmation
+        leave = make_journey(["click_web"] * 2)
+        enter = make_journey(["click_web"], task=Task.SUBSCRIBE)
+        s = score(leave, enter, [])
+        assert s.asymmetry_ratio == 2.0
+        assert s.friction == 6  # base only, no asymmetry penalty
+        assert s.grade == "A"
+
+    def test_asymmetry_penalty_beyond_one_step(self):
+        # leave 4 vs enter 1: 4-1-1=2 -> 5*2=10
+        leave = make_journey(["click_web"] * 4)
+        enter = make_journey(["click_web"], task=Task.SUBSCRIBE)
+        s = score(leave, enter, [])
+        assert s.friction == 18 + 10  # base 18 + asym 10
+        assert s.grade == "C"
+
+    def test_asymmetry_no_bonus_when_enter_heavier(self):
         leave = make_journey(["click_web"])
         enter = make_journey(["click_web"] * 3, task=Task.SUBSCRIBE)
         s = score(leave, enter, [])

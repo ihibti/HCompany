@@ -207,3 +207,11 @@ def test_step_from_policy_event_helper():
     steps_none = step_from_policy_event(policy, None, 0, ts)
     assert steps_none[0].url is None
     assert steps_none[0].screenshot_url is None
+
+
+def test_duration_override_wins_over_event_span():
+    events = _synthetic_events([{"tool_name": "click_web", "args": {}, "id": "x"}])
+    j = _journey(events)
+    assert j.duration_s is not None and j.duration_s < 100  # event span
+    j2 = _journey(events, duration_s=42.5)
+    assert j2.duration_s == 42.5

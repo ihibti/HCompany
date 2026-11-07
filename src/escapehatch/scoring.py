@@ -97,10 +97,12 @@ def score(leave: Journey, enter: Journey | None, findings: list[Finding]) -> Sco
     asymmetry_ratio: float | None = None
     asym = 0
     if enter is not None and enter.outcome == Outcome.SUCCESS:
-        ratio = leave_eff.total / max(1, enter_eff.total if enter_eff else 1)
+        enter_total = enter_eff.total if enter_eff else 0
+        ratio = leave_eff.total / max(1, enter_total)
         asymmetry_ratio = ratio
-        if ratio > 1:
-            asym = min(20, round(10 * (ratio - 1)))
+        # one extra step over the enter flow is legitimate (e.g. a confirmation);
+        # penalize only asymmetry beyond that
+        asym = min(20, 5 * max(0, leave_eff.total - enter_total - 1))
 
     max_sev: dict[str, int] = {}
     for f in findings:
