@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch — https://www.allocine.fr</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #131824;
+    --panel2: #1a2130;
+    --line: #262f42;
+    --text: #e8ecf4;
+    --muted: #8b96ab;
+    --accent: #ff4d5e;
+    --green: #3ddc84;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --grey: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
+  .grade {
+    width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; flex-shrink: 0;
+  }
+  .g-A { background: rgba(61,220,132,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
+  .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
+  .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
+  .g-F { background: rgba(248,113,113,.12); color: var(--red); border: 2px solid var(--red); }
+  .g-NA, .g-Q { background: rgba(100,116,139,.12); color: var(--grey); border: 2px solid var(--grey); }
+  .hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  .hero .sub { color: var(--muted); font-size: 14px; }
+  .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+  h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
+  .effort-row .lbl { font-size: 13px; color: var(--muted); }
+  .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 7px; }
+  .bar.leave > div { background: linear-gradient(90deg, #ff4d5e, #ff8a5c); }
+  .bar.enter > div { background: linear-gradient(90deg, #3ddc84, #a3e635); }
+  .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
+  .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+  .sev-3 { background: rgba(248,113,113,.15); color: var(--red); }
+  .sev-2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .sev-1 { background: rgba(139,150,171,.15); color: var(--muted); }
+  .pname { font-weight: 700; font-size: 14px; }
+  .pdesc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .ev { border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--text); font-size: 13px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .ex { font-size: 13px; color: var(--muted); }
+  .finding img { width: 180px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .finding .noimg { width: 180px; height: 100px; border-radius: 10px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .step { display: grid; grid-template-columns: 140px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .step img { width: 140px; border-radius: 8px; border: 1px solid var(--line); }
+  .step .noimg { width: 140px; height: 80px; border-radius: 8px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; }
+  .step .act { font-weight: 700; font-size: 14px; }
+  .step .el { color: var(--accent); font-size: 13px; margin-top: 2px; word-break: break-word; }
+  .step .rs { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; }
+  summary:hover { color: var(--text); }
+  .legal { display: grid; gap: 10px; }
+  .legal .ref { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .legal .code { font-weight: 700; font-size: 14px; }
+  .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .legal .sum { font-size: 13px; margin-top: 6px; }
+  .legal a { color: #7db4ff; text-decoration: none; font-size: 12px; }
+  .legal a:hover { text-decoration: underline; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .obstacles li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">Escape<span>Hatch</span></div>
+    <div class="tag">friction audit</div>
+    <div class="tag">refuse_cookies</div>
+  </header>
+
+  <section class="hero">
+    
+    <div class="grade g-F">F</div>
+    <div>
+      <h1>https://www.allocine.fr</h1>
+      <div class="sub">Leaving is impossible without paying or accepting.</div>
+      <div class="meta">
+        <span class="chip">friction <b>100</b>/100</span>
+        <span class="chip">patterns <b>3</b></span>
+        <span class="chip">steps <b>1</b></span>
+        <span class="chip">outcome <b>impossible</b></span>
+        <span class="chip">agent <b>h/web-surfer-pro</b></span>
+        <span class="chip">2026-11-07 22:36</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Obstacles reported by the agent</h2>
+    <ul class="obstacles">
+      <li>Cookie wall: the only two choices are (1) pay 2€/month subscription to avoid ad cookies, or (2) accept all 1000+ third-party advertising/tracking cookies. There is no free &#39;refuse&#39; or &#39;essential only&#39; option.</li><li>No &#39;Customize&#39;, &#39;Settings&#39;, &#39;Préférences cookies&#39;, or close (X) button available in the banner before making a choice.</li>
+    </ul>
+  </div>
+  
+
+  <h2>Effort to leave vs enter</h2>
+  <div class="card">
+    
+    
+    
+    <div>
+      <div class="effort-row">
+        <div class="lbl">Leave (refuse cookies)</div>
+        <div class="bar leave"><div style="width: 0.0%"></div></div>
+        <div class="num">0</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        0 interactions · 0 navigations · 0 detours
+        
+      </div>
+    </div>
+    
+    <div>
+      <div class="effort-row">
+        <div class="lbl">Enter (accept cookies)</div>
+        <div class="bar enter"><div style="width: 100.0%"></div></div>
+        <div class="num">1</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        1 interactions · 0 navigations · 0 detours
+        
+      </div>
+    </div>
+    
+  </div>
+
+  <h2>Dark patterns detected</h2>
+  
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">asymmetric choice</span>
+          <span class="chip">step 0</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Accept&#39; button is visually more prominent than the &#39;Reject&#39; option, which is presented as a less prominent text link. The &#39;Accept&#39; button is styled as a primary action, while &#39;Reject&#39; is a secondary option that requires additional effort to locate and select.&rdquo;</div>
+        <div class="ex">The &#39;Accept&#39; button is designed to be the primary action, making it more visually prominent than the &#39;Reject&#39; option. This creates an asymmetric choice where the user&#39;s desired action (refusing cookies) is visually weaker and less accessible, potentially leading to accidental acceptance of non-essential cookies.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/5108c0a701457ebcb807ce2925302d9a4fbeea29.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">forced action</span>
+          <span class="chip">step 1</span>
+        </div>
+        <div class="ev">&ldquo;The only way to refuse non-essential cookies is to pay 2€ for a one-month subscription (&#39;Accéder au site pour 2€ TTC pendant 1 mois sans cookie publicitaire&#39;). There is no free option to refuse cookies.&rdquo;</div>
+        <div class="ex">The user is forced to either pay for a subscription or accept cookies to continue using the site, which is a form of forced action that hinders the goal of refusing non-essential cookies.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/1f9858ed1077fb2424e182ce2d818f8a61b00f9c.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">misdirection</span>
+          <span class="chip">step 1</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;j&#39;accepte&#39; button is styled in bright yellow and is more visually prominent than the &#39;Je m&#39;abonne&#39; button, which is grey and less noticeable. This draws attention to the option that accepts cookies rather than the option to refuse them.&rdquo;</div>
+        <div class="ex">The design uses color and visual hierarchy to make the &#39;accept&#39; option more prominent, steering users toward accepting cookies rather than refusing them.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/1f9858ed1077fb2424e182ce2d818f8a61b00f9c.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+  
+
+  <h2>Step timeline — leave journey</h2>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/5108c0a701457ebcb807ce2925302d9a4fbeea29.jpg" alt="step 0" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#0 · go_to_web</div>
+      
+      <div class="el" style="color:var(--muted)">https://www.bing.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The user wants me to navigate to allocine.fr and refuse all non-essential cookies. Let me navigate there first.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+
+  <h2>Legal references</h2>
+  <div class="legal">
+    
+    <div class="ref">
+      <div><span class="code">ePrivacy Directive Art. 5(3)</span><span class="jur">EU</span></div>
+      <div class="title">Consent required for non-essential cookies</div>
+      <div class="sum">Directive 2002/58/EC requires prior consent before storing or reading non-essential trackers on a user&#39;s device (transposed in France by Art. 82 of the Loi Informatique et Libertés).</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2002/58/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2002/58/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">CNIL Délibérations 2020-091 / 2020-092</span><span class="jur">FR</span></div>
+      <div class="title">Refusing cookies must be as easy as accepting them</div>
+      <div class="sum">The CNIL guidelines and recommendation on cookies require that refusing be as simple as accepting. In January 2022 the CNIL fined Google €150M and Facebook €60M because refusing took more clicks than accepting.</div>
+      <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation" target="_blank" rel="noopener">https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">GDPR Art. 7(3)</span><span class="jur">EU</span></div>
+      <div class="title">Withdrawing consent must be as easy as giving it</div>
+      <div class="sum">Regulation (EU) 2016/679 requires that it be as easy to withdraw consent as to give it.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2016/679/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">DSA Art. 25</span><span class="jur">EU</span></div>
+      <div class="title">Ban on deceptive interface design by online platforms</div>
+      <div class="sum">Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2022/2065/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2022/2065/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Directive 2005/29/EC</span><span class="jur">EU</span></div>
+      <div class="title">Unfair Commercial Practices Directive</div>
+      <div class="sum">Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2005/29/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2005/29/oj</a>
+    </div>
+    
+  </div>
+
+  <footer>
+    <span>session <b>5513e104-f4e7-4ace-aa2d-0958c11b9033</b></span>
+    <span>status <b>completed</b></span>
+    <span>cost <b>$0.0067</b></span>
+    <span>duration <b>23s</b></span>
+    <span>enter session <b>b0da24c1-d545-484e-87ff-8c5c86df107a</b></span>
+    <span>Escape Hatch · evidence-backed friction report</span>
+  </footer>
+</div>
+</body>
+</html>

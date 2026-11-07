@@ -1,0 +1,387 @@
+{
+  "id": "20261107-220806-ihibti-github-io-cancel_subscription",
+  "created_at": "2026-11-07T22:09:15.234361Z",
+  "site_url": "https://ihibti.github.io/HCompany/level3/index.html",
+  "task": "cancel_subscription",
+  "leave": {
+    "session_id": "229023ea-a59b-4388-a9f7-2302678d9e26",
+    "site_url": "https://ihibti.github.io/HCompany/level3/index.html",
+    "task": "cancel_subscription",
+    "agent": "h/web-surfer-pro",
+    "steps": [
+      {
+        "index": 0,
+        "action": "go_to_web",
+        "args": {
+          "url": "https://ihibti.github.io/HCompany/level3/index.html"
+        },
+        "element": null,
+        "reasoning": "Let me start by navigating to the target URL.\n",
+        "message": "I'll navigate to the target site to begin the cancellation process.",
+        "url": "https://www.bing.com/",
+        "title": "Search - Microsoft Bing",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-a960671e-fdb0-4879-96a0-e0e8eb8e2b27.png",
+        "timestamp": "2026-11-07T22:08:19.060685Z"
+      },
+      {
+        "index": 1,
+        "action": "click_web",
+        "args": {
+          "x": 0.89,
+          "y": 0.97,
+          "element": "Accept all cookies button in bottom-right cookie banner"
+        },
+        "element": "Accept all cookies button in bottom-right cookie banner",
+        "reasoning": "This is a Netflix-like site. I'm already logged in as \"Demo\". I need to find the cancellation option. Let me first dismiss the cookie banner, then look for account settings. The \"DU\" avatar in the top right likely leads to account options. Let me click it.\n",
+        "message": "I'm logged in as Demo. Let me dismiss the cookie banner and explore the account menu.",
+        "url": "https://ihibti.github.io/HCompany/level3/index.html",
+        "title": "Account — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-04ef656d-aaf9-44a3-a72a-d33d8b3f29f2.png",
+        "timestamp": "2026-11-07T22:08:24.244140Z"
+      },
+      {
+        "index": 2,
+        "action": "click_web",
+        "args": {
+          "x": 0.933,
+          "y": 0.026,
+          "element": "DU avatar button in top-right corner"
+        },
+        "element": "DU avatar button in top-right corner",
+        "reasoning": "Cookie banner dismissed. Now let me click the \"DU\" avatar in the top right to find account/cancel options.\n",
+        "message": "Cookie banner dismissed. Let me click the account avatar in the top right.",
+        "url": "https://ihibti.github.io/HCompany/level3/index.html",
+        "title": "Account — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-faaaf6bc-b0b3-4168-85e4-35dcaf870bf4.png",
+        "timestamp": "2026-11-07T22:08:29.503641Z"
+      },
+      {
+        "index": 3,
+        "action": "scroll_web",
+        "args": {
+          "direction": "down",
+          "num_pixels": 600,
+          "scroll_element": null
+        },
+        "element": null,
+        "reasoning": "The avatar click didn't open a menu. The \"Your plan\" card is the most likely place for cancellation. There's a \"Help Center\" button and \"Visit our Help Center\" link. But cancellation is usually under account settings. Let me scroll down to see if there's more content, or the plan card might have a manage option. Actually, the plan card only shows \"Your plan\" with Help Center. Let me scroll down to check the rest of the page.\n",
+        "message": "The avatar didn't open a menu. Let me scroll down to see the rest of the page.",
+        "url": "https://ihibti.github.io/HCompany/level3/index.html",
+        "title": "Account — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-63d5fdae-aa85-42b3-9824-583de03ddb1b.png",
+        "timestamp": "2026-11-07T22:08:34.166142Z"
+      },
+      {
+        "index": 4,
+        "action": "scroll_web",
+        "args": {
+          "direction": "up",
+          "num_pixels": 600,
+          "scroll_element": null
+        },
+        "element": null,
+        "reasoning": "No cancellation option on the main page. The only paths are \"Help Center\" button and \"Visit our Help Center\" link. The \"Your plan\" card is the account area. Let me scroll back up and click the \"Help Center\" button, which likely leads to account management where cancellation lives.\n",
+        "message": "No cancel option on the main page. Let me scroll back up and click the Help Center button.",
+        "url": "https://ihibti.github.io/HCompany/level3/index.html",
+        "title": "Account — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-0dbe4960-4aa7-422f-bbcd-8132109aa6e4.png",
+        "timestamp": "2026-11-07T22:08:38.912071Z"
+      },
+      {
+        "index": 5,
+        "action": "click_web",
+        "args": {
+          "x": 0.159,
+          "y": 0.402,
+          "element": "Help Center button in the Your plan card"
+        },
+        "element": "Help Center button in the Your plan card",
+        "reasoning": "Let me click the \"Help Center\" button in the Your plan card.\n",
+        "message": null,
+        "url": "https://ihibti.github.io/HCompany/level3/index.html",
+        "title": "Account — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-2a006c11-f042-4533-92fa-d9089d598857.png",
+        "timestamp": "2026-11-07T22:08:42.904766Z"
+      },
+      {
+        "index": 6,
+        "action": "click_web",
+        "args": {
+          "x": 0.377,
+          "y": 0.28,
+          "element": "Billing & membership expandable FAQ row"
+        },
+        "element": "Billing & membership expandable FAQ row",
+        "reasoning": "Help Center with FAQ. \"Billing & membership\" is the most likely to contain cancellation. Let me expand it.\n",
+        "message": "Help Center loaded. Let me expand \"Billing & membership\".",
+        "url": "https://ihibti.github.io/HCompany/level3/help.html",
+        "title": "Help Center — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-984847a1-557f-48c3-b48d-29b9b04c0019.png",
+        "timestamp": "2026-11-07T22:08:47.143356Z"
+      },
+      {
+        "index": 7,
+        "action": "click_web",
+        "args": {
+          "x": 0.507,
+          "y": 0.349,
+          "element": "\"end your membership\" link in the Billing & membership answer"
+        },
+        "element": "\"end your membership\" link in the Billing & membership answer",
+        "reasoning": "There's a link \"end your membership\" which is exactly what I want. It says \"our retention team would love to help\" — that's a nudge toward retention, but the link itself \"end your membership\" is the cancellation path. Let me click it.\n",
+        "message": "Found the \"end your membership\" link. Let me click it.",
+        "url": "https://ihibti.github.io/HCompany/level3/help.html",
+        "title": "Help Center — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-c6c33d59-2c91-478a-8a70-8fa76ca43f99.png",
+        "timestamp": "2026-11-07T22:08:51.368254Z"
+      },
+      {
+        "index": 8,
+        "action": "click_web",
+        "args": {
+          "x": 0.396,
+          "y": 0.56,
+          "element": "\"Continue to cancel instead\" text link in the free month modal"
+        },
+        "element": "\"Continue to cancel instead\" text link in the free month modal",
+        "reasoning": "Retention offer: \"Claim my free month\" (the red nudge) vs \"Continue to cancel instead\" (the understated link). I must decline the free month and click \"Continue to cancel instead\".\n",
+        "message": "A retention offer appeared. I'll decline the free month and continue to cancel.",
+        "url": "https://ihibti.github.io/HCompany/level3/help.html",
+        "title": "Help Center — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-e9947d24-9896-48dc-b23a-4274146d71d7.png",
+        "timestamp": "2026-11-07T22:08:54.997122Z"
+      },
+      {
+        "index": 9,
+        "action": "request_confirmation",
+        "args": {
+          "action": "Click the red \"Confirm cancellation\" button on the \"Cancel your subscription?\" page to permanently cancel the Netflux Premium subscription (active until end of billing period, then will not renew)."
+        },
+        "element": null,
+        "reasoning": "Now the confirmation page: \"Cancel your subscription?\" with \"Confirm cancellation\" (red) and \"Go back\". This is the final irreversible click. Per instructions, I must call request_confirmation describing the exact button before clicking.\n",
+        "message": "This is the final confirmation page. Before clicking the irreversible \"Confirm cancellation\" button, I'll request confirmation.",
+        "url": "https://ihibti.github.io/HCompany/level3/confirm.html",
+        "title": "Confirm cancellation — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-96f5d75e-46a8-417d-a17f-92e0b9dfc420.png",
+        "timestamp": "2026-11-07T22:08:58.742755Z"
+      },
+      {
+        "index": 10,
+        "action": "click_web",
+        "args": {
+          "x": 0.397,
+          "y": 0.228,
+          "element": "Red \"Confirm cancellation\" button"
+        },
+        "element": "Red \"Confirm cancellation\" button",
+        "reasoning": "Approved. Now click \"Confirm cancellation\".\n",
+        "message": "Approved. Clicking \"Confirm cancellation\".",
+        "url": "https://ihibti.github.io/HCompany/level3/confirm.html",
+        "title": "Confirm cancellation — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-96f5d75e-46a8-417d-a17f-92e0b9dfc420.png",
+        "timestamp": "2026-11-07T22:09:01.010743Z"
+      }
+    ],
+    "answer": {
+      "completed": true,
+      "impossible": false,
+      "flow_found": true,
+      "interactions_reported": 7,
+      "steps": [
+        "Navigated to the Netflux account page (already logged in as Demo).",
+        "Dismissed the cookie banner (Accept all cookies).",
+        "Tried the DU avatar (no menu), then clicked the Help Center button on the Your plan card.",
+        "In Help Center, expanded the 'Billing & membership' FAQ.",
+        "Clicked the 'end your membership' link in that answer.",
+        "A retention modal offered a FREE month ('Claim my free month' as the red nudge); I declined it and clicked the understated 'Continue to cancel instead' link.",
+        "On the 'Cancel your subscription?' page, called request_confirmation describing the red 'Confirm cancellation' button; it returned 'approved'.",
+        "Clicked the red 'Confirm cancellation' button.",
+        "Landed on cancelled.html: 'Your Netflix subscription is cancelled', confirmation code NX-L3-CANCELLED, 'You will not be billed again.'"
+      ],
+      "obstacles": [
+        "Retention offer modal ('Wait! Here's a FREE month') with the free-month option styled as the primary red button and the actual cancel path as a small text link — declined the free month and chose 'Continue to cancel instead'.",
+        "The DU avatar in the top-right did not open an account menu, so the cancellation path was reached via Help Center instead."
+      ],
+      "final_state": "Subscription fully cancelled and confirmed. Confirmation page shows 'Your Netflix subscription is cancelled', code NX-L3-CANCELLED, and 'You will not be billed again.' Plan remains active until end of current billing period, then will not renew."
+    },
+    "session_status": "completed",
+    "outcome": "success",
+    "cost_usd": 0.03477960000000001,
+    "duration_s": 61.71911,
+    "final_url": "https://ihibti.github.io/HCompany/level3/cancelled.html",
+    "final_screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-4fc4df38-ee92-4234-a723-c422b923b136.png"
+  },
+  "enter": {
+    "session_id": "0ad87212-14e6-4a5d-90cf-e366646f5379",
+    "site_url": "https://ihibti.github.io/HCompany/level3/signup.html",
+    "task": "subscribe",
+    "agent": "h/web-surfer-pro",
+    "steps": [
+      {
+        "index": 0,
+        "action": "go_to_web",
+        "args": {
+          "url": "https://ihibti.github.io/HCompany/level3/signup.html"
+        },
+        "element": null,
+        "reasoning": "Let me navigate to the target URL first.\n",
+        "message": null,
+        "url": "https://www.bing.com/",
+        "title": "Search - Microsoft Bing",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/0ad87212-14e6-4a5d-90cf-e366646f5379/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/0ad87212-14e6-4a5d-90cf-e366646f5379/screenshot-dc88ebdd-ae12-4c2b-8477-748041bc07f2.png",
+        "timestamp": "2026-11-07T22:08:17.931941Z"
+      },
+      {
+        "index": 1,
+        "action": "scroll_web",
+        "args": {
+          "direction": "down",
+          "num_pixels": 500,
+          "scroll_element": null
+        },
+        "element": null,
+        "reasoning": "This is a Netflix-like page. I see a \"Start my plan\" button for Netflix Premium $15.99/month. But wait - this is a signup page. Let me be careful. The goal is to start a subscription or free trial with fewest interactions. Let me first dismiss the cookie banner (it's a nudge but I should handle it). Actually, cookie acceptance is optional. Let me focus on the main goal.\n\nThere's a \"Start my plan\" button. But I should be careful - the page says \"Choose your plan\" in the title. There might be multiple plans. Let me scroll down to see if there are other plan options, or check if this is the only one. Actually the title is \"Choose your plan\" but only Premium is shown. Let me scroll to see more.\n\nActually, let me think about interaction count. The cookie banner - \"Accept all\" is a nudge but not required. I'll avoid it to keep interactions minimal. Let me scroll down to check the full page first before clicking.\n",
+        "message": "I'm on the Netflux signup page showing a Premium plan with a \"Start my plan\" button. Let me scroll down to check for other plan options before committing.",
+        "url": "https://ihibti.github.io/HCompany/level3/signup.html",
+        "title": "Choose your plan — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/0ad87212-14e6-4a5d-90cf-e366646f5379/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/0ad87212-14e6-4a5d-90cf-e366646f5379/screenshot-0031cc68-b348-4382-ae33-a219d694b003.png",
+        "timestamp": "2026-11-07T22:08:24.696325Z"
+      },
+      {
+        "index": 2,
+        "action": "scroll_web",
+        "args": {
+          "direction": "up",
+          "num_pixels": 500,
+          "scroll_element": null
+        },
+        "element": null,
+        "reasoning": "The page only has the one \"Start my plan\" button for the Premium plan. The rest is trending content and footer. So the only path is \"Start my plan\". Let me scroll back up and click it. The cookie banner is a nudge but not required for the goal. I'll skip it.\n\nLet me scroll up to find the button.\n",
+        "message": "Only one plan (\"Start my plan\") is available. Let me scroll back up and click it.",
+        "url": "https://ihibti.github.io/HCompany/level3/signup.html",
+        "title": "Choose your plan — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/0ad87212-14e6-4a5d-90cf-e366646f5379/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/0ad87212-14e6-4a5d-90cf-e366646f5379/screenshot-3acb58a2-4c70-40ac-bd62-d412c7da743b.png",
+        "timestamp": "2026-11-07T22:08:29.682437Z"
+      },
+      {
+        "index": 3,
+        "action": "click_web",
+        "args": {
+          "x": 0.165,
+          "y": 0.376,
+          "element": "Red \"Start my plan\" button under Netflix Premium"
+        },
+        "element": "Red \"Start my plan\" button under Netflix Premium",
+        "reasoning": "Now I'll click \"Start my plan\" button. This is interaction #1.\n",
+        "message": "Clicking \"Start my plan\" (interaction 1).",
+        "url": "https://ihibti.github.io/HCompany/level3/signup.html",
+        "title": "Choose your plan — Netflux",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/0ad87212-14e6-4a5d-90cf-e366646f5379/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/0ad87212-14e6-4a5d-90cf-e366646f5379/screenshot-a31cb463-a053-46ac-96a0-edb91c72a23e.png",
+        "timestamp": "2026-11-07T22:08:33.924875Z"
+      }
+    ],
+    "answer": {
+      "completed": true,
+      "impossible": false,
+      "flow_found": true,
+      "interactions_reported": 1,
+      "steps": [
+        "Navigated to signup.html (plan selection page showing Netflix Premium $15.99/month)",
+        "Clicked the red 'Start my plan' button",
+        "Landed on welcome.html showing 'You're subscribed! Your Netflix Premium plan is active. Happy watching.'"
+      ],
+      "obstacles": [
+        "Cookie consent banner ('Accept all') was present but not required to complete the goal, so it was left untouched"
+      ],
+      "final_state": "Subscription confirmed on welcome.html: 'You're subscribed! Your Netflix Premium plan is active.' Reached in 1 interaction (single click on 'Start my plan'). No login or payment step was required."
+    },
+    "session_status": "completed",
+    "outcome": "success",
+    "cost_usd": 0.0136156,
+    "duration_s": 33.75887,
+    "final_url": "https://ihibti.github.io/HCompany/level3/welcome.html",
+    "final_screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/0ad87212-14e6-4a5d-90cf-e366646f5379/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/0ad87212-14e6-4a5d-90cf-e366646f5379/screenshot-9ac1749f-488a-430e-945b-7175657646b5.png"
+  },
+  "findings": [
+    {
+      "pattern": "asymmetric_choice",
+      "severity": 2,
+      "evidence": "The 'Claim my free month' button is a large, prominent red button, while the 'Continue to cancel instead' option is a small, grey text link below it, making the cancellation option visually weaker and harder to find.",
+      "explanation": "The user's goal is to cancel their subscription, but the design makes the cancellation option significantly less prominent than the retention offer, which could lead users to accidentally accept the free month instead of canceling.",
+      "step_index": 8,
+      "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-e9947d24-9896-48dc-b23a-4274146d71d7.png"
+    },
+    {
+      "pattern": "hidden_option",
+      "severity": 2,
+      "evidence": "The 'Your plan' section shows subscription details but the only visible action is a 'Help Center' button; the actual cancellation option is not directly accessible from this main page and requires navigating through the 'DU' avatar menu in the top-right corner.",
+      "explanation": "The cancellation process is not immediately visible on the main page. The user must first click the 'DU' avatar button to access account options, which adds an extra step and makes the cancellation path less discoverable.",
+      "step_index": 2,
+      "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-faaaf6bc-b0b3-4168-85e4-35dcaf870bf4.png"
+    },
+    {
+      "pattern": "obstruction",
+      "severity": 2,
+      "evidence": "The only visible action related to the subscription is the 'Help Center' button in the 'Your plan' card. There is no direct 'Cancel' or 'Manage Subscription' option on this screen, forcing the user to navigate through the Help Center to find cancellation instructions, which adds unnecessary steps to the process.",
+      "explanation": "The user's goal is to cancel a paid subscription, but the interface only provides a 'Help Center' button as the primary action. This forces the user to go through an additional layer (the Help Center) to find cancellation options, which is an unnecessary step that adds friction to the process. This is a clear case of obstruction, as the direct path to cancellation is not provided on the main account page.",
+      "step_index": 5,
+      "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/229023ea-a59b-4388-a9f7-2302678d9e26/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/229023ea-a59b-4388-a9f7-2302678d9e26/screenshot-2a006c11-f042-4533-92fa-d9089d598857.png"
+    }
+  ],
+  "score": {
+    "leave_effort": {
+      "interactions": 7,
+      "navigations": 0,
+      "detours": 0,
+      "total": 7
+    },
+    "enter_effort": {
+      "interactions": 1,
+      "navigations": 0,
+      "detours": 0,
+      "total": 1
+    },
+    "asymmetry_ratio": 7.0,
+    "pattern_points": 24,
+    "friction": 80,
+    "grade": "F",
+    "headline": "Leaving takes 7 actions. Subscribing takes 1."
+  },
+  "legal": [
+    {
+      "code": "Code de la consommation L215-1-1",
+      "jurisdiction": "FR",
+      "title": "Résiliation en trois clics",
+      "summary": "Since 1 June 2023 (loi n° 2022-1158), a contract that can be concluded online must be cancellable online through a free, easily accessible feature.",
+      "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046190107"
+    },
+    {
+      "code": "ROSCA, 15 U.S.C. § 8403",
+      "jurisdiction": "US",
+      "title": "Simple mechanism to stop recurring charges",
+      "summary": "The Restore Online Shoppers' Confidence Act requires online negative-option sellers to provide simple mechanisms to stop recurring charges. (The FTC's 2024 click-to-cancel rule was vacated in July 2025; ROSCA still applies.)",
+      "url": "https://www.law.cornell.edu/uscode/text/15/8403"
+    },
+    {
+      "code": "Cal. Bus. & Prof. Code § 17602",
+      "jurisdiction": "US-CA",
+      "title": "California Automatic Renewal Law",
+      "summary": "Consumers who sign up online must be able to cancel online, without obstruction.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=17602"
+    },
+    {
+      "code": "DSA Art. 25",
+      "jurisdiction": "EU",
+      "title": "Ban on deceptive interface design by online platforms",
+      "summary": "Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.",
+      "url": "https://eur-lex.europa.eu/eli/reg/2022/2065/oj"
+    },
+    {
+      "code": "Directive 2005/29/EC",
+      "jurisdiction": "EU",
+      "title": "Unfair Commercial Practices Directive",
+      "summary": "Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.",
+      "url": "https://eur-lex.europa.eu/eli/dir/2005/29/oj"
+    }
+  ]
+}
