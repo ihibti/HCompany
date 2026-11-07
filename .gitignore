@@ -1,0 +1,4 @@
+.env
+.env.*
+.devin/config.local.json
+.DS_Store
