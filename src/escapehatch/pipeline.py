@@ -356,5 +356,6 @@ async def run_audit(
         "grade": audit_score.grade,
         "friction": audit_score.friction,
         "headline": audit_score.headline,
+        "outcome": leave.outcome.value,
     })
     return audit

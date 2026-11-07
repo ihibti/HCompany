@@ -11,10 +11,11 @@
   <div class="bench-head">
     <div>
       <h2>{{ b.agent }}</h2>
-      <p class="bench-meta">{{ b.created_at[:16].replace("T", " ") }} UTC · base {{ b.base }}</p>
+      <p class="bench-meta">latest {{ (b.latest or "")[:16].replace("T", " ") }} UTC · base {{ b.base }} · {{ b.total_runs }} level-runs</p>
     </div>
     <div class="bench-agg">
-      <div class="agg"><b>{{ "%.0f%%" | format(b.success_rate * 100) }}</b><span>levels escaped</span></div>
+      <div class="agg"><b>{{ b.escaped }}/{{ b.level_count }}</b><span>levels escaped</span></div>
+      <div class="agg"><b>{{ "%.0f" | format(b.mean_overhead) }}</b><span>mean effort vs human min</span></div>
       <div class="agg"><b>{{ "%.2f" | format(b.mean_recall) }}</b><span>mean pattern recall</span></div>
       <div class="agg"><b>${{ "%.3f" | format(b.total_cost) }}</b><span>total cost</span></div>
     </div>
@@ -27,8 +28,12 @@
       <div class="bl-top">
         <span class="bl-num">L{{ l.level }}</span>
         <span class="bl-title">{{ l.title }}</span>
-        <span class="verdict verdict-{{ l.verdict }}">{{ l.verdict }}</span>
-        <span class="grade grade-{{ l.grade }}">{{ l.grade }}</span>
+        <span class="bl-right">
+          {% if l.runs and l.runs > 1 %}<span class="bl-runs" title="{{ l.escapes or 0 }}/{{ l.runs }} runs escaped">{{ l.escapes or 0 }}/{{ l.runs }}</span>{% endif %}
+          <span class="verdict verdict-{{ l.verdict }}">{{ l.verdict }}</span>
+          <span class="grade grade-{{ l.grade }}">{{ l.grade }}</span>
+          {% if l.audit_id %}<a class="bl-link" href="/audits/{{ l.audit_id }}">evidence &rarr;</a>{% endif %}
+        </span>
       </div>
       <div class="bl-stats">
         <span>effort <b>{{ l.leave_effort }}</b> / human min {{ l.min_leave_interactions }}</span>
@@ -41,7 +46,6 @@
         {% for p in meta.patterns %}<span class="pattern-chip sev-2">{{ p.replace("_", " ") }}</span>{% endfor %}
       </p>
       {% endif %}
-      {% if l.audit_id %}<a class="bl-link" href="/audits/{{ l.audit_id }}">evidence &rarr;</a>{% endif %}
     </div>
     {% endfor %}
   </div>

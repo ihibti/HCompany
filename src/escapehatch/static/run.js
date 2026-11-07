@@ -144,15 +144,37 @@
     const g = c.grade;
     g.textContent = msg.grade || "?";
     g.className = "grade-badge grade-" + (msg.grade || "?");
-    c.headline.textContent = msg.headline || "";
+    if (msg.outcome === "impossible") {
+      c.headline.textContent = "Impossible — the site blocks the exit (cookie wall / paywall / no refuse path).";
+      c.headline.classList.add("impossible");
+    } else {
+      c.headline.textContent = msg.headline || "";
+      c.headline.classList.remove("impossible");
+    }
     c.report.href = "/audits/" + msg.audit_id;
     setStatus(c, "done");
     c.controls.hidden = true;
   }
 
+  function clearReplayConfirms(c) {
+    document.querySelectorAll('.confirm-modal.replay-auto')
+      .forEach((m) => { if (m.dataset.run === c.run) m.remove(); });
+  }
+
   function showConfirm(c, msg) {
     const stack = document.querySelector('[data-role="confirms"]');
     const modal = document.createElement("div");
+    modal.dataset.run = c.run;
+    if (msg.replay_auto) {
+      modal.className = "confirm-modal replay-auto";
+      modal.innerHTML =
+        `<h3>The agent asked before acting</h3>` +
+        `<p class="confirm-action">${escapeHtml(msg.action || "")}</p>` +
+        `<div class="confirm-timer" style="color:var(--green)">auto-approved in replay</div>`;
+      stack.appendChild(modal);
+      setTimeout(() => modal.remove(), 30000);
+      return;
+    }
     modal.className = "confirm-modal";
     modal.innerHTML =
       `<h3>The agent is about to act</h3>` +
@@ -217,6 +239,7 @@
     if (!run) return;
     const c = col(run);
     if (!c) return;
+    if (msg.type === "step" || msg.type === "status") clearReplayConfirms(c);
     switch (msg.type) {
       case "step": addStep(c, msg); break;
       case "status":

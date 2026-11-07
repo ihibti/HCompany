@@ -30,7 +30,11 @@
     </span>
     <span class="hall-stats">
       <span class="stat"><b>{{ a.score.friction }}</b> friction</span>
+      {% if a.leave.outcome.value == "impossible" %}
+      <span class="stat impossible">impossible</span>
+      {% else %}
       <span class="stat"><b>{{ a.score.leave_effort.total }}</b> actions</span>
+      {% endif %}
       <span class="stat cost">${{ "%.4f" | format(a.leave.cost_usd or 0) }}</span>
     </span>
   </a>

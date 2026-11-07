@@ -8,6 +8,7 @@ through the same message protocol.
 import asyncio
 import json
 import logging
+import re
 import time
 import uuid
 from datetime import datetime, timezone
@@ -44,6 +45,7 @@ GAUNTLET_DIR = APP_DIR.parent.parent / "gauntlet"
 LEVELS_JSON = GAUNTLET_DIR / "levels.json"
 
 SHONG_HOSTS = {"agp.eu.hcompany.ai", "agp.hcompany.ai"}
+_SHOT_NAME_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 CONFIRM_TIMEOUT_S = 120
 REPLAY_STEP_DELAY_S = 0.9
 SHOT_KEYS_VARS = ("HAI_API_KEY", "HCOMPANY_KEY")
@@ -178,6 +180,16 @@ def _hall_rows(state: State, task: str | None = None) -> list[dict[str, Any]]:
         if task and audit.task.value != task:
             continue
         rows.append({"audit": audit, "store": store.name if hasattr(store, "name") else str(store.root)})
+    # one row per (host, task): keep the most recent audit, older runs stay
+    # reachable from their own audit pages
+    best: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in rows:
+        a = row["audit"]
+        key = (urlparse(a.site_url).netloc, a.task.value)
+        cur = best.get(key)
+        if cur is None or a.created_at > cur["audit"].created_at:
+            best[key] = row
+    rows = list(best.values())
     rows.sort(key=lambda r: (-r["audit"].score.friction, r["audit"].site_url))
     return rows
 
@@ -304,6 +316,14 @@ async def _replay_one(state: State, batch: Batch, spec: dict[str, Any], delay: f
                 "step": payload, "effort_so_far": effort,
             })
             emitted_steps += 1
+            if step.action == "request_confirmation":
+                action = (step.args or {}).get("action") or step.element or "irreversible action"
+                _emit(batch, {
+                    "type": "confirm_request", "run": run_key, "journey": side,
+                    "id": f"replay-{emitted_steps}", "action": action,
+                    "replay_auto": True,
+                })
+                await asyncio.sleep(delay * 1.6)
             if freeze_after is not None and emitted_steps >= freeze_after:
                 await asyncio.Event().wait()  # hold frozen state for screenshots
             await asyncio.sleep(delay)
@@ -322,6 +342,7 @@ async def _replay_one(state: State, batch: Batch, spec: dict[str, Any], delay: f
         "type": "done", "run": run_key, "audit_id": audit.id,
         "grade": audit.score.grade, "friction": audit.score.friction,
         "headline": audit.score.headline,
+        "outcome": audit.leave.outcome.value,
     })
 
 
@@ -438,13 +459,38 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
             return None
 
         html = render_report_html(audit, resolver)
+        host = urlparse(audit.site_url).netloc
+        prev = [
+            a for a, _ in _all_audits(state)
+            if a.id != audit.id
+            and urlparse(a.site_url).netloc == host
+            and a.task == audit.task
+        ]
+        prev.sort(key=lambda a: a.created_at, reverse=True)
+        prev_links = "".join(
+            f'<a href="/audits/{a.id}" style="color:#14c06a;text-decoration:none;'
+            'margin-right:10px">'
+            f'{a.score.grade} · {a.created_at.strftime("%Y-%m-%d %H:%M")}</a>'
+            for a in prev[:5]
+        )
+        prev_html = (
+            f'<span style="color:#8fa396;font:500 12px/1 -apple-system,sans-serif">'
+            f'previous runs: {prev_links}</span>' if prev_links else ""
+        )
         toolbar = (
-            '<div style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px">'
-            f'<a href="/" style="background:#141816;color:#e8f5ee;padding:8px 14px;border-radius:10px;'
-            'text-decoration:none;font:600 13px/1 -apple-system,sans-serif;border:1px solid #2a332e">'
+            '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;'
+            'display:flex;align-items:center;gap:10px;padding:12px 18px;'
+            'background:rgba(11,13,12,.9);backdrop-filter:blur(10px);'
+            'border-bottom:1px solid rgba(255,255,255,.08)">'
+            '<a href="/" style="background:#14c06a;color:#06130c;padding:8px 14px;'
+            'border-radius:10px;text-decoration:none;font:700 13px/1 -apple-system,sans-serif">'
             "&larr; Escape Hatch</a>"
-            f'<a href="/api/audits/{audit.id}" download="audit.json" style="background:#14c06a;color:#06130c;'
-            'padding:8px 14px;border-radius:10px;text-decoration:none;font:700 13px/1 -apple-system,sans-serif">'
+            '<span style="color:#8fa396;font:500 12px/1 -apple-system,sans-serif">friction audit</span>'
+            + prev_html +
+            '<span style="flex:1"></span>'
+            f'<a href="/api/audits/{audit.id}" download="audit.json" style="background:#18211c;color:#e9f2ec;'
+            'padding:8px 14px;border-radius:10px;text-decoration:none;font:600 13px/1 -apple-system,sans-serif;'
+            'border:1px solid rgba(255,255,255,.12)">'
             "Download JSON</a></div>"
         )
         html = html.replace("</body>", toolbar + "</body>")
@@ -617,8 +663,8 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
 
     @app.get("/api/shot")
     async def shot(u: str):
-        host = urlparse(u).netloc
-        if host not in SHONG_HOSTS:
+        parsed = urlparse(u)
+        if parsed.scheme != "https" or parsed.netloc not in SHONG_HOSTS:
             raise HTTPException(400, "host not allowed")
         for s in (state.store, state.demo_store):
             if s is not None:
@@ -642,10 +688,17 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
 
     @app.get("/shots/{audit_id}/{name}")
     async def stored_shot(audit_id: str, name: str):
+        if not (_SHOT_NAME_RE.match(audit_id) and _SHOT_NAME_RE.match(name)):
+            raise HTTPException(400, "bad shot path")
+        if ".." in audit_id or ".." in name:
+            raise HTTPException(400, "bad shot path")
         for s in (state.store, state.demo_store):
             if s is None:
                 continue
-            p = s.root / "shots" / name
+            root = s.root.resolve() / "shots"
+            p = (root / name).resolve()
+            if not p.is_relative_to(root):
+                continue
             if p.exists() and p.suffix == ".jpg":
                 return FileResponse(p)
         raise HTTPException(404, "shot not found")
@@ -654,8 +707,10 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
 
 
 def _load_benchmarks(state: State) -> list[dict[str, Any]]:
-    """Latest benchmark JSON per agent across stores."""
-    by_agent: dict[str, dict[str, Any]] = {}
+    """Latest result per (agent, level) across all benchmark files, both stores."""
+    per_level: dict[tuple[str, int], tuple[str, dict[str, Any]]] = {}
+    audit_verdicts: dict[tuple[str, int], dict[str, str]] = {}
+    meta: dict[str, dict[str, Any]] = {}
     for store in (state.store, state.demo_store):
         if store is None:
             continue
@@ -668,22 +723,50 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
             except Exception:
                 continue
             agent = data.get("agent", "?")
-            cur = by_agent.get(agent)
-            if cur is None or data.get("created_at", "") > cur.get("created_at", ""):
-                by_agent[agent] = data
+            file_ts = data.get("created_at", "")
+            meta.setdefault(agent, {"base": data.get("base"), "latest": ""})
+            if file_ts > meta[agent]["latest"]:
+                meta[agent]["latest"] = file_ts
+            for row in data.get("levels", []):
+                k = (agent, row.get("level"))
+                aid = row.get("audit_id")
+                if aid:
+                    audit_verdicts.setdefault(k, {})[aid] = row.get("verdict")
+                cur = per_level.get(k)
+                if cur is None or file_ts > cur[0]:
+                    per_level[k] = (file_ts, row)
+
+    by_agent: dict[str, list[dict[str, Any]]] = {}
+    for (agent, level), (_, row) in per_level.items():
+        k = (agent, level)
+        verdicts = audit_verdicts.get(k) or {}
+        n = max(1, len(verdicts))
+        escapes = sum(1 for v in verdicts.values() if v == "cancelled")
+        by_agent.setdefault(agent, []).append(
+            {**row, "runs": n, "escapes": escapes if verdicts else None})
+
     out = []
-    for agent, data in by_agent.items():
-        levels = data.get("levels", [])
+    for agent, levels in by_agent.items():
+        levels.sort(key=lambda l: l.get("level") or 0)
         done = [l for l in levels if l.get("verdict") == "cancelled"]
         recalls = [l["recall"] for l in levels if l.get("recall") is not None]
+        overheads = [
+            l["leave_effort"] - l["min_leave_interactions"]
+            for l in levels
+            if l.get("leave_effort") is not None and l.get("min_leave_interactions") is not None
+        ]
         out.append({
             "agent": agent,
-            "created_at": data.get("created_at"),
-            "base": data.get("base"),
+            "base": meta.get(agent, {}).get("base"),
+            "latest": meta.get(agent, {}).get("latest"),
             "levels": levels,
             "success_rate": (len(done) / len(levels)) if levels else 0,
+            "escaped": len(done),
+            "level_count": len(levels),
             "mean_recall": (sum(recalls) / len(recalls)) if recalls else 0,
+            "mean_overhead": (sum(overheads) / len(overheads)) if overheads else 0,
             "total_cost": sum(l.get("cost_usd", 0) for l in levels),
+            "total_runs": sum(l.get("runs", 1) for l in levels),
         })
-    out.sort(key=lambda b: b["created_at"] or "", reverse=True)
+    out.sort(key=lambda b: b["agent"])
     return out

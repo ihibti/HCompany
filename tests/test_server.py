@@ -261,11 +261,37 @@ async def test_shot_proxy_allowlist(app_and_state):
         assert r.status_code == 400
         r = await client.get("/api/shot", params={"u": "https://ihibti.github.io/x.png"})
         assert r.status_code == 400
+        r = await client.get("/api/shot", params={"u": "http://agp.eu.hcompany.ai/x.png"})
+        assert r.status_code == 400
+        r = await client.get("/api/shot", params={"u": "ftp://agp.eu.hcompany.ai/x.png"})
+        assert r.status_code == 400
         url = "https://agp.eu.hcompany.ai/api/v1/trajectories/s/resources/b/k"
         store.save_screenshot(url, _png())
         r = await client.get("/api/shot", params={"u": url})
         assert r.status_code == 200
         assert r.headers["content-type"] == "image/jpeg"
+
+
+@pytest.mark.asyncio
+async def test_stored_shot_path_validation(app_and_state):
+    app, store, registry, probe = app_and_state
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://t") as client:
+        url = "https://agp.eu.hcompany.ai/x.png"
+        path = store.save_screenshot(url, _png())
+        name = path.name
+        r = await client.get(f"/shots/any-audit/{name}")
+        assert r.status_code == 200
+        r = await client.get("/shots/any-audit/..")
+        assert r.status_code in (400, 404)
+        r = await client.get("/shots/bad%20name/x.jpg")
+        assert r.status_code == 400
+        r = await client.get("/shots/audit/%2e%2e")
+        assert r.status_code == 400
+        r = await client.get("/shots/audit/%2e%2e%2fsecret.jpg")
+        assert r.status_code in (400, 404)
+        r = await client.get("/shots/audit/nonexistent.jpg")
+        assert r.status_code == 404
 
 
 def _save_test_audit(store: RunStore, audit_id: str, site_url: str,
