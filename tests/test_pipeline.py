@@ -203,8 +203,8 @@ async def test_run_audit_confirm_request_emitted(tmp_path, monkeypatch):
 
     confirm_calls = []
 
-    async def user_confirm(action: str) -> str:
-        confirm_calls.append(action)
+    async def user_confirm(action: str, req_id: str) -> str:
+        confirm_calls.append((action, req_id))
         return "approved"
 
     await pipeline.run_audit(
@@ -223,7 +223,7 @@ async def test_run_audit_confirm_request_emitted(tmp_path, monkeypatch):
     assert reqs[0]["journey"] == "leave"
     assert reqs[0]["action"] == "click 'Confirm cancellation'"
     assert reqs[0]["id"]
-    assert confirm_calls == ["click 'Confirm cancellation'"]
+    assert confirm_calls == [("click 'Confirm cancellation'", reqs[0]["id"])]
     # wrapper mapped the user result through
     assert fake_rj.calls[0]["confirm_result"] == "approved"
 
@@ -235,7 +235,7 @@ async def test_run_audit_confirm_denied_propagates(tmp_path, monkeypatch):
 
     store = RunStore(tmp_path / "runs")
 
-    async def deny(action: str) -> str:
+    async def deny(action: str, req_id: str) -> str:
         return "denied"
 
     await pipeline.run_audit(

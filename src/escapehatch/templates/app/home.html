@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <p class="hero-kicker">Computer-use agents vs. dark patterns</p>
+  <h1 class="hero-title">Signing up takes 1 click.<br>Leaving takes <em>{{ max_effort }}</em>.</h1>
+  <p class="hero-sub">Escape Hatch sends an agent to leave websites for you — refusing cookies, cancelling subscriptions, unsubscribing — and measures every dark pattern standing in the way.</p>
+</section>
+
+<section class="launcher card">
+  <div class="launcher-head">
+    <h2>Find the exit</h2>
+    <label class="demo-toggle"><input type="checkbox" id="demoMode"> Demo mode <span class="demo-hint">replays curated runs — no live sessions</span></label>
+  </div>
+
+  <div id="urlRows">
+    <div class="url-row">
+      <input type="url" class="url-input" placeholder="https://www.example.com" spellcheck="false">
+      <button type="button" class="icon-btn" data-remove title="Remove">&times;</button>
+    </div>
+  </div>
+  <button type="button" id="addUrl" class="ghost-btn">+ Add another site (max 3)</button>
+
+  <div class="form-grid">
+    <label class="field">
+      <span>Goal</span>
+      <select id="task">
+        {% for value, label in tasks.items() %}
+        <option value="{{ value }}" {% if value == "refuse_cookies" %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Agent</span>
+      <select id="agent">
+        <option value="h/web-surfer-pro" selected>Web Surfer Pro</option>
+        <option value="h/web-surfer-flash">Web Surfer Flash</option>
+      </select>
+    </label>
+    <label class="check-field">
+      <input type="checkbox" id="withEnter" checked>
+      <span>Measure the way in too</span>
+    </label>
+  </div>
+
+  <label class="field creds-field" id="credsField" hidden>
+    <span>Credentials <em>(optional)</em></span>
+    <input type="text" id="credentials" placeholder="email …, password …" spellcheck="false">
+  </label>
+
+  <div class="presets">
+    <span class="presets-label">Try a preset:</span>
+    <button type="button" class="chip" data-preset="netflux">Netflux · Level 1</button>
+    <button type="button" class="chip" data-preset="netflux2">Netflux · Level 2</button>
+    <button type="button" class="chip" data-preset="netflux3">Netflux · Level 3</button>
+    <button type="button" class="chip" data-preset="netflux4">Netflux · Level 4</button>
+    <button type="button" class="chip" data-preset="netflux5">Netflux · Level 5 (boss)</button>
+    <button type="button" class="chip" data-preset="french">French media ×3</button>
+  </div>
+
+  <button type="button" id="launch" class="launch-btn">Find the exit &rarr;</button>
+  <p class="launch-hint" id="launchHint"></p>
+</section>
+
+<section class="hall-preview">
+  <div class="section-head">
+    <h2>Hall of Shame</h2>
+    <a class="more-link" href="/hall">See all &rarr;</a>
+  </div>
+  <div class="hall-grid">
+    {% for row in hall %}
+    {% set a = row.audit %}
+    <a class="hall-card" href="/audits/{{ a.id }}">
+      <span class="grade grade-{{ a.score.grade }}">{{ a.score.grade }}</span>
+      <span class="hall-site">{{ a.site_url | replace("https://", "") | replace("http://", "") }}</span>
+      <span class="hall-headline">{{ a.score.headline }}</span>
+      <span class="hall-meta">friction {{ a.score.friction }} · {{ a.score.leave_effort.total }} actions out</span>
+    </a>
+    {% else %}
+    <p class="empty-note">No audits yet — run one above and it will show up here.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const NETFLUX = "https://ihibti.github.io/HCompany/";
+  const LEVELS = {
+    netflux:  { url: NETFLUX + "level1/index.html", task: "cancel_subscription", creds: "email demo@netflux.test, password Hatch-2026" },
+    netflux2: { url: NETFLUX + "level2/index.html", task: "cancel_subscription", creds: "email demo@netflux.test, password Hatch-2026" },
+    netflux3: { url: NETFLUX + "level3/index.html", task: "cancel_subscription", creds: "email demo@netflux.test, password Hatch-2026" },
+    netflux4: { url: NETFLUX + "level4/index.html", task: "cancel_subscription", creds: "email demo@netflux.test, password Hatch-2026" },
+    netflux5: { url: NETFLUX + "level5/index.html", task: "cancel_subscription", creds: "email demo@netflux.test, password Hatch-2026" },
+  };
+  const FRENCH = ["https://www.lemonde.fr", "https://www.lefigaro.fr", "https://www.allocine.fr"];
+  const DEMO = {{ demo_runs | tojson }};
+
+  const urlRows = document.getElementById("urlRows");
+  const taskSel = document.getElementById("task");
+  const credsField = document.getElementById("credsField");
+  const credsInput = document.getElementById("credentials");
+  const demoMode = document.getElementById("demoMode");
+  const hint = document.getElementById("launchHint");
+
+  function syncCreds() {
+    const needs = ["cancel_subscription", "unsubscribe", "subscribe"].includes(taskSel.value);
+    credsField.hidden = !needs;
+  }
+  taskSel.addEventListener("change", syncCreds);
+  syncCreds();
+
+  document.getElementById("addUrl").addEventListener("click", () => {
+    if (urlRows.children.length >= 3) return;
+    const row = urlRows.children[0].cloneNode(true);
+    row.querySelector("input").value = "";
+    urlRows.appendChild(row);
+  });
+  urlRows.addEventListener("click", (e) => {
+    if (e.target.dataset.remove && urlRows.children.length > 1) {
+      e.target.closest(".url-row").remove();
+    }
+  });
+
+  function setUrls(urls) {
+    while (urlRows.children.length < urls.length) {
+      document.getElementById("addUrl").click();
+    }
+    [...urlRows.children].forEach((row, i) => {
+      row.querySelector("input").value = urls[i] || "";
+      row.hidden = i >= urls.length;
+    });
+  }
+
+  document.querySelectorAll("[data-preset]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const p = btn.dataset.preset;
+      if (p === "french") {
+        setUrls(FRENCH);
+        taskSel.value = "refuse_cookies";
+      } else {
+        const l = LEVELS[p];
+        setUrls([l.url]);
+        taskSel.value = l.task;
+        credsInput.value = l.creds;
+      }
+      syncCreds();
+    });
+  });
+
+  document.getElementById("launch").addEventListener("click", async () => {
+    const urls = [...urlRows.querySelectorAll(".url-input")]
+      .map((i) => i.value.trim()).filter(Boolean);
+    if (!urls.length) { hint.textContent = "Add at least one URL."; return; }
+    const body = {
+      urls,
+      task: taskSel.value,
+      with_enter: document.getElementById("withEnter").checked,
+      credentials: credsInput.value.trim() || null,
+      agent: document.getElementById("agent").value,
+    };
+    if (demoMode.checked) {
+      // demo mode: replay the curated audits matching the entered sites
+      const pick = [];
+      for (const u of urls) {
+        const m = DEMO.find((d) => d.site_url === u || d.site_url.startsWith(u));
+        if (m && !pick.includes(m.id)) pick.push(m.id);
+      }
+      const fallback = DEMO.slice(0, Math.min(urls.length, 3)).map((d) => d.id);
+      const ids = pick.length ? pick : fallback;
+      if (!ids.length) { hint.textContent = "No demo runs available."; return; }
+      hint.textContent = "Demo mode — replaying stored runs…";
+      const res = await fetch("/api/batches", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ replay: ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) { hint.textContent = data.detail || "failed"; return; }
+      location.href = "/run/" + data.batch_id;
+      return;
+    }
+    hint.textContent = "Launching agents…";
+    const res = await fetch("/api/batches", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) { hint.textContent = data.detail || "failed to launch"; return; }
+    location.href = "/run/" + data.batch_id;
+  });
+})();
+</script>
+{% endblock %}

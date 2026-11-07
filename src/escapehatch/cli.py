@@ -12,10 +12,12 @@ from typing import Any
 from urllib.parse import urljoin
 
 from escapehatch.gauntlet import load_levels, pattern_recall, verify_gauntlet
+from escapehatch.keys import KeyPool
 from escapehatch.models import Audit
 from escapehatch.pipeline import run_audit, shot_resolver
 from escapehatch.prompts import Task
 from escapehatch.report import render_report_html
+from escapehatch.scoring import score
 from escapehatch.store import RunStore
 
 logger = logging.getLogger("escapehatch")
@@ -23,42 +25,6 @@ logger = logging.getLogger("escapehatch")
 GAUNTLET_DIR = Path(__file__).resolve().parent.parent.parent / "gauntlet"
 LEVELS_JSON = GAUNTLET_DIR / "levels.json"
 GAUNTLET_CREDENTIALS = "email demo@netflux.test, password Hatch-2026"
-
-_SESSION_LIMIT = 3
-
-
-class _WeightedSemaphore:
-    """Caps total in-flight sessions (an audit with enter uses 2)."""
-
-    def __init__(self, limit: int) -> None:
-        self._limit = limit
-        self._active = 0
-        self._cond = asyncio.Condition()
-
-    async def acquire(self, n: int) -> None:
-        async with self._cond:
-            while self._active + n > self._limit:
-                await self._cond.wait()
-            self._active += n
-
-    async def release(self, n: int) -> None:
-        async with self._cond:
-            self._active -= n
-            self._cond.notify_all()
-
-    def __call__(self, n: int):
-        return _Acquire(self, n)
-
-
-class _Acquire:
-    def __init__(self, sem: _WeightedSemaphore, n: int) -> None:
-        self._sem, self._n = sem, n
-
-    async def __aenter__(self) -> None:
-        await self._sem.acquire(self._n)
-
-    async def __aexit__(self, *exc) -> None:
-        await self._sem.release(self._n)
 
 
 def parse_levels(spec: str) -> list[int]:
@@ -114,33 +80,35 @@ def _effort_str(audit: Audit) -> str:
 
 async def _cmd_audit(args: argparse.Namespace) -> int:
     store = RunStore(args.store)
-    sem = _WeightedSemaphore(_SESSION_LIMIT)
+    pool = KeyPool()
     results: list[Audit] = []
 
     async def one(url: str) -> Audit:
-        weight = 2 if args.enter else 1
-        async with sem(weight):
-            audit = await run_audit(
-                site_url=url,
-                task=Task(args.task),
-                store=store,
-                agent=args.agent,
-                with_enter=args.enter,
-                credentials=args.credentials,
-                on_update=_progress_printer(args.verbose),
-                max_steps=args.max_steps,
-                max_time_s=args.max_time,
-            )
-            results.append(audit)
-            print(
-                f"  {url}: grade {audit.score.grade} friction {audit.score.friction}"
-                f" effort {_effort_str(audit)} findings {len(audit.findings)}"
-                f" cost ${audit.leave.cost_usd or 0:.4f} -> {audit.id}",
-                file=sys.stderr,
-            )
-            return audit
+        audit = await run_audit(
+            site_url=url,
+            task=Task(args.task),
+            store=store,
+            agent=args.agent,
+            with_enter=args.enter,
+            credentials=args.credentials,
+            on_update=_progress_printer(args.verbose),
+            pool=pool,
+            max_steps=args.max_steps,
+            max_time_s=args.max_time,
+        )
+        results.append(audit)
+        print(
+            f"  {url}: grade {audit.score.grade} friction {audit.score.friction}"
+            f" effort {_effort_str(audit)} findings {len(audit.findings)}"
+            f" cost ${audit.leave.cost_usd or 0:.4f} -> {audit.id}",
+            file=sys.stderr,
+        )
+        return audit
 
-    await asyncio.gather(*(one(u) for u in args.urls))
+    try:
+        await asyncio.gather(*(one(u) for u in args.urls))
+    finally:
+        await pool.aclose()
 
     print(f"\n{'site':38} {'grade':5} {'friction':8} {'effort L/E':10} {'findings':8} {'cost':8}")
     print("-" * 82)
@@ -160,6 +128,7 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
     if not levels:
         print("no matching levels", file=sys.stderr)
         return 1
+    pool = KeyPool()
 
     base = args.base if args.base.endswith("/") else args.base + "/"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -182,6 +151,7 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
             credentials=GAUNTLET_CREDENTIALS,
             enter_url=signup_url,
             on_update=_progress_printer(args.verbose, collected),
+            pool=pool,
             max_steps=args.max_steps,
             max_time_s=args.max_time,
         )
@@ -223,6 +193,7 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
         "levels": rows,
     }
     bench_path.write_text(json.dumps(bench, indent=2, ensure_ascii=False))
+    await pool.aclose()
 
     print(f"\n{'lvl':4} {'verdict':12} {'effort':10} {'grade':5} {'P':5} {'R':5} {'cost':8} {'wall':7} audit")
     print("-" * 100)
@@ -244,6 +215,62 @@ def _cmd_report(args: argparse.Namespace) -> int:
     out = audit_dir / "report.html"
     out.write_text(html)
     print(out)
+    return 0
+
+
+async def _cmd_rescore(args: argparse.Namespace) -> int:
+    """Recompute scores for every stored audit and refresh reports/benchmarks."""
+    store = RunStore(args.store)
+    audits: dict[str, Audit] = {}
+    for audit_id in store.list_audits():
+        try:
+            audit = store.load_audit(audit_id)
+        except Exception:
+            logger.exception("could not load audit %s", audit_id)
+            continue
+        new_score = score(audit.leave, audit.enter, audit.findings)
+        audits[audit.id] = audit
+        if new_score != audit.score:
+            audit.score = new_score
+            store.save_audit(audit)
+            audit_dir = store.root / audit.id
+            html = render_report_html(audit, shot_resolver(store, audit_dir))
+            (audit_dir / "report.html").write_text(html)
+            print(f"{audit.id}: grade {new_score.grade} friction {new_score.friction} ({new_score.headline})")
+
+    bench_dir = store.root / "benchmarks"
+    if bench_dir.is_dir():
+        for bp in sorted(bench_dir.glob("*.json")):
+            try:
+                data = json.loads(bp.read_text())
+            except Exception:
+                continue
+            changed = False
+            for row in data.get("levels", []):
+                audit = audits.get(row.get("audit_id", ""))
+                if audit is None:
+                    continue
+                if row.get("grade") != audit.score.grade or row.get("friction") != audit.score.friction:
+                    row["grade"] = audit.score.grade
+                    row["friction"] = audit.score.friction
+                    changed = True
+            if changed:
+                bp.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+                print(f"updated benchmark {bp}")
+    return 0
+
+
+async def _cmd_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    from escapehatch.server import create_app
+
+    store = RunStore(args.store)
+    demo_store = RunStore(args.demo_store) if Path(args.demo_store).is_dir() else None
+    app = create_app(store, demo_store)
+    config = uvicorn.Config(app, host=args.host, port=args.port, log_level="info")
+    server = uvicorn.Server(config)
+    await server.serve()
     return 0
 
 
@@ -278,6 +305,17 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("audit_id")
     pr.add_argument("--store", default="runs")
     pr.set_defaults(func=_cmd_report)
+
+    ps = sub.add_parser("rescore", help="Recompute scores for all stored audits (no API)")
+    ps.add_argument("--store", default="runs")
+    ps.set_defaults(func=_cmd_rescore)
+
+    psv = sub.add_parser("serve", help="Launch the web app")
+    psv.add_argument("--port", type=int, default=8765)
+    psv.add_argument("--host", default="127.0.0.1")
+    psv.add_argument("--store", default="runs")
+    psv.add_argument("--demo-store", default="demo_runs")
+    psv.set_defaults(func=_cmd_serve)
 
     return p
 

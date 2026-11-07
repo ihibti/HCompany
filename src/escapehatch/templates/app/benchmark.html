@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Escape Hatch — Netflux Benchmark{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Netflux Benchmark</h1>
+  <p class="page-sub">Five fictional streaming-service traps. An agent must find the exit on each; we score effort, grade and dark-pattern detection against ground truth.</p>
+</div>
+
+{% for b in benches %}
+<section class="bench card">
+  <div class="bench-head">
+    <div>
+      <h2>{{ b.agent }}</h2>
+      <p class="bench-meta">{{ b.created_at[:16].replace("T", " ") }} UTC · base {{ b.base }}</p>
+    </div>
+    <div class="bench-agg">
+      <div class="agg"><b>{{ "%.0f%%" | format(b.success_rate * 100) }}</b><span>levels escaped</span></div>
+      <div class="agg"><b>{{ "%.2f" | format(b.mean_recall) }}</b><span>mean pattern recall</span></div>
+      <div class="agg"><b>${{ "%.3f" | format(b.total_cost) }}</b><span>total cost</span></div>
+    </div>
+  </div>
+
+  <div class="bench-levels">
+    {% for l in b.levels %}
+    {% set meta = level_meta.get(l.level) %}
+    <div class="bench-level">
+      <div class="bl-top">
+        <span class="bl-num">L{{ l.level }}</span>
+        <span class="bl-title">{{ l.title }}</span>
+        <span class="verdict verdict-{{ l.verdict }}">{{ l.verdict }}</span>
+        <span class="grade grade-{{ l.grade }}">{{ l.grade }}</span>
+      </div>
+      <div class="bl-stats">
+        <span>effort <b>{{ l.leave_effort }}</b> / human min {{ l.min_leave_interactions }}</span>
+        <span>P/R <b>{{ "%.2f" | format(l.precision) }}</b>/<b>{{ "%.2f" | format(l.recall) }}</b></span>
+        <span>${{ "%.3f" | format(l.cost_usd) }}</span>
+        <span>{{ "%.0f" | format(l.wall_seconds) }}s</span>
+      </div>
+      {% if meta %}
+      <p class="bl-trap"><b>Traps:</b>
+        {% for p in meta.patterns %}<span class="pattern-chip sev-2">{{ p.replace("_", " ") }}</span>{% endfor %}
+      </p>
+      {% endif %}
+      {% if l.audit_id %}<a class="bl-link" href="/audits/{{ l.audit_id }}">evidence &rarr;</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<p class="empty-note">No benchmarks yet — run <code>escapehatch gauntlet</code> to generate one.</p>
+{% endfor %}
+{% endblock %}

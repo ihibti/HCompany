@@ -20,6 +20,7 @@ from openai import AsyncOpenAI
 
 from escapehatch.agent import ConfirmFn, EventFn, fetch_screenshot, run_journey
 from escapehatch.events import _parse_ts, step_from_policy_event
+from escapehatch.keys import KeyPool
 from escapehatch.legal import applicable_refs
 from escapehatch.models import Audit, Finding, Journey
 from escapehatch.patterns import classify_step, merge_findings, select_key_steps
@@ -31,6 +32,8 @@ from escapehatch.store import RunStore
 logger = logging.getLogger(__name__)
 
 UpdateFn = Callable[[dict], Awaitable[None]]
+# user-facing confirm: (action_description, request_id) -> "approved" | "denied"
+ConfirmRequestFn = Callable[[str, str], Awaitable[str]]
 
 _MODELS_BASE_URL = "https://api.hcompany.ai/v1"
 _CLASSIFY_MODEL = "holo4-27b"
@@ -109,7 +112,7 @@ def _make_event_tap(
 def _confirm_wrapper(
     journey_name: str,
     emitter: _Emitter,
-    confirm: ConfirmFn | None,
+    confirm: ConfirmRequestFn | None,
 ) -> ConfirmFn:
     """Emit confirm_request, delegate to the user confirm (auto-approve default)."""
 
@@ -124,7 +127,7 @@ def _confirm_wrapper(
         if confirm is None:
             return "approved"
         try:
-            res = await confirm(action)
+            res = await confirm(action, req_id)
         except Exception:
             logger.exception("confirm callback failed")
             return "denied"
@@ -205,42 +208,60 @@ async def run_audit(
     agent: str = "h/web-surfer-pro",
     with_enter: bool = True,
     credentials: str | None = None,
-    confirm: ConfirmFn | None = None,
+    confirm: ConfirmRequestFn | None = None,
     on_update: UpdateFn | None = None,
+    on_journey_started: Callable[[str, Any], None] | None = None,
     classify: bool = True,
     enter_url: str | None = None,
+    audit_id: str | None = None,
     client: AsyncClient | None = None,
     openai_client: AsyncOpenAI | None = None,
+    pool: KeyPool | None = None,
     max_steps: int = 35,
     max_time_s: int = 480,
 ) -> Audit:
     """Run leave (+enter counterpart) journeys, classify, score and persist an Audit."""
     emitter = _Emitter(on_update)
-    audit_id = _audit_id(site_url, task, store)
+    audit_id = audit_id or _audit_id(site_url, task, store)
 
     legs: list[tuple[str, Task, str]] = [("leave", task, site_url)]
     counterpart = ENTER_COUNTERPART.get(task)
     if with_enter and counterpart is not None:
         legs.append(("enter", counterpart, enter_url or site_url))
 
-    owns_client = client is None
-    agent_client = client or AsyncClient()
     journeys: dict[str, Journey] = {}
     raw_events: dict[str, list[dict]] = {}
 
     async def _run_leg(side: str, leg_task: Task, url: str) -> None:
         tap = _make_event_tap(side, emitter)
-        journey, events = await run_journey(
-            agent_client,
+        side_name = side
+
+        def _on_started(run: Any) -> None:
+            if on_journey_started is not None:
+                try:
+                    on_journey_started(side_name, run)
+                except Exception:
+                    logger.exception("on_journey_started callback failed")
+
+        kwargs = dict(
             site_url=url,
             task=leg_task,
             agent=agent,
             credentials=credentials,
             confirm=_confirm_wrapper(side, emitter, confirm),
             on_event=tap,
+            on_started=_on_started,
             max_steps=max_steps,
             max_time_s=max_time_s,
         )
+        if pool is not None:
+            async with pool.acquire() as leg_client:
+                journey, events = await run_journey(leg_client, **kwargs)
+        elif client is not None:
+            journey, events = await run_journey(client, **kwargs)
+        else:
+            async with AsyncClient() as leg_client:
+                journey, events = await run_journey(leg_client, **kwargs)
         journeys[side] = journey
         raw_events[side] = events
         await emitter.send({
@@ -256,12 +277,6 @@ async def run_audit(
     except Exception:
         logger.exception("run_audit journeys failed for %s", site_url)
         await emitter.send({"type": "error", "audit_id": audit_id, "message": "journey run failed"})
-    finally:
-        if owns_client:
-            try:
-                await agent_client.aclose()
-            except Exception:
-                logger.exception("client close failed")
 
     leave = journeys.get("leave")
     if leave is None:
@@ -286,6 +301,11 @@ async def run_audit(
         try:
             async with httpx.AsyncClient() as http:
                 pairs = await _download_key_screenshots(http, leave, store)
+            await emitter.send({
+                "type": "phase",
+                "phase": "classifying",
+                "screenshots": len(pairs),
+            })
             owns_openai = openai_client is None
             oai = openai_client or AsyncOpenAI(
                 base_url=_MODELS_BASE_URL,

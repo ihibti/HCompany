@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Escape Hatch{% endblock %}</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="/">
+    <svg class="logo" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+      <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+      <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+      <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+      <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+    </svg>
+    <span class="brand-name">Escape&nbsp;Hatch</span>
+  </a>
+  <nav class="nav-links">
+    <a href="/hall">Hall of Shame</a>
+    <a href="/benchmark">Netflux Benchmark</a>
+  </nav>
+</header>
+<main class="page">
+{% block content %}{% endblock %}
+</main>
+<footer class="foot">
+  <span>Escape Hatch — computer-use agents that measure how hard websites make it to leave.</span>
+</footer>
+<script src="/static/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

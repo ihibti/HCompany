@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Escape Hatch — live run{% endblock %}
+{% block content %}
+<div class="race-head">
+  <div>
+    <a class="back-link" href="/">&larr; Escape Hatch</a>
+    <h1 class="race-title">The race{% if kind == "replay" %}<span class="replay-tag">REPLAY</span>{% endif %}</h1>
+  </div>
+  <div class="race-meta" id="raceMeta"></div>
+</div>
+<div class="race-grid" id="raceGrid">
+  {% for a in audits %}
+  <section class="race-col" data-run="{{ a.run }}">
+    <header class="race-col-head">
+      <div class="race-site">
+        <span class="race-host">{{ a.host }}</span>
+        <span class="task-chip">{{ a.task.replace("_", " ") }}</span>
+      </div>
+      <span class="status-pill" data-role="status">queued</span>
+    </header>
+
+    <div class="screen" data-role="screen">
+      <div class="screen-empty" data-role="empty">
+        <span class="screen-empty-text">Waiting for the agent…</span>
+      </div>
+      <img class="screen-img" data-role="img" alt="" hidden>
+      <div class="click-marker" data-role="marker" hidden></div>
+      <div class="screen-caption" data-role="caption"></div>
+    </div>
+
+    <div class="counters">
+      <div class="counter way-out"><span class="counter-label">Way out</span><span class="counter-num" data-role="outEffort">0</span><span class="counter-unit">actions</span></div>
+      <div class="counter way-in"><span class="counter-label">Way in</span><span class="counter-num" data-role="inEffort">–</span><span class="counter-unit">actions</span></div>
+    </div>
+
+    <div class="phase-line" data-role="phase" hidden></div>
+
+    <div class="findings" data-role="findings"></div>
+
+    <div class="ticker" data-role="ticker">
+      <div class="ticker-title">Steps</div>
+      <ul class="ticker-list" data-role="steps"></ul>
+    </div>
+
+    <div class="controls" data-role="controls" {% if kind == "replay" %}hidden{% endif %}>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" data-ctrl="pause">Pause</button>
+        <button class="ctrl-btn" data-ctrl="resume">Resume</button>
+        <button class="ctrl-btn danger" data-ctrl="stop">Stop</button>
+      </div>
+      <form class="msg-form" data-role="msgform">
+        <input type="text" placeholder="Tell the agent…" data-role="msginput" autocomplete="off">
+        <button type="submit" class="ctrl-btn">Send</button>
+      </form>
+    </div>
+
+    <div class="done-panel" data-role="done" hidden>
+      <div class="grade-badge" data-role="grade"></div>
+      <p class="done-headline" data-role="headline"></p>
+      <a class="report-link" data-role="report" href="#">Open full report &rarr;</a>
+    </div>
+  </section>
+  {% endfor %}
+</div>
+
+<div class="confirm-stack" data-role="confirms"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.RACE = {
+  batchId: {{ batch_id | tojson }},
+  kind: {{ kind | tojson }},
+};
+</script>
+<script src="/static/run.js"></script>
+{% endblock %}
