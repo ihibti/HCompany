@@ -67,11 +67,17 @@ def step_label(step: Step) -> str:
     return action or "step"
 
 
-def render_report_html(audit: Audit, screenshot_resolver: Callable[[str | None], str | None]) -> str:
+def render_report_html(
+    audit: Audit,
+    screenshot_resolver: Callable[[str | None], str | None],
+    home_url: str | None = None,
+) -> str:
     """Render a standalone dark-themed report page. screenshot_resolver maps a
     platform screenshot URL (or None) to a displayable URL/path (or None)."""
     template = _env().get_template("report.html")
-    return template.render(audit=audit, shot=screenshot_resolver, step_label=step_label)
+    return template.render(
+        audit=audit, shot=screenshot_resolver, step_label=step_label, home_url=home_url,
+    )
 
 
 def audit_to_json(audit: Audit) -> str:

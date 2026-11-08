@@ -194,6 +194,34 @@ def _hall_rows(state: State, task: str | None = None) -> list[dict[str, Any]]:
     return rows
 
 
+def _home_stats(state: State) -> dict[str, Any]:
+    """Headline numbers for the home stats band (conclusive, non-gauntlet audits)."""
+    rows = _hall_rows(state)
+    hosts = {urlparse(r["audit"].site_url).netloc for r in rows}
+    walls = sum(
+        1 for r in rows
+        if r["audit"].task == Task.REFUSE_COOKIES
+        and r["audit"].leave.outcome == Outcome.IMPOSSIBLE
+    )
+    benches = _load_benchmarks(state)
+    pro = next((b for b in benches if b["agent"] == "h/web-surfer-pro"), None) \
+        or (benches[0] if benches else None)
+    netflux = f"{pro['escaped']}/{pro['level_count']}" if pro else "–"
+    costs = []
+    for audit, _ in _all_audits(state):
+        if _is_gauntlet(audit) or audit.score.grade in {"?", "N/A"}:
+            continue
+        total = (audit.leave.cost_usd or 0.0) + ((audit.enter.cost_usd or 0.0) if audit.enter else 0.0)
+        if audit.leave.cost_usd is not None or (audit.enter and audit.enter.cost_usd is not None):
+            costs.append(total)
+    return {
+        "sites": len(hosts),
+        "walls": walls,
+        "netflux": netflux,
+        "avg_cost": (sum(costs) / len(costs)) if costs else 0.0,
+    }
+
+
 # ---------------------------------------------------------------- live batches
 
 
@@ -204,6 +232,8 @@ class BatchIn(BaseModel):
     credentials: str | None = None
     agent: str = "h/web-surfer-pro"
     replay: list[str] | None = None
+    speed: float = 1.0
+    at: int | None = None
 
 
 async def _await_confirm(state: State, audit_id: str, action: str, req_id: str) -> str:
@@ -395,6 +425,7 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
         return templates.TemplateResponse(request, "home.html", {
             "request": request,
             "max_effort": max_effort,
+            "stats": _home_stats(state),
             "hall": hall,
             "demo_runs": demo_runs,
             "tasks": _TASK_LABELS,
@@ -457,7 +488,7 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
                     return f"/shots/{audit.id}/{s.local_shot(url).name}"  # type: ignore[union-attr]
             return None
 
-        html = render_report_html(audit, resolver)
+        html = render_report_html(audit, resolver, home_url="/")
         host = urlparse(audit.site_url).netloc
         prev = [
             a for a, _ in _all_audits(state)
@@ -483,7 +514,7 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
             if prev_links else ""
         )
         toolbar = (
-            '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;'
+            '<div class="eh-toolbar" style="position:fixed;top:0;left:0;right:0;z-index:9999;'
             'display:flex;align-items:center;gap:10px;padding:10px 18px;'
             'background:rgba(11,13,12,.92);backdrop-filter:blur(10px);'
             'border-bottom:1px solid rgba(255,255,255,.08)">'
@@ -491,6 +522,10 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
             'border-radius:10px;text-decoration:none;font:700 12.5px/1 -apple-system,sans-serif">'
             "&larr; Escape Hatch</a>"
             '<span style="flex:1"></span>'
+            '<button onclick="window.print()" style="background:#18211c;color:#e9f2ec;'
+            'padding:7px 13px;border-radius:10px;font:600 12.5px/1 -apple-system,sans-serif;'
+            'border:1px solid rgba(255,255,255,.12);cursor:pointer">'
+            "Print / PDF</button>"
             f'<a href="/api/audits/{audit.id}" download="audit.json" style="background:#18211c;color:#e9f2ec;'
             'padding:7px 13px;border-radius:10px;text-decoration:none;font:600 12.5px/1 -apple-system,sans-serif;'
             'border:1px solid rgba(255,255,255,.12)">'
@@ -556,7 +591,10 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
                     "agent": audit.leave.agent,
                     "host": urlparse(audit.site_url).netloc.removeprefix("www."),
                 })
-            batch.tasks.append(asyncio.create_task(_run_replay_batch(state, batch, REPLAY_STEP_DELAY_S, None)))
+            delay = REPLAY_STEP_DELAY_S / max(0.1, body.speed)
+            freeze = body.at if body.at and body.at > 0 else None
+            batch.tasks.append(asyncio.create_task(
+                _run_replay_batch(state, batch, delay, freeze)))
             return {"batch_id": batch_id, "kind": "replay", "audits": batch.audits}
 
         urls = [u.strip() for u in body.urls if u.strip()]
@@ -715,9 +753,14 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
 
 
 def _load_benchmarks(state: State) -> list[dict[str, Any]]:
-    """Latest result per (agent, level) across all benchmark files, both stores."""
+    """Latest result per (agent, level) across all benchmark files, both stores.
+
+    Also aggregates every recorded run per level (deduped by audit_id) so the
+    page can show success counts and mean/range stats when n > 1.
+    """
     per_level: dict[tuple[str, int], tuple[str, dict[str, Any]]] = {}
     audit_verdicts: dict[tuple[str, int], dict[str, str]] = {}
+    level_runs: dict[tuple[str, int], dict[str, dict[str, Any]]] = {}
     meta: dict[str, dict[str, Any]] = {}
     for store in (state.store, state.demo_store):
         if store is None:
@@ -740,9 +783,16 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
                 aid = row.get("audit_id")
                 if aid:
                     audit_verdicts.setdefault(k, {})[aid] = row.get("verdict")
+                    level_runs.setdefault(k, {}).setdefault(aid, row)
                 cur = per_level.get(k)
                 if cur is None or file_ts > cur[0]:
                     per_level[k] = (file_ts, row)
+
+    def _spread(rows: list[dict[str, Any]], key: str) -> dict[str, float] | None:
+        vals = [r[key] for r in rows if isinstance(r.get(key), (int, float))]
+        if not vals:
+            return None
+        return {"mean": sum(vals) / len(vals), "min": min(vals), "max": max(vals), "n": len(vals)}
 
     by_agent: dict[str, list[dict[str, Any]]] = {}
     for (agent, level), (_, row) in per_level.items():
@@ -750,8 +800,12 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
         verdicts = audit_verdicts.get(k) or {}
         n = max(1, len(verdicts))
         escapes = sum(1 for v in verdicts.values() if v == "cancelled")
-        by_agent.setdefault(agent, []).append(
-            {**row, "runs": n, "escapes": escapes if verdicts else None})
+        runs = list(level_runs.get(k, {}).values())
+        entry = {**row, "runs": n, "escapes": escapes if verdicts else None}
+        if len(runs) > 1:
+            entry["effort_spread"] = _spread(runs, "leave_effort")
+            entry["cost_spread"] = _spread(runs, "cost_usd")
+        by_agent.setdefault(agent, []).append(entry)
 
     out = []
     for agent, levels in by_agent.items():

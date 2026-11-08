@@ -36,9 +36,9 @@
         </span>
       </div>
       <div class="bl-stats">
-        <span>effort <b>{{ l.leave_effort }}</b> / human min {{ l.min_leave_interactions }}</span>
+        <span>effort <b>{{ l.leave_effort }}</b>{% if l.effort_spread %} <span class="bl-spread">μ {{ "%.1f" | format(l.effort_spread.mean) }} · {{ l.effort_spread.min }}–{{ l.effort_spread.max }} (n={{ l.effort_spread.n }})</span>{% endif %} / human min {{ l.min_leave_interactions }}</span>
         <span>P/R <b>{{ "%.2f" | format(l.precision) }}</b>/<b>{{ "%.2f" | format(l.recall) }}</b></span>
-        <span>${{ "%.3f" | format(l.cost_usd) }}</span>
+        <span>${{ "%.3f" | format(l.cost_usd) }}{% if l.cost_spread %} <span class="bl-spread">μ {{ "%.3f" | format(l.cost_spread.mean) }} · {{ "%.3f" | format(l.cost_spread.min) }}–{{ "%.3f" | format(l.cost_spread.max) }}</span>{% endif %}</span>
         <span>{{ "%.0f" | format(l.wall_seconds) }}s</span>
       </div>
       {% if meta %}

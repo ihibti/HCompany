@@ -33,7 +33,7 @@
       {% if a.leave.outcome.value == "impossible" %}
       <span class="stat impossible">impossible</span>
       {% else %}
-      <span class="stat"><b>{{ a.score.leave_effort.total }}</b> actions</span>
+      <span class="stat"><b>{{ a.score.leave_effort.total }}</b> {{ 'action' if a.score.leave_effort.total == 1 else 'actions' }}</span>
       {% endif %}
       <span class="stat cost">${{ "%.4f" | format(a.leave.cost_usd or 0) }}</span>
     </span>

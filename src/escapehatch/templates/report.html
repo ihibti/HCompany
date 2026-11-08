@@ -103,12 +103,25 @@
   .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
   .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
   .obstacles li { margin: 3px 0; }
+  a.logo { text-decoration: none; color: inherit; }
+  @media print {
+    :root {
+      --bg: #ffffff; --panel: #ffffff; --panel2: #f4f6f5;
+      --line: #d8ddd9; --text: #141a17; --muted: #5a665f;
+    }
+    body { background: #fff; }
+    .eh-toolbar { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .hero, .card, .finding, .step { break-inside: avoid; }
+    .finding img, .step img { max-height: 180px; width: auto; max-width: 180px; }
+    a { color: #0a6e3f; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="logo">
+    {% if home_url %}<a class="logo" href="{{ home_url }}">{% else %}<div class="logo">{% endif %}
       <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
         <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
@@ -121,7 +134,7 @@
         <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
       </svg>
       <span>Escape<span>Hatch</span></span>
-    </div>
+    {% if home_url %}</a>{% else %}</div>{% endif %}
     <div class="tag">friction audit</div>
     <div class="tag">{{ audit.task.value }}</div>
   </header>

@@ -121,13 +121,14 @@ def score(leave: Journey, enter: Journey | None, findings: list[Finding]) -> Sco
 
     friction = max(0, min(100, base + asym + pattern_points))
 
+    actions_word = "action" if leave_eff.total == 1 else "actions"
     if enter is not None:
         headline = (
-            f"Leaving takes {leave_eff.total} actions. "
+            f"Leaving takes {leave_eff.total} {actions_word}. "
             f"{_enter_verb(enter.task)} takes {enter_eff.total if enter_eff else 0}."
         )
     else:
-        headline = f"Leaving takes {leave_eff.total} actions."
+        headline = f"Leaving takes {leave_eff.total} {actions_word}."
 
     return Score(
         leave_effort=leave_eff,

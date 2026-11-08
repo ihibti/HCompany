@@ -169,6 +169,10 @@ class TestScoreMath:
         s = score(leave, enter, [])
         assert "Accepting takes 1." in s.headline
 
+    def test_headline_singular_action(self):
+        s = score(make_journey(["click_web"]), None, [])
+        assert s.headline == "Leaving takes 1 action."
+
 
 class TestGradeBoundaries:
     def test_grade_thresholds(self):

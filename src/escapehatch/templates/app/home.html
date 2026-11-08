@@ -6,6 +6,21 @@
   <p class="hero-sub">Escape Hatch sends an agent to leave websites for you — refusing cookies, cancelling subscriptions, unsubscribing — and measures every dark pattern standing in the way.</p>
 </section>
 
+<section class="stats-band">
+  <a class="stat-cell" href="/hall">
+    <b>{{ stats.sites }}</b><span>sites audited</span>
+  </a>
+  <a class="stat-cell stat-warn" href="/hall?task=refuse_cookies">
+    <b>{{ stats.walls }}</b><span>make refusing cookies impossible</span>
+  </a>
+  <a class="stat-cell" href="/benchmark">
+    <b>{{ stats.netflux }}</b><span>Netflux levels escaped</span>
+  </a>
+  <a class="stat-cell" href="/hall">
+    <b>${{ "%.3f" | format(stats.avg_cost) }}</b><span>avg cost per audit</span>
+  </a>
+</section>
+
 <section class="launcher card">
   <div class="launcher-head">
     <h2>Find the exit</h2>
@@ -73,7 +88,7 @@
       <span class="grade grade-{{ a.score.grade }}">{{ a.score.grade }}</span>
       <span class="hall-site">{{ a.site_url | replace("https://", "") | replace("http://", "") }}</span>
       <span class="hall-headline">{{ a.score.headline }}</span>
-      <span class="hall-meta">friction {{ a.score.friction }} · {{ a.score.leave_effort.total }} actions out</span>
+      <span class="hall-meta">friction {{ a.score.friction }} · {{ a.score.leave_effort.total }} {{ 'action' if a.score.leave_effort.total == 1 else 'actions' }} out</span>
     </a>
     {% else %}
     <p class="empty-note">No audits yet — run one above and it will show up here.</p>

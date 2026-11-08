@@ -18,6 +18,8 @@
         caption: el.querySelector('[data-role="caption"]'),
         outEffort: el.querySelector('[data-role="outEffort"]'),
         inEffort: el.querySelector('[data-role="inEffort"]'),
+        outUnit: el.querySelector('[data-role="outUnit"]'),
+        inUnit: el.querySelector('[data-role="inUnit"]'),
         phase: el.querySelector('[data-role="phase"]'),
         findings: el.querySelector('[data-role="findings"]'),
         steps: el.querySelector('[data-role="steps"]'),
@@ -43,7 +45,7 @@
       awaiting_tool_results: "awaiting_tool_results",
       completed: "completed", failed: "failed", timed_out: "failed",
       interrupted: "failed", idle: "running", classifying: "classifying",
-      replay: "running", done: "done",
+      replay: "running", done: "done", retrying: "retrying",
     };
     c.status.textContent = text;
     c.status.className = "status-pill " + (map[text] || "");
@@ -137,8 +139,10 @@
       updateMarker(c, step);
       c.caption.textContent = captionFor(step);
       c.outEffort.textContent = msg.effort_so_far ?? c.outEffort.textContent;
+      if (msg.effort_so_far != null) c.outUnit.textContent = msg.effort_so_far === 1 ? "action" : "actions";
     } else {
       c.inEffort.textContent = msg.effort_so_far ?? c.inEffort.textContent;
+      if (msg.effort_so_far != null) c.inUnit.textContent = msg.effort_so_far === 1 ? "action" : "actions";
     }
 
     const li = document.createElement("li");
