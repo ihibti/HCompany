@@ -53,6 +53,7 @@ class Journey(BaseModel):
     duration_s: float | None = None
     final_url: str | None = None
     final_screenshot_url: str | None = None
+    retried_from: str | None = None
 
 
 class Finding(BaseModel):

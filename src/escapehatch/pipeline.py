@@ -275,6 +275,12 @@ async def run_audit(
                 except Exception:
                     logger.exception("on_journey_started callback failed")
 
+        async def _on_status(status: str, reason: str | None) -> None:
+            await emitter.send({
+                "type": "status", "journey": side_name,
+                "status": status, "reason": reason,
+            })
+
         kwargs = dict(
             site_url=url,
             task=leg_task,
@@ -283,6 +289,7 @@ async def run_audit(
             confirm=_confirm_wrapper(side, emitter, confirm),
             on_event=tap,
             on_started=_on_started,
+            on_status=_on_status,
             max_steps=max_steps,
             max_time_s=max_time_s,
         )

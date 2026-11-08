@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 ConfirmFn = Callable[[str], Awaitable[str]]
 EventFn = Callable[[dict], Awaitable[None]]
+StatusFn = Callable[[str, str | None], Awaitable[None]]
 
 # request_confirmation is only meaningful where an irreversible action exists.
 _CONFIRM_TASKS = {Task.CANCEL_SUBSCRIPTION, Task.UNSUBSCRIBE}
@@ -119,27 +120,61 @@ async def _safe_cancel(run: JourneyRun) -> None:
         logger.exception("cancel failed for session %s", run.session_id)
 
 
-async def run_journey(
+_STREAM_END = object()
+
+
+async def _stream_next(stream_it: Any, timeout_s: float) -> tuple[Any, bool]:
+    """Pull one item from an async iterator.
+
+    Returns (event, False), (_STREAM_END, False) on exhaustion, or
+    (None, True) when nothing arrives within ``timeout_s``.
+    """
+    task = asyncio.ensure_future(stream_it.__anext__())
+    done, _pending = await asyncio.wait({task}, timeout=timeout_s)
+    if not done:
+        task.cancel()
+        try:
+            await task
+        except (asyncio.CancelledError, Exception):
+            pass
+        return None, True
+    try:
+        return task.result(), False
+    except StopAsyncIteration:
+        return _STREAM_END, False
+
+
+@dataclass
+class _Attempt:
+    run: JourneyRun
+    events: list[dict]
+    session_status: str
+    answer: dict | None
+    stalled: bool
+
+
+async def _run_attempt(
     client: AsyncClient,
     *,
     site_url: str,
     task: Task,
-    agent: str = "h/web-surfer-pro",
-    credentials: str | None = None,
-    confirm: ConfirmFn | None = None,
-    on_event: EventFn | None = None,
-    on_started: Callable[[JourneyRun], None] | None = None,
-    max_steps: int = 35,
-    max_time_s: int = 480,
-) -> tuple[Journey, list[dict]]:
-    """Run one agent journey; returns (Journey, raw events). Never raises."""
+    agent: str,
+    credentials: str | None,
+    confirm: ConfirmFn | None,
+    on_event: EventFn | None,
+    on_started: Callable[[JourneyRun], None] | None,
+    max_steps: int,
+    max_time_s: int,
+    stall_timeout_s: float,
+) -> _Attempt:
+    """One session attempt; returns raw events plus stall/terminal metadata."""
     prompt = build_task_prompt(task, site_url, credentials)
     tools = [_confirmation_tool(confirm)] if task in _CONFIRM_TASKS else None
     run = JourneyRun()
     streamed: list[dict] = []
     session_status = "failed"
     answer: dict | None = None
-    t0 = time.monotonic()
+    stalled = False
 
     try:
         handle = await client.start_session(
@@ -155,22 +190,36 @@ async def run_journey(
         if on_started is not None:
             on_started(run)
 
-        try:
-            async for event in handle.stream(
-                until="terminal",
-                wait_for_seconds=20,
-                timeout_seconds=max_time_s + _STREAM_SLACK_S,
-            ):
-                d = _to_dict(event)
-                streamed.append(d)
-                if on_event is not None:
-                    await on_event(d)
-        except TimeoutError:
-            logger.warning("stream timed out for session %s; cancelling", run.session_id)
-            await _safe_cancel(run)
-        except Exception:
-            logger.exception("stream failed for session %s", run.session_id)
-            await _safe_cancel(run)
+        stream_it = handle.stream(
+            until="terminal",
+            wait_for_seconds=20,
+            timeout_seconds=max_time_s + _STREAM_SLACK_S,
+        ).__aiter__()
+        while True:
+            try:
+                ev, is_stall = await _stream_next(stream_it, stall_timeout_s)
+            except TimeoutError:
+                logger.warning("stream timed out for session %s; cancelling", run.session_id)
+                await _safe_cancel(run)
+                break
+            except Exception:
+                logger.exception("stream failed for session %s", run.session_id)
+                await _safe_cancel(run)
+                break
+            if is_stall:
+                stalled = True
+                logger.warning(
+                    "no events for %.0fs; session %s treated as stalled",
+                    stall_timeout_s, run.session_id,
+                )
+                await _safe_cancel(run)
+                break
+            if ev is _STREAM_END:
+                break
+            d = _to_dict(ev)
+            streamed.append(d)
+            if on_event is not None:
+                await on_event(d)
 
         session_status = await _wait_terminal(client, run.session_id, _TERMINAL_POLL_S)
 
@@ -192,26 +241,83 @@ async def run_journey(
             logger.exception("event listing failed for %s", run.session_id)
             events = streamed
     except Exception:
-        logger.exception("run_journey failed for %s task=%s", site_url, task)
+        logger.exception("run attempt failed for %s task=%s", site_url, task)
         events = streamed
         session_status = "failed"
 
+    return _Attempt(run, events, session_status, answer, stalled)
+
+
+async def run_journey(
+    client: AsyncClient,
+    *,
+    site_url: str,
+    task: Task,
+    agent: str = "h/web-surfer-pro",
+    credentials: str | None = None,
+    confirm: ConfirmFn | None = None,
+    on_event: EventFn | None = None,
+    on_started: Callable[[JourneyRun], None] | None = None,
+    on_status: StatusFn | None = None,
+    max_steps: int = 35,
+    max_time_s: int = 480,
+    stall_timeout_s: float = 75,
+    max_retries: int = 1,
+) -> tuple[Journey, list[dict]]:
+    """Run one agent journey; returns (Journey, raw events). Never raises.
+
+    A session that goes silent for ``stall_timeout_s`` is cancelled and the
+    journey restarted once (``max_retries``) in a fresh session.
+    """
+    t0 = time.monotonic()
+    retried_from: str | None = None
+    attempt_no = 0
+    attempt: _Attempt | None = None
+
+    while True:
+        attempt = await _run_attempt(
+            client,
+            site_url=site_url,
+            task=task,
+            agent=agent,
+            credentials=credentials,
+            confirm=confirm,
+            on_event=on_event,
+            on_started=on_started,
+            max_steps=max_steps,
+            max_time_s=max_time_s,
+            stall_timeout_s=stall_timeout_s,
+        )
+        if not attempt.stalled or attempt_no >= max_retries:
+            break
+        attempt_no += 1
+        retried_from = attempt.run.session_id
+        if on_status is not None:
+            try:
+                await on_status("retrying", "agent stalled")
+            except Exception:
+                logger.exception("on_status callback failed")
+
+    assert attempt is not None
+    run = attempt.run
     journey = journey_from_events(
-        events,
+        attempt.events,
         session_id=run.session_id or "unknown",
         site_url=site_url,
         task=task,
         agent=agent,
-        session_status=session_status,
-        answer=answer,
+        session_status=attempt.session_status,
+        answer=attempt.answer,
         duration_s=round(time.monotonic() - t0, 1),
     )
+    if retried_from:
+        journey.retried_from = retried_from
     logger.info(
-        "journey %s task=%s status=%s outcome=%s steps=%d cost=%s dur=%.0fs",
-        run.session_id, task.value, session_status, journey.outcome.value,
-        len(journey.steps), journey.cost_usd, journey.duration_s or 0,
+        "journey %s task=%s status=%s outcome=%s steps=%d cost=%s dur=%.0fs retried_from=%s",
+        run.session_id, task.value, attempt.session_status, journey.outcome.value,
+        len(journey.steps), journey.cost_usd, journey.duration_s or 0, retried_from,
     )
-    return journey, events
+    return journey, attempt.events
 
 
 async def fetch_screenshot(http: httpx.AsyncClient, url: str) -> bytes:
