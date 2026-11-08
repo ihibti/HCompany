@@ -332,6 +332,52 @@ async def test_replay_streams_steps_then_done(tmp_path, monkeypatch):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("available,expected", [
+    (["start", "latest", "final"], "final"),
+    (["start", "latest"], "latest"),
+    (["start"], "start"),
+    ([], None),
+])
+async def test_replay_uses_latest_local_leave_screenshot(tmp_path, available, expected):
+    store = RunStore(tmp_path / "runs")
+    leave = make_journey(
+        steps=[
+            make_step("go_to_web", index=0, screenshot_url="https://shots/start"),
+            make_step("click_web", index=1, screenshot_url="https://shots/latest"),
+            make_step("click_web", index=2, screenshot_url="https://shots/missing"),
+        ],
+        final_screenshot_url="https://shots/final", outcome=Outcome.IMPOSSIBLE,
+    )
+    enter = make_journey(["click_web"], task=Task.ACCEPT_COOKIES,
+                         final_screenshot_url="https://shots/enter")
+    for name in [*available, "enter"]:
+        store.save_screenshot(f"https://shots/{name}", _png())
+    audit = Audit(id="replay-final", created_at=datetime.now(timezone.utc),
+                  site_url="https://example.com", task=Task.REFUSE_COOKIES,
+                  leave=leave, enter=enter, score=score(leave, enter, []))
+    store.save_audit(audit)
+    app = create_app(store, None)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
+                                base_url="http://t") as client:
+        res = await client.post("/api/batches", json={"replay": [audit.id], "speed": 100})
+        msgs = await _collect_sse(client, f"/api/batches/{res.json()['batch_id']}/events")
+        done = next(m for m in msgs if m["type"] == "done")
+        expected_url = (f"/shots/{audit.id}/{store.local_shot(f'https://shots/{expected}').name}"
+                        if expected else None)
+        assert done["screenshot_url"] == expected_url
+        assert done["outcome"] == "impossible"
+        steps = [m for m in msgs if m["type"] == "step" and m["journey"] == "leave"]
+        assert len(steps) == 3
+        assert steps[-1]["effort_so_far"] == 2
+        assert steps[-1]["step"]["screenshot_url"] is None
+        assert all(not m["step"]["screenshot_url"]
+                   or m["step"]["screenshot_url"].startswith("/shots/")
+                   for m in steps)
+        if expected_url:
+            assert (await client.get(expected_url)).status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_hall_excludes_gauntlet_and_inconclusive(tmp_path, monkeypatch):
     monkeypatch.setenv("HAI_API_KEY", "test-key")
     store = RunStore(tmp_path / "runs")

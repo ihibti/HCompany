@@ -174,6 +174,12 @@
   }
 
   function showDone(c, msg) {
+    showShot(c, msg, "leave");
+    c.marker.hidden = true;
+    c.caption.textContent = {
+      success: "Completed", impossible: "Exit blocked", blocked: "Site access blocked",
+      failed: "Inconclusive", not_applicable: "Not applicable",
+    }[msg.outcome] || "Finished";
     c.done.hidden = false;
     c.phase.hidden = true;
     const g = c.grade;

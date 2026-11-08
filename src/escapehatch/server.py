@@ -324,8 +324,7 @@ def _local_shot_url(store: RunStore, audit_id: str, url: str | None) -> str | No
 def _rewrite_step(step: dict[str, Any], store: RunStore, audit_id: str) -> dict[str, Any]:
     s = dict(step)
     local = _local_shot_url(store, audit_id, s.get("screenshot_url"))
-    if local:
-        s["screenshot_url"] = local
+    s["screenshot_url"] = local
     return s
 
 
@@ -383,6 +382,10 @@ async def _replay_one(state: State, batch: Batch, spec: dict[str, Any], delay: f
         "grade": audit.score.grade, "friction": audit.score.friction,
         "headline": audit.score.headline,
         "outcome": audit.leave.outcome.value,
+        "screenshot_url": next((local for url in [
+            audit.leave.final_screenshot_url,
+            *(s.screenshot_url for s in reversed(audit.leave.steps)),
+        ] if (local := _local_shot_url(store, run_key, url))), None),
     })
 
 
