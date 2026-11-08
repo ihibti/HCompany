@@ -83,14 +83,16 @@ https://ihibti.github.io/HCompany/ — five fictional streaming-service levels w
 
 7 of 20 audited sites make refusing cookies impossible without paying.
 
-### Netflux benchmark (latest run per level; success counts across all runs)
+### Netflux benchmark (latest run per level; success counts across all runs, shortcuts excluded)
 
-| agent | levels escaped | runs cancelled | mean effort vs human min | mean recall | latest-row cost |
-|-------|---------------|----------------|--------------------------|-------------|-----------------|
-| h/web-surfer-pro | 4/5 (14/15 runs) | L5 boss level beat the latest attempt | +5.4 | 0.83 | $0.30 |
-| h/web-surfer-flash | 4/5 (9/10 runs) | L5 boss level beat the latest attempt | +4.0 | 0.68 | $0.16 |
+Runs that cheated — web search/fetch, direct URL jumps, off-site visits — are verified as `shortcut` and never count as escapes.
 
-Both agents escape L1–L4 every time; the L5 "boss" level (chatbot deflection, fake pause, hidden escape link) is genuinely hard — pro went 12→31→33 effort across three runs (cancelled, cancelled, incomplete) and flash 15→20 (cancelled, incomplete). Agent variance on L5 is the interesting result.
+| agent | levels escaped | honest runs cancelled | mean effort vs human min | mean recall | cost/run |
+|-------|---------------|----------------------|--------------------------|-------------|----------|
+| h/web-surfer-pro | 4/5 latest (18/22 all runs) | L5 is the boss: 2/6 honest escapes | +5.4 | 0.83 | ~$0.05 |
+| h/web-surfer-flash | 4/5 latest (9/10 all runs) | L5 1/2 honest escapes | +4.0 | 0.68 | ~$0.02 |
+
+Fresh honest runs under the no-shortcut rules: pro escaped L1–L5 once (13/9 effort on L5, $0.05) and trapped once (30/9, ran out of steps one click short of the escape link); flash escaped all five (L5 in 12/9, $0.03). The L5 escape path is real but buried: retention chat → "Go to my account" → paused page → the small "I asked to cancel, not pause" link → confirm. Agents that find both hidden elements win; the chat loop eats the step budget for the rest.
 
 ## Testing
 
