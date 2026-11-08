@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch — https://www.20minutes.fr</title>
+<style>
+  :root {
+    --bg: #0b0d0c;
+    --panel: #131a16;
+    --panel2: #18211c;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #e9f2ec;
+    --muted: #8fa396;
+    --accent: #14c06a;
+    --green: #14c06a;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --grey: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20, 192, 106, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20, 192, 106, 0.05), transparent 55%),
+      var(--bg);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,192,106,0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20,192,106,0.05), transparent 55%);
+    background-size: 44px 44px, 44px 44px, auto, auto;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo svg { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(20,192,106,.35)); }
+  .logo span { color: var(--accent); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
+  .grade {
+    width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; flex-shrink: 0;
+  }
+  .g-A { background: rgba(20,192,106,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
+  .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
+  .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
+  .g-F { background: rgba(248,113,113,.12); color: var(--red); border: 2px solid var(--red); }
+  .g-NA, .g-Q { background: rgba(100,116,139,.12); color: var(--grey); border: 2px solid var(--grey); }
+  .hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  .hero .sub { color: var(--muted); font-size: 14px; }
+  .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+  h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
+  .effort-row .lbl { font-size: 13px; color: var(--muted); }
+  .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 7px; }
+  .bar.leave > div { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .bar.enter > div { background: linear-gradient(90deg, #14c06a, #a3e635); }
+  .bar.impossible > div { background: linear-gradient(90deg, #f87171, #ef4444); }
+  .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
+  .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .impossible-note { color: var(--red); font-size: 13px; margin-top: 4px; }
+  .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+  .sev-3 { background: rgba(248,113,113,.15); color: var(--red); }
+  .sev-2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .sev-1 { background: rgba(139,150,171,.15); color: var(--muted); }
+  .pname { font-weight: 700; font-size: 14px; }
+  .pdesc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .ev { border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--text); font-size: 13px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .ex { font-size: 13px; color: var(--muted); }
+  .finding img { width: 180px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .finding .noimg { width: 180px; height: 100px; border-radius: 10px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .step { display: grid; grid-template-columns: 140px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .step img { width: 140px; border-radius: 8px; border: 1px solid var(--line); }
+  .step .noimg { width: 140px; height: 80px; border-radius: 8px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; }
+  .step .act { font-weight: 700; font-size: 14px; }
+  .step .el { color: var(--accent); font-size: 13px; margin-top: 2px; word-break: break-word; }
+  .step .rs { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; }
+  summary:hover { color: var(--text); }
+  .legal { display: grid; gap: 10px; }
+  .legal .ref { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .legal .code { font-weight: 700; font-size: 14px; }
+  .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .legal .sum { font-size: 13px; margin-top: 6px; }
+  .legal a { color: var(--green); text-decoration: none; font-size: 12px; }
+  .legal a:hover { text-decoration: underline; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .obstacles li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+        <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+        <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+        <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+        <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+      </svg>
+      <span>Escape<span>Hatch</span></span>
+    </div>
+    <div class="tag">friction audit</div>
+    <div class="tag">refuse_cookies</div>
+  </header>
+
+  <section class="hero">
+    
+    <div class="grade g-F">F</div>
+    <div>
+      <h1>https://www.20minutes.fr</h1>
+      <div class="sub">Leaving is impossible without paying or accepting.</div>
+      <div class="meta">
+        <span class="chip">friction <b>100</b>/100</span>
+        <span class="chip">patterns <b>2</b></span>
+        <span class="chip">steps <b>10</b></span>
+        <span class="chip">outcome <b>impossible</b></span>
+        <span class="chip">agent <b>h/web-surfer-pro</b></span>
+        <span class="chip">2026-11-07 23:53</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Obstacles reported by the agent</h2>
+    <ul class="obstacles">
+      <li>Cookie wall: After selecting &#39;Refuser&#39; for all 7 optional categories and clicking &#39;Enregistrer&#39;, the site redirected to a paid subscription registration page (1.99€/month). The only way back is &#39;Revenir et accepter les cookies&#39; which accepts all cookies. There is no way to refuse all non-essential cookies without subscribing.</li>
+    </ul>
+  </div>
+  
+
+  <h2>Effort to leave vs enter</h2>
+  <div class="card">
+    
+    
+    
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Leave (refuse cookies)</div>
+        <div class="bar impossible"><div style="width: 100%"></div></div>
+        <div class="num">Impossible</div>
+      </div>
+      <div class="impossible-note">
+        Blocked: Cookie wall: After selecting &#39;Refuser&#39; for all 7 optional categories and clicking &#39;Enregistrer&#39;, the site redirected to a paid subscription registration page (1.99€/month). The only way back is &#39;Revenir et accepter les cookies&#39; which accepts all cookies. There is no way to refuse all non-essential cookies without subscribing.
+      </div>
+      
+    </div>
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Enter (accept cookies)</div>
+        <div class="bar enter"><div style="width: 11.11111111111111%"></div></div>
+        <div class="num">1</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        1 interactions · 0 navigations · 0 detours
+        
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <h2>Dark patterns detected</h2>
+  
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-3">severity 3</span>
+          <span class="pname">obstruction</span>
+          <span class="chip">step 10</span>
+        </div>
+        <div class="ev">&ldquo;The only visible cookie-related option is the blue button &#39;Revenir et accepter les cookies*&#39; (Return and accept cookies*), which forces the user to accept cookies to proceed. There is no visible &#39;refuse&#39; or &#39;decline&#39; option for non-essential cookies, making it impossible to complete the goal of refusing all non-essential cookies.&rdquo;</div>
+        <div class="ex">The user&#39;s goal is to refuse all non-essential cookies, but the interface only provides a button to accept cookies. This creates an obstruction where the user cannot proceed with their intended action (refusing cookies) without accepting them, which directly contradicts their goal.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/43eb1c7745f42450a0f72a8dfac3599a0869753f.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">misdirection</span>
+          <span class="chip">step 8</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Refuser&#39; buttons for non-essential categories are styled in red with an &#39;X&#39; icon, while &#39;Accepter&#39; buttons are white. This visual emphasis on the &#39;Refuser&#39; option (which is the user&#39;s goal) is counterintuitive and could mislead users into thinking they are making a negative choice when they are actually refusing cookies.&rdquo;</div>
+        <div class="ex">The red &#39;Refuser&#39; buttons with &#39;X&#39; icons create a visual misdirection by making the refusal action appear as a negative or destructive choice, which could confuse users trying to refuse non-essential cookies.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/ca91ccd941d94b7bff16b662c898322487091b4a.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+  
+
+  <h2>Step timeline — leave journey</h2>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/6736caa3a5f5ed577ba9ff19d4e5fc6900ec7257.jpg" alt="step 0" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#0 · go_to_web</div>
+      
+      <div class="el" style="color:var(--muted)">https://www.bing.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Let me navigate to the target website first.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#1 · click_web</div>
+      <div class="el">Réglages button (Settings) - light outline button on the left</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I can see the cookie banner. There are three buttons: &#34;Réglages&#34; (Settings), &#34;Refuser et s&#39;abonner&#34; (Refuse and subscribe - this is a cookie wall), and &#34;Accepter et fermer&#34; (Accept and close). Let me try &#34;Réglages&#34; first to see if I can refuse all non-essential cookies without subscribing.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The cookie banner is visible. I see three buttons:
+1. &#34;Réglages&#34; (Settings) - light/outline button
+2. &#34;Refuser et s&#39;abonner&#34; (Refuse and subscribe) - blue button
+3. &#34;Accepter et fermer&#34; (Accept and close) - blue button
+
+The &#34;Refuser et s&#39;abonner&#34; button is a cookie wall - it refuses cookies but requires subscribing (paying). The task says if refusing requires paying, report as impossible.
+
+But wait - &#34;Réglages&#34; (Settings) might allow me to customize and refuse all non-essential cookies without subscribing. Let me click &#34;Réglages&#34; first to see if I can turn off all optional purposes and save. That would be the proper &#34;refuse all non-essential&#34; path without paying.
+
+Actually, let me re-read the task: &#34;If refusing requires paying or subscribing (a &#39;cookie wall&#39;), do not pay; report the outcome as impossible.&#34;
+
+The &#34;Refuser et s&#39;abonner&#34; button explicitly says &#34;subscribe&#34; - that&#39;s the cookie wall. But &#34;Réglages&#34; might give a legitimate way to refuse all non-essential cookies. Let me try that first since it&#39;s the standard customization path.
+
+I&#39;ll click &#34;Réglages&#34; (Settings).
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/6660624531d42b50b9ba7514f0db825d88227a48.jpg" alt="step 2" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#2 · click_web</div>
+      <div class="el">Refuser button for &#34;Activation des services interactifs proposés par des tiers&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The settings panel is open. I can see multiple cookie categories with &#34;Refuser&#34;/&#34;Accepter&#34; buttons. The &#34;Enregistrer&#34; (Save) button appears grayed out. Let me click &#34;Refuser&#34; for each optional category. Starting with &#34;Activation des services interactifs proposés par des tiers&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Now I can see the detailed cookie settings. There are several categories:
+
+1. **Cookies de fonctionnement** - REQUIS (Required) - no buttons, can&#39;t be refused
+2. **Activation des services interactifs proposés par des tiers** - Refuser/Accepter buttons
+3. **Activation des réseaux sociaux** - Refuser/Accepter buttons
+4. **Mesure d&#39;audience et web-analyse *** - Refuser/Accepter buttons
+5. **Activation de l&#39;affiliation *** - Refuser/Accepter buttons
+6. **Publicité personnalisée de l&#39;Editeur *** - Refuser/Accepter buttons
+7. **Attribution et utilisation d&#39;identifiants publicitaires *** - Refuser/Accepter buttons
+8. **Publicité et contenus personnalisés de Tiers *** - Refuser/Accepter buttons
+
+The asterisk (*) items are the non-essential ones. The &#34;Refuser&#34; buttons appear to be the default state (they look like they might already be selected - they have a gray/outline style while &#34;Accepter&#34; has a blue/highlighted style... wait, actually looking more carefully:
+
+- &#34;Refuser&#34; buttons appear to have a gray/outline style
+- &#34;Accepter&#34; buttons also appear to have a similar style
+
+Actually, looking at the screenshot more carefully, both &#34;Refuser&#34; and &#34;Accepter&#34; buttons appear to be in the same style (gray outline). I need to check which is the default. The &#34;Enregistrer&#34; (Save) button at the bottom appears grayed out/disabled, which suggests no selection has been made yet.
+
+Wait, looking more carefully at the buttons - &#34;Refuser&#34; buttons appear to be in a slightly different shade than &#34;Accepter&#34;. Let me look at the &#34;Refuser&#34; button for &#34;Activation des services interactifs proposés par des tiers&#34; - it appears to be in a gray/outline state, and &#34;Accepter&#34; is also in a gray state.
+
+The &#34;Enregistrer&#34; button at the bottom appears disabled (grayed out). This suggests I need to make a selection for each category before I can save.
+
+Actually, I think the default state might be that &#34;Refuser&#34; is already selected (since the &#34;Refuser&#34; buttons appear slightly more prominent/active). But the &#34;Enregistrer&#34; button is grayed out...
+
+Let me just click &#34;Refuser&#34; for each optional category to be safe. I&#39;ll start with &#34;Activation des services interactifs proposés par des tiers&#34; - click &#34;Refuser&#34;.
+
+Actually, I need to be careful. The &#34;Refuser&#34; buttons might already be the default. Let me look at the styling more carefully. In the screenshot, the &#34;Refuser&#34; buttons appear to have a light gray background with a border, and &#34;Accepter&#34; buttons appear similar. It&#39;s hard to tell which is selected.
+
+Given that &#34;Enregistrer&#34; is grayed out, it seems like I need to actively select something. Let me click &#34;Refuser&#34; for the first optional category and see if the styling changes or if &#34;Enregistrer&#34; becomes active.
+
+Let me click &#34;Refuser&#34; for &#34;Activation des services interactifs proposés par des tiers&#34; first.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#3 · click_web</div>
+      <div class="el">Refuser button for &#34;Activation des réseaux sociaux&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">&#34;Refuser&#34; is now selected (highlighted in red) for the first category. The &#34;Enregistrer&#34; button is still grayed out, so I need to select all categories. Let me continue with &#34;Activation des réseaux sociaux&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">I can see that &#34;Refuser&#34; for &#34;Activation des services interactifs proposés par des tiers&#34; is now highlighted in red/active (it shows &#34;Ré...&#34; with a red border). The &#34;Enregistrer&#34; button is still grayed out, which means I need to make selections for all categories. Let me continue clicking &#34;Refuser&#34; for each remaining optional category:
+
+1. ✅ Activation des services interactifs proposés par des tiers - Refuser (done)
+2. Activation des réseaux sociaux - need to click Refuser
+3. Mesure d&#39;audience et web-analyse * - need to click Refuser
+4. Activation de l&#39;affiliation * - need to click Refuser
+5. Publicité personnalisée de l&#39;Editeur * - need to click Refuser
+6. Attribution et utilisation d&#39;identifiants publicitaires * - need to click Refuser
+7. Publicité et contenu personnalisés de Tiers * - need to click Refuser
+
+Let me click &#34;Refuser&#34; for &#34;Activation des réseaux sociaux&#34; next.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/697dad60d0a12a1bbd413de42103b73dc4a74da4.jpg" alt="step 4" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#4 · click_web</div>
+      <div class="el">Refuser button for &#34;Mesure d&#39;audience et web-analyse *&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Two &#34;Refuser&#34; selected. Continuing with &#34;Mesure d&#39;audience et web-analyse *&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Two &#34;Refuser&#34; buttons are now selected (highlighted in red). I need to continue with the remaining 5 categories:
+- Mesure d&#39;audience et web-analyse *
+- Activation de l&#39;affiliation *
+- Publicité personnalisée de l&#39;Editeur *
+- Attribution et utilisation d&#39;identifiants publicitaires *
+- Publicité et contenu personnalisés de Tiers *
+
+Let me click &#34;Refuser&#34; for &#34;Mesure d&#39;audience et web-analyse *&#34; next.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#5 · click_web</div>
+      <div class="el">Refuser button for &#34;Activation de l&#39;affiliation *&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Three done. Now &#34;Activation de l&#39;affiliation *&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Three &#34;Refuser&#34; buttons selected. Now I need to click &#34;Refuser&#34; for &#34;Activation de l&#39;affiliation *&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/8bc8731ab2d748bfe01e2053a3b495d9cc68c430.jpg" alt="step 6" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#6 · click_web</div>
+      <div class="el">Refuser button for &#34;Publicité personnalisée de l&#39;Editeur *&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Four done. Now &#34;Publicité personnalisée de l&#39;Editeur *&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Four &#34;Refuser&#34; buttons selected. Now I need to click &#34;Refuser&#34; for &#34;Publicité personnalisée de l&#39;Editeur *&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#7 · click_web</div>
+      <div class="el">Refuser button for &#34;Attribution et utilisation d&#39;identifiants publicitaires *&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Five done. Now &#34;Attribution et utilisation d&#39;identifiants publicitaires *&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Five &#34;Refuser&#34; buttons selected. Now I need to click &#34;Refuser&#34; for &#34;Attribution et utilisation d&#39;identifiants publicitaires *&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/ca91ccd941d94b7bff16b662c898322487091b4a.jpg" alt="step 8" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#8 · click_web</div>
+      <div class="el">Refuser button for &#34;Publicité et contenu personnalisés de Tiers *&#34;</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Six done. Last one - &#34;Publicité et contenu personnalisés de Tiers *&#34;:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Six &#34;Refuser&#34; buttons selected. Now I need to click &#34;Refuser&#34; for the last one: &#34;Publicité et contenu personnalisés de Tiers *&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#9 · click_web</div>
+      <div class="el">Enregistrer (Save) button at the bottom of the cookie settings panel</div>
+      <div class="el" style="color:var(--muted)">https://www.20minutes.fr/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">All 7 &#34;Refuser&#34; buttons are now selected (highlighted in red). The &#34;Enregistrer&#34; button is now active. Let me click it to save the refusal:</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">All 7 &#34;Refuser&#34; buttons are now selected (highlighted in red). The &#34;Enregistrer&#34; button at the bottom is now active (it appears to be in a clickable state - it&#39;s no longer grayed out). Now I need to click &#34;Enregistrer&#34; to save my choices. This will refuse all non-essential cookies without requiring a subscription.
+
+The &#34;Enregistrer&#34; button is at the bottom right of the modal.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+
+  <h2>Legal references</h2>
+  <div class="legal">
+    
+    <div class="ref">
+      <div><span class="code">ePrivacy Directive Art. 5(3)</span><span class="jur">EU</span></div>
+      <div class="title">Consent required for non-essential cookies</div>
+      <div class="sum">Directive 2002/58/EC requires prior consent before storing or reading non-essential trackers on a user&#39;s device (transposed in France by Art. 82 of the Loi Informatique et Libertés).</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2002/58/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2002/58/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">CNIL Délibérations 2020-091 / 2020-092</span><span class="jur">FR</span></div>
+      <div class="title">Refusing cookies must be as easy as accepting them</div>
+      <div class="sum">The CNIL guidelines and recommendation on cookies require that refusing be as simple as accepting. In January 2022 the CNIL fined Google €150M and Facebook €60M because refusing took more clicks than accepting.</div>
+      <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation" target="_blank" rel="noopener">https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">GDPR Art. 7(3)</span><span class="jur">EU</span></div>
+      <div class="title">Withdrawing consent must be as easy as giving it</div>
+      <div class="sum">Regulation (EU) 2016/679 requires that it be as easy to withdraw consent as to give it.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2016/679/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">DSA Art. 25</span><span class="jur">EU</span></div>
+      <div class="title">Ban on deceptive interface design by online platforms</div>
+      <div class="sum">Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2022/2065/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2022/2065/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Directive 2005/29/EC</span><span class="jur">EU</span></div>
+      <div class="title">Unfair Commercial Practices Directive</div>
+      <div class="sum">Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2005/29/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2005/29/oj</a>
+    </div>
+    
+  </div>
+
+  <footer>
+    <span>session <b>39140286-e04f-4bea-9b72-fc52106531ad</b></span>
+    <span>status <b>completed</b></span>
+    <span>cost <b>$0.0421</b></span>
+    <span>duration <b>154s</b></span>
+    <span>enter session <b>1da9e189-1064-4636-9975-973326bb15da</b></span>
+    <span>Escape Hatch · evidence-backed friction report</span>
+  </footer>
+</div>
+</body>
+</html>

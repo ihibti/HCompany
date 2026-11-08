@@ -6,14 +6,14 @@
 <title>Escape Hatch — https://ihibti.github.io/HCompany/level2/index.html</title>
 <style>
   :root {
-    --bg: #0b0e14;
-    --panel: #131824;
-    --panel2: #1a2130;
-    --line: #262f42;
-    --text: #e8ecf4;
-    --muted: #8b96ab;
-    --accent: #ff4d5e;
-    --green: #3ddc84;
+    --bg: #0b0d0c;
+    --panel: #131a16;
+    --panel2: #18211c;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #e9f2ec;
+    --muted: #8fa396;
+    --accent: #14c06a;
+    --green: #14c06a;
     --lime: #a3e635;
     --amber: #fbbf24;
     --orange: #fb923c;
@@ -22,13 +22,24 @@
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
     line-height: 1.55;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20, 192, 106, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20, 192, 106, 0.05), transparent 55%),
+      var(--bg);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,192,106,0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20,192,106,0.05), transparent 55%);
+    background-size: 44px 44px, 44px 44px, auto, auto;
   }
   .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
   header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
-  .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo svg { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(20,192,106,.35)); }
   .logo span { color: var(--accent); }
   .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
   .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -36,7 +47,7 @@
     width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
     font-size: 52px; font-weight: 800; flex-shrink: 0;
   }
-  .g-A { background: rgba(61,220,132,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-A { background: rgba(20,192,106,.12); color: var(--green); border: 2px solid var(--green); }
   .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
   .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
   .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
@@ -53,10 +64,12 @@
   .effort-row .lbl { font-size: 13px; color: var(--muted); }
   .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
   .bar > div { height: 100%; border-radius: 7px; }
-  .bar.leave > div { background: linear-gradient(90deg, #ff4d5e, #ff8a5c); }
-  .bar.enter > div { background: linear-gradient(90deg, #3ddc84, #a3e635); }
+  .bar.leave > div { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .bar.enter > div { background: linear-gradient(90deg, #14c06a, #a3e635); }
+  .bar.impossible > div { background: linear-gradient(90deg, #f87171, #ef4444); }
   .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
   .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .impossible-note { color: var(--red); font-size: 13px; margin-top: 4px; }
   .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
   .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
   .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
@@ -84,7 +97,7 @@
   .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
   .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
   .legal .sum { font-size: 13px; margin-top: 6px; }
-  .legal a { color: #7db4ff; text-decoration: none; font-size: 12px; }
+  .legal a { color: var(--green); text-decoration: none; font-size: 12px; }
   .legal a:hover { text-decoration: underline; }
   footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
   .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
@@ -95,7 +108,20 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="logo">Escape<span>Hatch</span></div>
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+        <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+        <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+        <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+        <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+      </svg>
+      <span>Escape<span>Hatch</span></span>
+    </div>
     <div class="tag">friction audit</div>
     <div class="tag">cancel_subscription</div>
   </header>
@@ -131,7 +157,9 @@
     
     
     
+    
     <div>
+      
       <div class="effort-row">
         <div class="lbl">Leave (cancel subscription)</div>
         <div class="bar leave"><div style="width: 100.0%"></div></div>
@@ -141,9 +169,11 @@
         4 interactions · 0 navigations · 0 detours
         · leave/enter ratio 4.0
       </div>
+      
     </div>
     
     <div>
+      
       <div class="effort-row">
         <div class="lbl">Enter (subscribe)</div>
         <div class="bar enter"><div style="width: 25.0%"></div></div>
@@ -153,6 +183,7 @@
         1 interactions · 0 navigations · 0 detours
         
       </div>
+      
     </div>
     
   </div>

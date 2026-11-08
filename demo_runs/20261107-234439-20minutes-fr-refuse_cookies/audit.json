@@ -1,0 +1,333 @@
+{
+  "id": "20261107-234439-20minutes-fr-refuse_cookies",
+  "created_at": "2026-11-07T23:53:19.625261Z",
+  "site_url": "https://www.20minutes.fr",
+  "task": "refuse_cookies",
+  "leave": {
+    "session_id": "39140286-e04f-4bea-9b72-fc52106531ad",
+    "site_url": "https://www.20minutes.fr",
+    "task": "refuse_cookies",
+    "agent": "h/web-surfer-pro",
+    "steps": [
+      {
+        "index": 0,
+        "action": "go_to_web",
+        "args": {
+          "url": "https://www.20minutes.fr"
+        },
+        "element": null,
+        "reasoning": "Let me navigate to the target website first.\n",
+        "message": null,
+        "url": "https://www.bing.com/",
+        "title": "Search - Microsoft Bing",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-b2851e9b-f78e-4499-83d1-19b27b91113d.png",
+        "timestamp": "2026-11-07T23:46:18.086042Z"
+      },
+      {
+        "index": 1,
+        "action": "click_web",
+        "args": {
+          "x": 0.348,
+          "y": 0.832,
+          "element": "Réglages button (Settings) - light outline button on the left"
+        },
+        "element": "Réglages button (Settings) - light outline button on the left",
+        "reasoning": "The cookie banner is visible. I see three buttons:\n1. \"Réglages\" (Settings) - light/outline button\n2. \"Refuser et s'abonner\" (Refuse and subscribe) - blue button\n3. \"Accepter et fermer\" (Accept and close) - blue button\n\nThe \"Refuser et s'abonner\" button is a cookie wall - it refuses cookies but requires subscribing (paying). The task says if refusing requires paying, report as impossible.\n\nBut wait - \"Réglages\" (Settings) might allow me to customize and refuse all non-essential cookies without subscribing. Let me click \"Réglages\" first to see if I can turn off all optional purposes and save. That would be the proper \"refuse all non-essential\" path without paying.\n\nActually, let me re-read the task: \"If refusing requires paying or subscribing (a 'cookie wall'), do not pay; report the outcome as impossible.\"\n\nThe \"Refuser et s'abonner\" button explicitly says \"subscribe\" - that's the cookie wall. But \"Réglages\" might give a legitimate way to refuse all non-essential cookies. Let me try that first since it's the standard customization path.\n\nI'll click \"Réglages\" (Settings).\n",
+        "message": "I can see the cookie banner. There are three buttons: \"Réglages\" (Settings), \"Refuser et s'abonner\" (Refuse and subscribe - this is a cookie wall), and \"Accepter et fermer\" (Accept and close). Let me try \"Réglages\" first to see if I can refuse all non-essential cookies without subscribing.",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-99519041-07cd-440f-a19a-38452c707bd1.png",
+        "timestamp": "2026-11-07T23:46:25.218700Z"
+      },
+      {
+        "index": 2,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.438,
+          "element": "Refuser button for \"Activation des services interactifs proposés par des tiers\""
+        },
+        "element": "Refuser button for \"Activation des services interactifs proposés par des tiers\"",
+        "reasoning": "Now I can see the detailed cookie settings. There are several categories:\n\n1. **Cookies de fonctionnement** - REQUIS (Required) - no buttons, can't be refused\n2. **Activation des services interactifs proposés par des tiers** - Refuser/Accepter buttons\n3. **Activation des réseaux sociaux** - Refuser/Accepter buttons\n4. **Mesure d'audience et web-analyse *** - Refuser/Accepter buttons\n5. **Activation de l'affiliation *** - Refuser/Accepter buttons\n6. **Publicité personnalisée de l'Editeur *** - Refuser/Accepter buttons\n7. **Attribution et utilisation d'identifiants publicitaires *** - Refuser/Accepter buttons\n8. **Publicité et contenus personnalisés de Tiers *** - Refuser/Accepter buttons\n\nThe asterisk (*) items are the non-essential ones. The \"Refuser\" buttons appear to be the default state (they look like they might already be selected - they have a gray/outline style while \"Accepter\" has a blue/highlighted style... wait, actually looking more carefully:\n\n- \"Refuser\" buttons appear to have a gray/outline style\n- \"Accepter\" buttons also appear to have a similar style\n\nActually, looking at the screenshot more carefully, both \"Refuser\" and \"Accepter\" buttons appear to be in the same style (gray outline). I need to check which is the default. The \"Enregistrer\" (Save) button at the bottom appears grayed out/disabled, which suggests no selection has been made yet.\n\nWait, looking more carefully at the buttons - \"Refuser\" buttons appear to be in a slightly different shade than \"Accepter\". Let me look at the \"Refuser\" button for \"Activation des services interactifs proposés par des tiers\" - it appears to be in a gray/outline state, and \"Accepter\" is also in a gray state.\n\nThe \"Enregistrer\" button at the bottom appears disabled (grayed out). This suggests I need to make a selection for each category before I can save.\n\nActually, I think the default state might be that \"Refuser\" is already selected (since the \"Refuser\" buttons appear slightly more prominent/active). But the \"Enregistrer\" button is grayed out...\n\nLet me just click \"Refuser\" for each optional category to be safe. I'll start with \"Activation des services interactifs proposés par des tiers\" - click \"Refuser\".\n\nActually, I need to be careful. The \"Refuser\" buttons might already be the default. Let me look at the styling more carefully. In the screenshot, the \"Refuser\" buttons appear to have a light gray background with a border, and \"Accepter\" buttons appear similar. It's hard to tell which is selected.\n\nGiven that \"Enregistrer\" is grayed out, it seems like I need to actively select something. Let me click \"Refuser\" for the first optional category and see if the styling changes or if \"Enregistrer\" becomes active.\n\nLet me click \"Refuser\" for \"Activation des services interactifs proposés par des tiers\" first.\n",
+        "message": "The settings panel is open. I can see multiple cookie categories with \"Refuser\"/\"Accepter\" buttons. The \"Enregistrer\" (Save) button appears grayed out. Let me click \"Refuser\" for each optional category. Starting with \"Activation des services interactifs proposés par des tiers\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-4611e370-6ee5-4589-8b37-4a368050217e.png",
+        "timestamp": "2026-11-07T23:46:32.597593Z"
+      },
+      {
+        "index": 3,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.478,
+          "element": "Refuser button for \"Activation des réseaux sociaux\""
+        },
+        "element": "Refuser button for \"Activation des réseaux sociaux\"",
+        "reasoning": "I can see that \"Refuser\" for \"Activation des services interactifs proposés par des tiers\" is now highlighted in red/active (it shows \"Ré...\" with a red border). The \"Enregistrer\" button is still grayed out, which means I need to make selections for all categories. Let me continue clicking \"Refuser\" for each remaining optional category:\n\n1. ✅ Activation des services interactifs proposés par des tiers - Refuser (done)\n2. Activation des réseaux sociaux - need to click Refuser\n3. Mesure d'audience et web-analyse * - need to click Refuser\n4. Activation de l'affiliation * - need to click Refuser\n5. Publicité personnalisée de l'Editeur * - need to click Refuser\n6. Attribution et utilisation d'identifiants publicitaires * - need to click Refuser\n7. Publicité et contenu personnalisés de Tiers * - need to click Refuser\n\nLet me click \"Refuser\" for \"Activation des réseaux sociaux\" next.\n",
+        "message": "\"Refuser\" is now selected (highlighted in red) for the first category. The \"Enregistrer\" button is still grayed out, so I need to select all categories. Let me continue with \"Activation des réseaux sociaux\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-ec104685-c03c-4dd1-9efd-c5d35c470d64.png",
+        "timestamp": "2026-11-07T23:46:37.367304Z"
+      },
+      {
+        "index": 4,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.511,
+          "element": "Refuser button for \"Mesure d'audience et web-analyse *\""
+        },
+        "element": "Refuser button for \"Mesure d'audience et web-analyse *\"",
+        "reasoning": "Two \"Refuser\" buttons are now selected (highlighted in red). I need to continue with the remaining 5 categories:\n- Mesure d'audience et web-analyse *\n- Activation de l'affiliation *\n- Publicité personnalisée de l'Editeur *\n- Attribution et utilisation d'identifiants publicitaires *\n- Publicité et contenu personnalisés de Tiers *\n\nLet me click \"Refuser\" for \"Mesure d'audience et web-analyse *\" next.\n",
+        "message": "Two \"Refuser\" selected. Continuing with \"Mesure d'audience et web-analyse *\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-9b6c3f77-0329-46be-b5c4-30ce492dc47b.png",
+        "timestamp": "2026-11-07T23:46:41.770359Z"
+      },
+      {
+        "index": 5,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.543,
+          "element": "Refuser button for \"Activation de l'affiliation *\""
+        },
+        "element": "Refuser button for \"Activation de l'affiliation *\"",
+        "reasoning": "Three \"Refuser\" buttons selected. Now I need to click \"Refuser\" for \"Activation de l'affiliation *\".\n",
+        "message": "Three done. Now \"Activation de l'affiliation *\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-12698621-26d1-4dd3-aacd-be85b823b807.png",
+        "timestamp": "2026-11-07T23:46:45.843344Z"
+      },
+      {
+        "index": 6,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.575,
+          "element": "Refuser button for \"Publicité personnalisée de l'Editeur *\""
+        },
+        "element": "Refuser button for \"Publicité personnalisée de l'Editeur *\"",
+        "reasoning": "Four \"Refuser\" buttons selected. Now I need to click \"Refuser\" for \"Publicité personnalisée de l'Editeur *\".\n",
+        "message": "Four done. Now \"Publicité personnalisée de l'Editeur *\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-4d3293a9-2aab-4342-ae2a-3db823ed23be.png",
+        "timestamp": "2026-11-07T23:46:50.044895Z"
+      },
+      {
+        "index": 7,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.616,
+          "element": "Refuser button for \"Attribution et utilisation d'identifiants publicitaires *\""
+        },
+        "element": "Refuser button for \"Attribution et utilisation d'identifiants publicitaires *\"",
+        "reasoning": "Five \"Refuser\" buttons selected. Now I need to click \"Refuser\" for \"Attribution et utilisation d'identifiants publicitaires *\".\n",
+        "message": "Five done. Now \"Attribution et utilisation d'identifiants publicitaires *\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-855fefb6-3feb-4e0d-8a77-4b898b0465e6.png",
+        "timestamp": "2026-11-07T23:46:54.180510Z"
+      },
+      {
+        "index": 8,
+        "action": "click_web",
+        "args": {
+          "x": 0.644,
+          "y": 0.656,
+          "element": "Refuser button for \"Publicité et contenu personnalisés de Tiers *\""
+        },
+        "element": "Refuser button for \"Publicité et contenu personnalisés de Tiers *\"",
+        "reasoning": "Six \"Refuser\" buttons selected. Now I need to click \"Refuser\" for the last one: \"Publicité et contenu personnalisés de Tiers *\".\n",
+        "message": "Six done. Last one - \"Publicité et contenu personnalisés de Tiers *\":",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-28176980-5f13-42d6-90ec-2091ccd3ea15.png",
+        "timestamp": "2026-11-07T23:46:58.271112Z"
+      },
+      {
+        "index": 9,
+        "action": "click_web",
+        "args": {
+          "x": 0.695,
+          "y": 0.837,
+          "element": "Enregistrer (Save) button at the bottom of the cookie settings panel"
+        },
+        "element": "Enregistrer (Save) button at the bottom of the cookie settings panel",
+        "reasoning": "All 7 \"Refuser\" buttons are now selected (highlighted in red). The \"Enregistrer\" button at the bottom is now active (it appears to be in a clickable state - it's no longer grayed out). Now I need to click \"Enregistrer\" to save my choices. This will refuse all non-essential cookies without requiring a subscription.\n\nThe \"Enregistrer\" button is at the bottom right of the modal.\n",
+        "message": "All 7 \"Refuser\" buttons are now selected (highlighted in red). The \"Enregistrer\" button is now active. Let me click it to save the refusal:",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-25c358a1-0a5b-4090-b5a3-784dd7b3451e.png",
+        "timestamp": "2026-11-07T23:47:03.351366Z"
+      }
+    ],
+    "answer": {
+      "completed": false,
+      "impossible": true,
+      "flow_found": false,
+      "interactions_reported": 9,
+      "steps": [
+        "Navigated to https://www.20minutes.fr",
+        "Cookie banner appeared with 3 options: Réglages, Refuser et s'abonner, Accepter et fermer",
+        "Clicked 'Réglages' (Settings) to open detailed cookie preferences",
+        "Clicked 'Refuser' for 'Activation des services interactifs proposés par des tiers'",
+        "Clicked 'Refuser' for 'Activation des réseaux sociaux'",
+        "Clicked 'Refuser' for 'Mesure d'audience et web-analyse *'",
+        "Clicked 'Refuser' for 'Activation de l'affiliation *'",
+        "Clicked 'Refuser' for 'Publicité personnalisée de l'Editeur *'",
+        "Clicked 'Refuser' for 'Attribution et utilisation d'identifiants publicitaires *'",
+        "Clicked 'Refuser' for 'Publicité et contenu personnalisés de Tiers *'",
+        "Clicked 'Enregistrer' (Save) — site redirected to subscription page at membre.20minutes.fr/abonnement/inscription/"
+      ],
+      "obstacles": [
+        "Cookie wall: After selecting 'Refuser' for all 7 optional categories and clicking 'Enregistrer', the site redirected to a paid subscription registration page (1.99€/month). The only way back is 'Revenir et accepter les cookies' which accepts all cookies. There is no way to refuse all non-essential cookies without subscribing."
+      ],
+      "final_state": "Redirected to subscription page (membre.20minutes.fr/abonnement/inscription/) after saving all-Refuser preferences. The site's cookie consent mechanism (Didomi) is configured so that refusing all non-essential cookies triggers the paid subscription flow. No non-essential cookies were set; the refusal was technically saved but the site gates content behind a paywall."
+    },
+    "session_status": "completed",
+    "outcome": "impossible",
+    "cost_usd": 0.042072399999999996,
+    "duration_s": 154.4,
+    "final_url": "https://membre.20minutes.fr/abonnement/inscription/",
+    "final_screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-4e40924e-2bba-42ab-ab84-8741e2b6fae9.png"
+  },
+  "enter": {
+    "session_id": "1da9e189-1064-4636-9975-973326bb15da",
+    "site_url": "https://www.20minutes.fr",
+    "task": "accept_cookies",
+    "agent": "h/web-surfer-pro",
+    "steps": [
+      {
+        "index": 0,
+        "action": "go_to_web",
+        "args": {
+          "url": "https://www.20minutes.fr"
+        },
+        "element": null,
+        "reasoning": "The user wants me to go to https://www.20minutes.fr and accept all cookies with the fewest possible interactions. Let me navigate there first.\n",
+        "message": null,
+        "url": "https://www.bing.com/",
+        "title": "Search - Microsoft Bing",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/1da9e189-1064-4636-9975-973326bb15da/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/1da9e189-1064-4636-9975-973326bb15da/screenshot-1bff0cc4-294b-4c72-a028-dfac3ba63b20.png",
+        "timestamp": "2026-11-07T23:44:53.842740Z"
+      },
+      {
+        "index": 1,
+        "action": "click_web",
+        "args": {
+          "x": 0.684,
+          "y": 0.832,
+          "element": "\"Accepter et fermer\" button (blue, rightmost button in cookie banner)"
+        },
+        "element": "\"Accepter et fermer\" button (blue, rightmost button in cookie banner)",
+        "reasoning": "The cookie banner is visible with three buttons:\n1. \"Réglages\" (Settings) - left\n2. \"Refuser et s'abonner\" (Refuse and subscribe) - middle\n3. \"Accepter et fermer\" (Accept and close) - right\n\nThe goal is to accept all cookies. The correct button is \"Accepter et fermer\" (Accept and close) on the right side. This is the standard accept button. Let me click it.\n",
+        "message": "The cookie banner is showing. I can see three buttons: \"Réglages\" (Settings), \"Refuser et s'abonner\" (Refuse and subscribe), and \"Accepter et fermer\" (Accept and close). The correct one for accepting all cookies is \"Accepter et fermer\" on the right.",
+        "url": "https://www.20minutes.fr/",
+        "title": "20 Minutes - Toute l’actualité en direct et les dernières infos en continu",
+        "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/1da9e189-1064-4636-9975-973326bb15da/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/1da9e189-1064-4636-9975-973326bb15da/screenshot-fb070ed0-a24a-4bf2-899d-6017d3f323bf.png",
+        "timestamp": "2026-11-07T23:45:00.002548Z"
+      }
+    ],
+    "answer": {
+      "completed": true,
+      "impossible": false,
+      "flow_found": true,
+      "interactions_reported": 1,
+      "steps": [
+        "Navigated to https://www.20minutes.fr",
+        "Cookie banner appeared with title 'Vous prendrez bien un cookie ?', showing three buttons: 'Réglages', 'Refuser et s'abonner', 'Accepter et fermer'",
+        "Clicked 'Accepter et fermer' (rightmost blue button) to accept all cookies",
+        "Banner dismissed; page loaded normally"
+      ],
+      "obstacles": [],
+      "final_state": "20 Minutes homepage fully loaded, no cookie banner visible. All cookies accepted with 1 click."
+    },
+    "session_status": "completed",
+    "outcome": "success",
+    "cost_usd": 0.006517200000000001,
+    "duration_s": 30.0,
+    "final_url": "https://www.20minutes.fr/",
+    "final_screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/1da9e189-1064-4636-9975-973326bb15da/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/1da9e189-1064-4636-9975-973326bb15da/screenshot-688015a9-3382-4539-b9f5-fecf3f3f5c54.png"
+  },
+  "findings": [
+    {
+      "pattern": "obstruction",
+      "severity": 3,
+      "evidence": "The only visible cookie-related option is the blue button 'Revenir et accepter les cookies*' (Return and accept cookies*), which forces the user to accept cookies to proceed. There is no visible 'refuse' or 'decline' option for non-essential cookies, making it impossible to complete the goal of refusing all non-essential cookies.",
+      "explanation": "The user's goal is to refuse all non-essential cookies, but the interface only provides a button to accept cookies. This creates an obstruction where the user cannot proceed with their intended action (refusing cookies) without accepting them, which directly contradicts their goal.",
+      "step_index": 10,
+      "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-4e40924e-2bba-42ab-ab84-8741e2b6fae9.png"
+    },
+    {
+      "pattern": "misdirection",
+      "severity": 2,
+      "evidence": "The 'Refuser' buttons for non-essential categories are styled in red with an 'X' icon, while 'Accepter' buttons are white. This visual emphasis on the 'Refuser' option (which is the user's goal) is counterintuitive and could mislead users into thinking they are making a negative choice when they are actually refusing cookies.",
+      "explanation": "The red 'Refuser' buttons with 'X' icons create a visual misdirection by making the refusal action appear as a negative or destructive choice, which could confuse users trying to refuse non-essential cookies.",
+      "step_index": 8,
+      "screenshot_url": "https://agp.eu.hcompany.ai/api/v1/trajectories/39140286-e04f-4bea-9b72-fc52106531ad/resources/production-eu-agentplatfo-screenshotbucketv2f6e481-5gugybownpjc/39140286-e04f-4bea-9b72-fc52106531ad/screenshot-28176980-5f13-42d6-90ec-2091ccd3ea15.png"
+    }
+  ],
+  "score": {
+    "leave_effort": {
+      "interactions": 9,
+      "navigations": 0,
+      "detours": 0,
+      "total": 9
+    },
+    "enter_effort": {
+      "interactions": 1,
+      "navigations": 0,
+      "detours": 0,
+      "total": 1
+    },
+    "asymmetry_ratio": null,
+    "pattern_points": 0,
+    "friction": 100,
+    "grade": "F",
+    "headline": "Leaving is impossible without paying or accepting."
+  },
+  "legal": [
+    {
+      "code": "ePrivacy Directive Art. 5(3)",
+      "jurisdiction": "EU",
+      "title": "Consent required for non-essential cookies",
+      "summary": "Directive 2002/58/EC requires prior consent before storing or reading non-essential trackers on a user's device (transposed in France by Art. 82 of the Loi Informatique et Libertés).",
+      "url": "https://eur-lex.europa.eu/eli/dir/2002/58/oj"
+    },
+    {
+      "code": "CNIL Délibérations 2020-091 / 2020-092",
+      "jurisdiction": "FR",
+      "title": "Refusing cookies must be as easy as accepting them",
+      "summary": "The CNIL guidelines and recommendation on cookies require that refusing be as simple as accepting. In January 2022 the CNIL fined Google €150M and Facebook €60M because refusing took more clicks than accepting.",
+      "url": "https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation"
+    },
+    {
+      "code": "GDPR Art. 7(3)",
+      "jurisdiction": "EU",
+      "title": "Withdrawing consent must be as easy as giving it",
+      "summary": "Regulation (EU) 2016/679 requires that it be as easy to withdraw consent as to give it.",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+    },
+    {
+      "code": "DSA Art. 25",
+      "jurisdiction": "EU",
+      "title": "Ban on deceptive interface design by online platforms",
+      "summary": "Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.",
+      "url": "https://eur-lex.europa.eu/eli/reg/2022/2065/oj"
+    },
+    {
+      "code": "Directive 2005/29/EC",
+      "jurisdiction": "EU",
+      "title": "Unfair Commercial Practices Directive",
+      "summary": "Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.",
+      "url": "https://eur-lex.europa.eu/eli/dir/2005/29/oj"
+    }
+  ]
+}

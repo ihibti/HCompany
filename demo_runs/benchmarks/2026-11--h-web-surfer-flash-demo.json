@@ -1,0 +1,155 @@
+{
+  "created_at": "2026-11-08T00:08:38.340003+00:00",
+  "agent": "h/web-surfer-flash",
+  "base": "https://ihibti.github.io/HCompany/",
+  "levels": [
+    {
+      "level": 1,
+      "title": "Honest",
+      "audit_id": "20261107-235333-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 2,
+      "min_leave_interactions": 2,
+      "enter_effort": 1,
+      "grade": "A",
+      "friction": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "patterns_found": [],
+      "patterns_truth": [],
+      "cost_usd": 0.0166,
+      "wall_seconds": 37.5,
+      "leave_duration_s": 31.2,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the red \"Confirm cancellation\" button to finalize the subscription cancellation."
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "title": "Confirmshaming",
+      "audit_id": "20261107-235410-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 4,
+      "min_leave_interactions": 3,
+      "enter_effort": 1,
+      "grade": "D",
+      "friction": 56,
+      "precision": 1.0,
+      "recall": 1.0,
+      "patterns_found": [
+        "asymmetric_choice",
+        "confirmshaming",
+        "misdirection"
+      ],
+      "patterns_truth": [
+        "asymmetric_choice",
+        "confirmshaming",
+        "misdirection"
+      ],
+      "cost_usd": 0.0208,
+      "wall_seconds": 284.2,
+      "leave_duration_s": 36.7,
+      "confirmations": []
+    },
+    {
+      "level": 3,
+      "title": "Hidden option",
+      "audit_id": "20261107-235855-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 10,
+      "min_leave_interactions": 6,
+      "enter_effort": 2,
+      "grade": "F",
+      "friction": 100,
+      "precision": 0.667,
+      "recall": 0.5,
+      "patterns_found": [
+        "asymmetric_choice",
+        "confirmshaming",
+        "hidden_option"
+      ],
+      "patterns_truth": [
+        "hidden_option",
+        "misdirection",
+        "asymmetric_choice",
+        "obstruction"
+      ],
+      "cost_usd": 0.0398,
+      "wall_seconds": 73.4,
+      "leave_duration_s": 64.7,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Clicking the \"Confirm cancellation\" button to cancel the Netflix Premium subscription at $15.99/month. This will end the subscription so it will not renew after the current billing period."
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "title": "Obstruction",
+      "audit_id": "20261108-000008-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 12,
+      "min_leave_interactions": 5,
+      "enter_effort": 1,
+      "grade": "F",
+      "friction": 100,
+      "precision": 1.0,
+      "recall": 0.667,
+      "patterns_found": [
+        "false_urgency",
+        "misdirection",
+        "obstruction",
+        "preselection"
+      ],
+      "patterns_truth": [
+        "obstruction",
+        "preselection",
+        "false_urgency",
+        "trick_question",
+        "misdirection",
+        "sneaking"
+      ],
+      "cost_usd": 0.0384,
+      "wall_seconds": 310.2,
+      "leave_duration_s": 62.0,
+      "confirmations": []
+    },
+    {
+      "level": 5,
+      "title": "Boss",
+      "audit_id": "20261108-000518-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 15,
+      "min_leave_interactions": 9,
+      "enter_effort": 1,
+      "grade": "F",
+      "friction": 100,
+      "precision": 1.0,
+      "recall": 0.75,
+      "patterns_found": [
+        "sneaking",
+        "nagging",
+        "obstruction"
+      ],
+      "patterns_truth": [
+        "obstruction",
+        "nagging",
+        "sneaking",
+        "misdirection"
+      ],
+      "cost_usd": 0.046,
+      "wall_seconds": 199.8,
+      "leave_duration_s": 72.8,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the red \"Confirm cancellation\" button to permanently cancel the Netflix Premium subscription (it will stay active until the end of the current billing period, then not renew)."
+        }
+      ]
+    }
+  ]
+}

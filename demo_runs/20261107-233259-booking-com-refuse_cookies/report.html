@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch — https://www.booking.com</title>
+<style>
+  :root {
+    --bg: #0b0d0c;
+    --panel: #131a16;
+    --panel2: #18211c;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #e9f2ec;
+    --muted: #8fa396;
+    --accent: #14c06a;
+    --green: #14c06a;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --grey: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20, 192, 106, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20, 192, 106, 0.05), transparent 55%),
+      var(--bg);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,192,106,0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20,192,106,0.05), transparent 55%);
+    background-size: 44px 44px, 44px 44px, auto, auto;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo svg { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(20,192,106,.35)); }
+  .logo span { color: var(--accent); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
+  .grade {
+    width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; flex-shrink: 0;
+  }
+  .g-A { background: rgba(20,192,106,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
+  .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
+  .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
+  .g-F { background: rgba(248,113,113,.12); color: var(--red); border: 2px solid var(--red); }
+  .g-NA, .g-Q { background: rgba(100,116,139,.12); color: var(--grey); border: 2px solid var(--grey); }
+  .hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  .hero .sub { color: var(--muted); font-size: 14px; }
+  .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+  h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
+  .effort-row .lbl { font-size: 13px; color: var(--muted); }
+  .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 7px; }
+  .bar.leave > div { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .bar.enter > div { background: linear-gradient(90deg, #14c06a, #a3e635); }
+  .bar.impossible > div { background: linear-gradient(90deg, #f87171, #ef4444); }
+  .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
+  .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .impossible-note { color: var(--red); font-size: 13px; margin-top: 4px; }
+  .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+  .sev-3 { background: rgba(248,113,113,.15); color: var(--red); }
+  .sev-2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .sev-1 { background: rgba(139,150,171,.15); color: var(--muted); }
+  .pname { font-weight: 700; font-size: 14px; }
+  .pdesc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .ev { border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--text); font-size: 13px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .ex { font-size: 13px; color: var(--muted); }
+  .finding img { width: 180px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .finding .noimg { width: 180px; height: 100px; border-radius: 10px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .step { display: grid; grid-template-columns: 140px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .step img { width: 140px; border-radius: 8px; border: 1px solid var(--line); }
+  .step .noimg { width: 140px; height: 80px; border-radius: 8px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; }
+  .step .act { font-weight: 700; font-size: 14px; }
+  .step .el { color: var(--accent); font-size: 13px; margin-top: 2px; word-break: break-word; }
+  .step .rs { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; }
+  summary:hover { color: var(--text); }
+  .legal { display: grid; gap: 10px; }
+  .legal .ref { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .legal .code { font-weight: 700; font-size: 14px; }
+  .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .legal .sum { font-size: 13px; margin-top: 6px; }
+  .legal a { color: var(--green); text-decoration: none; font-size: 12px; }
+  .legal a:hover { text-decoration: underline; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .obstacles li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+        <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+        <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+        <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+        <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+      </svg>
+      <span>Escape<span>Hatch</span></span>
+    </div>
+    <div class="tag">friction audit</div>
+    <div class="tag">refuse_cookies</div>
+  </header>
+
+  <section class="hero">
+    
+    <div class="grade g-A">A</div>
+    <div>
+      <h1>https://www.booking.com</h1>
+      <div class="sub">Leaving takes 2 actions. Accepting takes 2.</div>
+      <div class="meta">
+        <span class="chip">friction <b>6</b>/100</span>
+        <span class="chip">patterns <b>0</b></span>
+        <span class="chip">steps <b>3</b></span>
+        <span class="chip">outcome <b>success</b></span>
+        <span class="chip">agent <b>h/web-surfer-pro</b></span>
+        <span class="chip">2026-11-07 23:39</span>
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Obstacles reported by the agent</h2>
+    <ul class="obstacles">
+      <li>A &#39;Sign in, save money&#39; Genius modal appeared first and had to be closed before the cookie banner became accessible</li>
+    </ul>
+  </div>
+  
+
+  <h2>Effort to leave vs enter</h2>
+  <div class="card">
+    
+    
+    
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Leave (refuse cookies)</div>
+        <div class="bar leave"><div style="width: 100.0%"></div></div>
+        <div class="num">2</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        2 interactions · 0 navigations · 0 detours
+        · leave/enter ratio 1.0
+      </div>
+      
+    </div>
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Enter (accept cookies)</div>
+        <div class="bar enter"><div style="width: 100.0%"></div></div>
+        <div class="num">2</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        2 interactions · 0 navigations · 0 detours
+        
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <h2>Dark patterns detected</h2>
+  
+    <div class="card"><div class="empty">No dark patterns flagged on the reviewed screenshots.</div></div>
+  
+
+  <h2>Step timeline — leave journey</h2>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#0 · go_to_web</div>
+      
+      <div class="el" style="color:var(--muted)">https://www.bing.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The user wants me to go to booking.com and refuse all non-essential cookies. Let me navigate there first.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#1 · click_web</div>
+      <div class="el">Close X button on the Genius sign-in modal</div>
+      <div class="el" style="color:var(--muted)">https://www.booking.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I see a &#34;Sign in, save money&#34; modal. Let me close it first to look for the cookie banner.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">There&#39;s a &#34;Sign in, save money&#34; Genius modal blocking the page. I need to close it first by clicking the X button, then look for the cookie banner. The X is at the top right of the modal, around coordinates (718, 388).
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <div class="noimg">no screenshot</div>
+    </div>
+    <div>
+      <div class="act">#2 · click_web</div>
+      <div class="el">Decline button in the cookie banner</div>
+      <div class="el" style="color:var(--muted)">https://www.booking.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The cookie banner is visible at the bottom. I can see a &#34;Decline&#34; button which is exactly what I need — it refuses all non-essential cookies in one click.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The cookie banner is now visible at the bottom of the page. I can see:
+- &#34;Manage cookie settings&#34; heading
+- Text about analytical cookies and marketing cookies
+- A &#34;Decline&#34; button (blue, top right of the banner)
+- An &#34;Accept&#34; button (blue, below Decline)
+- A &#34;Manage settings&#34; link (bottom)
+
+The &#34;Decline&#34; button is exactly what I need - it refuses all non-essential cookies. This is the fewest possible interactions (1 click). Let me click &#34;Decline&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+
+  <h2>Legal references</h2>
+  <div class="legal">
+    
+    <div class="ref">
+      <div><span class="code">ePrivacy Directive Art. 5(3)</span><span class="jur">EU</span></div>
+      <div class="title">Consent required for non-essential cookies</div>
+      <div class="sum">Directive 2002/58/EC requires prior consent before storing or reading non-essential trackers on a user&#39;s device (transposed in France by Art. 82 of the Loi Informatique et Libertés).</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2002/58/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2002/58/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">CNIL Délibérations 2020-091 / 2020-092</span><span class="jur">FR</span></div>
+      <div class="title">Refusing cookies must be as easy as accepting them</div>
+      <div class="sum">The CNIL guidelines and recommendation on cookies require that refusing be as simple as accepting. In January 2022 the CNIL fined Google €150M and Facebook €60M because refusing took more clicks than accepting.</div>
+      <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation" target="_blank" rel="noopener">https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies/lignes-directrices-modificatives-et-recommandation</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">GDPR Art. 7(3)</span><span class="jur">EU</span></div>
+      <div class="title">Withdrawing consent must be as easy as giving it</div>
+      <div class="sum">Regulation (EU) 2016/679 requires that it be as easy to withdraw consent as to give it.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2016/679/oj</a>
+    </div>
+    
+  </div>
+
+  <footer>
+    <span>session <b>38e81508-1fa5-4010-9993-b686370dae0a</b></span>
+    <span>status <b>completed</b></span>
+    <span>cost <b>$0.0104</b></span>
+    <span>duration <b>57s</b></span>
+    <span>enter session <b>2c65749f-11ae-4cfb-9f9c-9c591529ea1f</b></span>
+    <span>Escape Hatch · evidence-backed friction report</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -20,19 +20,15 @@ RUNS = Path("runs")
 DEMO = Path("demo_runs")
 
 AUDIT_IDS = [
-    # Netflux gauntlet L1-L5
-    "20261107-220628-ihibti-github-io-cancel_subscription",
-    "20261107-220717-ihibti-github-io-cancel_subscription",
-    "20261107-220806-ihibti-github-io-cancel_subscription",
-    "20261107-220915-ihibti-github-io-cancel_subscription",
-    "20261107-221014-ihibti-github-io-cancel_subscription",
-    # cookie audits (latest good runs)
-    "20261107-222205-leboncoin-fr-refuse_cookies",
-    "20261107-222250-marmiton-org-refuse_cookies",
-    "20261107-222321-lefigaro-fr-refuse_cookies",
-    "20261107-223407-doctissimo-fr-refuse_cookies",
-    "20261107-223525-lemonde-fr-refuse_cookies",
-    "20261107-223601-allocine-fr-refuse_cookies",
+    # second batch: cookie audits (2026-11-07/08)
+    "20261107-234439-20minutes-fr-refuse_cookies",
+    "20261107-233259-jeuxvideo-com-refuse_cookies",
+    "20261107-233259-leparisien-fr-refuse_cookies",
+    "20261107-233259-ouest-france-fr-refuse_cookies",
+    "20261107-233259-francetvinfo-fr-refuse_cookies",
+    "20261107-233259-booking-com-refuse_cookies",
+    "20261107-234439-cdiscount-com-refuse_cookies",
+    "20261107-233259-liberation-fr-refuse_cookies",
 ]
 
 
