@@ -249,3 +249,30 @@ async def test_run_audit_confirm_denied_propagates(tmp_path, monkeypatch):
         openai_client=object(),
     )
     assert fake_rj.calls[0]["confirm_result"] == "denied"
+
+
+@pytest.mark.asyncio
+async def test_run_audit_downloads_shots_live(tmp_path, monkeypatch):
+    fake_rj = _make_fake_run_journey()
+    monkeypatch.setattr(pipeline, "run_journey", fake_rj)
+
+    fetched = []
+
+    async def fake_fetch(http, url):
+        fetched.append(url)
+        return _png()
+
+    monkeypatch.setattr(pipeline, "fetch_screenshot", fake_fetch)
+
+    store = RunStore(tmp_path / "runs")
+    await pipeline.run_audit(
+        site_url="https://site.test/",
+        task=Task.CANCEL_SUBSCRIPTION,
+        store=store,
+        client=_FakeAgentClient(),
+        classify=False,
+    )
+    # both legs emit the same observation url -> deduped to one live fetch,
+    # and the shot lands in the store without waiting for classification
+    assert fetched == ["https://shots/final.png"]
+    assert store.local_shot("https://shots/final.png") is not None

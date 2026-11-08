@@ -75,6 +75,7 @@ def _audit_id(site_url: str, task: Task, store: RunStore) -> str:
 def _make_event_tap(
     journey_name: str,
     emitter: _Emitter,
+    on_shot: Callable[[str | None], None] | None = None,
 ) -> EventFn:
     """Live tap: tracks the last observation and emits step/status messages."""
     state: dict[str, Any] = {"last_obs": None, "steps": []}
@@ -86,6 +87,11 @@ def _make_event_tap(
             kind = data.get("kind")
             if kind == "observation_event":
                 state["last_obs"] = data
+                if on_shot is not None:
+                    try:
+                        on_shot((data.get("image") or {}).get("source"))
+                    except Exception:
+                        pass
             elif kind == "policy_event":
                 ts = _parse_ts(event.get("timestamp"))
                 new_steps = step_from_policy_event(data, state["last_obs"], len(state["steps"]), ts)
@@ -146,6 +152,10 @@ async def _download_key_screenshots(
     for step in select_key_steps(journey):
         url = step.screenshot_url
         if not url:
+            continue
+        local = store.local_shot(url)
+        if local is not None:
+            pairs.append((step, local))
             continue
         try:
             data = await fetch_screenshot(http, url)
@@ -232,8 +242,30 @@ async def run_audit(
     journeys: dict[str, Journey] = {}
     raw_events: dict[str, list[dict]] = {}
 
+    # live screenshot downloads: bounded, deduped across both journeys, best-effort
+    shot_sem = asyncio.Semaphore(4)
+    shot_seen: set[str] = set()
+    shot_tasks: set[asyncio.Task] = set()
+    shot_http = httpx.AsyncClient(timeout=30)
+
+    async def _live_shot(url: str) -> None:
+        async with shot_sem:
+            try:
+                data = await fetch_screenshot(shot_http, url)
+                store.save_screenshot(url, data)
+            except Exception:
+                logger.debug("live screenshot download failed: %s", url[:90])
+
+    def _schedule_shot(url: str | None) -> None:
+        if not url or url in shot_seen:
+            return
+        shot_seen.add(url)
+        task = asyncio.create_task(_live_shot(url))
+        shot_tasks.add(task)
+        task.add_done_callback(shot_tasks.discard)
+
     async def _run_leg(side: str, leg_task: Task, url: str) -> None:
-        tap = _make_event_tap(side, emitter)
+        tap = _make_event_tap(side, emitter, on_shot=_schedule_shot)
         side_name = side
 
         def _on_started(run: Any) -> None:
@@ -277,6 +309,15 @@ async def run_audit(
     except Exception:
         logger.exception("run_audit journeys failed for %s", site_url)
         await emitter.send({"type": "error", "audit_id": audit_id, "message": "journey run failed"})
+
+    if shot_tasks:
+        try:
+            await asyncio.wait_for(
+                asyncio.gather(*tuple(shot_tasks), return_exceptions=True), timeout=90
+            )
+        except Exception:
+            pass
+    await shot_http.aclose()
 
     leave = journeys.get("leave")
     if leave is None:
