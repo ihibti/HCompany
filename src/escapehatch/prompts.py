@@ -21,6 +21,7 @@ COMMON_RULES = """Rules:
 - Count every click, key press and form submission you make; the user is measuring how much effort this site demands.
 - Read the screen carefully. Sites may use misleading button colors, swapped button positions, double negatives, fake close buttons and pre-checked boxes. Do what the goal says, not what the design nudges you toward.
 - If you get stuck in a loop or the goal is impossible on this site, stop and report it honestly instead of guessing.
+- If the site itself refuses to load for you (an "Access Denied" page, a bot-protection or CAPTCHA challenge, an error page, a region block), set access_blocked to true and stop: that is not a dark pattern and the goal must not be reported as impossible.
 - When you are done, answer with the structured report."""
 
 TASK_PROMPTS: dict[Task, str] = {

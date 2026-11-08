@@ -6,11 +6,27 @@ policy_event (decision + tool_reqs), observation_event (screenshot + page
 metadata), tool_result, answer_event, error_event, message_event, flow_event.
 """
 
+import re
 from datetime import datetime
 from typing import Any, Literal
 
 from escapehatch.models import AgentAnswer, Journey, Outcome, Step
 from escapehatch.prompts import Task
+
+ACCESS_BLOCKED_RE = re.compile(
+    r"access denied|bot[\s_-]?(?:protect|detect)|captcha|akamai|cloudflare"
+    r"|edgsuite|\b403\b",
+    re.IGNORECASE,
+)
+
+
+def answer_indicates_blocked(answer: AgentAnswer | None) -> bool:
+    """True when the agent's obstacles/final_state describe an access block
+    (CDN bot protection, captcha, error page) rather than a dark pattern."""
+    if answer is None:
+        return False
+    text = " ".join(answer.obstacles) + " " + (answer.final_state or "")
+    return bool(ACCESS_BLOCKED_RE.search(text))
 
 # Tool-name -> effort bucket. Anything unmapped (custom tools, unknowns) is "other".
 ACTION_KIND: dict[str, Literal["interaction", "navigation", "detour", "other"]] = {
@@ -143,6 +159,8 @@ def journey_from_events(
 
     if session_status in TERMINAL_FAILURES or parsed_answer is None:
         outcome = Outcome.FAILED
+    elif parsed_answer.access_blocked:
+        outcome = Outcome.BLOCKED
     elif parsed_answer.completed:
         outcome = Outcome.SUCCESS
     elif parsed_answer.impossible:

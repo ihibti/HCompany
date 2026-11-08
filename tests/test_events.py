@@ -155,6 +155,40 @@ def test_impossible_outcome():
     assert j.outcome == Outcome.IMPOSSIBLE
 
 
+def test_access_blocked_outcome():
+    answer = dict(ANSWER, completed=False, impossible=True, access_blocked=True)
+    j = _journey(_synthetic_events([]), answer=answer)
+    assert j.outcome == Outcome.BLOCKED
+
+
+def test_access_blocked_checked_before_completed():
+    answer = dict(ANSWER, completed=True, access_blocked=True)
+    j = _journey(_synthetic_events([]), answer=answer)
+    assert j.outcome == Outcome.BLOCKED
+
+
+def test_answer_indicates_blocked():
+    from escapehatch.events import answer_indicates_blocked
+    from escapehatch.models import AgentAnswer
+
+    base = dict(
+        completed=False, impossible=True, flow_found=False,
+        interactions_reported=0, steps=[],
+    )
+    assert answer_indicates_blocked(None) is False
+    assert answer_indicates_blocked(AgentAnswer(
+        **base, obstacles=["Akamai EdgeSuite returned Access Denied"], final_state="",
+    )) is True
+    assert answer_indicates_blocked(AgentAnswer(
+        **base, obstacles=[], final_state="Cloudflare bot challenge, HTTP 403",
+    )) is True
+    assert answer_indicates_blocked(AgentAnswer(
+        **base,
+        obstacles=["cookie wall requires paid subscription"],
+        final_state="paywall page",
+    )) is False
+
+
 def test_not_applicable_outcome():
     answer = dict(ANSWER, completed=False, impossible=False, flow_found=False)
     j = _journey(_synthetic_events([]), answer=answer)

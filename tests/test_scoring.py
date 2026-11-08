@@ -64,6 +64,13 @@ class TestScoreBranches:
         assert s.friction == 100
         assert s.headline == "Leaving is impossible without paying or accepting."
 
+    def test_blocked_is_inconclusive(self):
+        j = make_journey(["click_web"], outcome=Outcome.BLOCKED)
+        s = score(j, None, [_finding()])
+        assert s.grade == "?"
+        assert s.friction == 0
+        assert s.headline == "Inconclusive: the site blocked our agent."
+
 
 class TestScoreMath:
     def test_base_effort_curve(self):

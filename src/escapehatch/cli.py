@@ -11,9 +11,10 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
 
+from escapehatch.events import answer_indicates_blocked
 from escapehatch.gauntlet import load_levels, pattern_recall, verify_gauntlet
 from escapehatch.keys import KeyPool
-from escapehatch.models import Audit
+from escapehatch.models import Audit, Outcome
 from escapehatch.pipeline import run_audit, shot_resolver
 from escapehatch.prompts import Task
 from escapehatch.report import render_report_html
@@ -228,15 +229,26 @@ async def _cmd_rescore(args: argparse.Namespace) -> int:
         except Exception:
             logger.exception("could not load audit %s", audit_id)
             continue
+        reclassified = False
+        if (
+            args.reclassify_blocked
+            and audit.leave.answer is not None
+            and audit.leave.outcome != Outcome.BLOCKED
+            and answer_indicates_blocked(audit.leave.answer)
+        ):
+            audit.leave.outcome = Outcome.BLOCKED
+            audit.leave.answer.access_blocked = True
+            reclassified = True
         new_score = score(audit.leave, audit.enter, audit.findings)
         audits[audit.id] = audit
-        if new_score != audit.score:
+        if new_score != audit.score or reclassified:
             audit.score = new_score
             store.save_audit(audit)
             audit_dir = store.root / audit.id
             html = render_report_html(audit, shot_resolver(store, audit_dir))
             (audit_dir / "report.html").write_text(html)
-            print(f"{audit.id}: grade {new_score.grade} friction {new_score.friction} ({new_score.headline})")
+            tag = " [blocked]" if reclassified else ""
+            print(f"{audit.id}: grade {new_score.grade} friction {new_score.friction} ({new_score.headline}){tag}")
 
     bench_dir = store.root / "benchmarks"
     if bench_dir.is_dir():
@@ -308,6 +320,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     ps = sub.add_parser("rescore", help="Recompute scores for all stored audits (no API)")
     ps.add_argument("--store", default="runs")
+    ps.add_argument("--reclassify-blocked", action="store_true",
+                    help="flag audits whose answer describes an access block as BLOCKED")
     ps.set_defaults(func=_cmd_rescore)
 
     psv = sub.add_parser("serve", help="Launch the web app")

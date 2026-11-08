@@ -13,6 +13,7 @@ class Outcome(str, Enum):
     IMPOSSIBLE = "impossible"
     NOT_APPLICABLE = "not_applicable"
     FAILED = "failed"
+    BLOCKED = "blocked"
 
 
 class AgentAnswer(BaseModel):
@@ -23,6 +24,7 @@ class AgentAnswer(BaseModel):
     steps: list[str]
     obstacles: list[str]
     final_state: str
+    access_blocked: bool = False
 
 
 class Step(BaseModel):

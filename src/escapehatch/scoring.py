@@ -71,6 +71,16 @@ def score(leave: Journey, enter: Journey | None, findings: list[Finding]) -> Sco
             grade="?",
             headline="Inconclusive: the agent could not finish.",
         )
+    if leave.outcome == Outcome.BLOCKED:
+        return Score(
+            leave_effort=leave_eff,
+            enter_effort=enter_eff,
+            asymmetry_ratio=None,
+            pattern_points=0,
+            friction=0,
+            grade="?",
+            headline="Inconclusive: the site blocked our agent.",
+        )
     if leave.outcome == Outcome.NOT_APPLICABLE:
         return Score(
             leave_effort=leave_eff,
