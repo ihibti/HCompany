@@ -10,7 +10,7 @@
 
 ## 0:45 Live demo (90s)
 1. Home → "French media" preset → three agents race in parallel on lemonde.fr, lefigaro.fr and allocine.fr, refusing cookies. Watch the click markers and the live effort counter.
-2. Report cards land: **7 of the 19 popular French sites we audited make refusing cookies impossible without paying.** Each verdict comes with screenshot evidence (e.g. Le Figaro's "continue without accepting" redirects to the subscription page) and the law it touches.
+2. Report cards land: **6 of the 19 popular French sites we audited make refusing cookies impossible without paying.** Each verdict comes with screenshot evidence (e.g. on 20minutes.fr, refusing all 7 categories lands on a 1.99€/month subscription page) and the law it touches.
 3. Consumer mode: "Cancel my Netflux, Level 5". The agent re-enters the password, insists three times with the retention chatbot, refuses the fake "pause", and *asks you before the irreversible click*. Approve → cancelled.
 
 ## 2:15 Reliability and tech (25s)

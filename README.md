@@ -76,12 +76,11 @@ https://ihibti.github.io/HCompany/ — five fictional streaming-service levels w
 | 20minutes.fr | F | refused all 7 cookie categories → redirected to 1.99€/mo paywall |
 | allocine.fr | F | pay 2€/mo or accept all |
 | jeuxvideo.com | F | pay 2€/mo or accept all — no refuse path |
-| lefigaro.fr | F | "continue without accepting" → subscription page |
 | lemonde.fr | F | free access requires consent |
 | leparisien.fr | F | only "Accepter" or "S'abonner et refuser" |
 | ouest-france.fr | F | refuse-all → paywall (2€/30d or 6.99€/mo) |
 
-7 of 20 audited sites make refusing cookies impossible without paying.
+6 of the 19 conclusively audited sites (latest run per site) make refusing cookies impossible without paying. Verdicts can vary between runs: lefigaro.fr redirected "continue without accepting" to its subscription page in one run (F) but offered a refusal path in the latest one (C).
 
 ### Netflux benchmark (latest run per level; success counts across all runs, shortcuts excluded)
 
