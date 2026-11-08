@@ -4,6 +4,14 @@ A computer-use agent that tries to *leave* websites for you — refusing cookies
 
 ![Escape Hatch race view](docs/assets/hero.png)
 
+Netflux Level 5 — the agent fights the boss level's chatbot, pause-button and hidden escape link:
+
+![Netflux L5 replay](docs/assets/netflux-l5.gif)
+
+Three genuine cookie walls side by side (20minutes, Ouest-France, Le Figaro):
+
+![French media race](docs/assets/french-media-race.gif)
+
 ## Quickstart
 
 ```bash
@@ -75,14 +83,14 @@ https://ihibti.github.io/HCompany/ — five fictional streaming-service levels w
 
 7 of 20 audited sites make refusing cookies impossible without paying.
 
-### Netflux benchmark (latest per level; n = runs per level)
+### Netflux benchmark (latest run per level; success counts across all runs)
 
-| agent | levels escaped | mean effort vs human min | mean recall | total cost |
-|-------|---------------|--------------------------|-------------|------------|
-| h/web-surfer-pro | 5/5 (2/2 each) | +6.4 | 0.72 | $0.34 |
-| h/web-surfer-flash | 5/5 | +3.6 | 0.78 | $0.16 |
+| agent | levels escaped | runs cancelled | mean effort vs human min | mean recall | latest-row cost |
+|-------|---------------|----------------|--------------------------|-------------|-----------------|
+| h/web-surfer-pro | 4/5 (14/15 runs) | L5 boss level beat the latest attempt | +5.4 | 0.83 | $0.30 |
+| h/web-surfer-flash | 4/5 (9/10 runs) | L5 boss level beat the latest attempt | +4.0 | 0.68 | $0.16 |
 
-Both agents escape every level; pro is more consistent on pattern recall, flash is cheaper and faster but wanders more on L3–L5.
+Both agents escape L1–L4 every time; the L5 "boss" level (chatbot deflection, fake pause, hidden escape link) is genuinely hard — pro went 12→31→33 effort across three runs (cancelled, cancelled, incomplete) and flash 15→20 (cancelled, incomplete). Agent variance on L5 is the interesting result.
 
 ## Testing
 
