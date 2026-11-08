@@ -89,10 +89,10 @@ Runs that cheated — web search/fetch, direct URL jumps, off-site visits — ar
 
 | agent | levels escaped (latest) | honest runs cancelled (all runs) | mean effort vs human min | mean recall | total cost |
 |-------|------------------------|----------------------------------|--------------------------|-------------|------------|
-| h/web-surfer-pro | 4/5 | 22/27 | +6 | 0.67 | $0.33 |
+| h/web-surfer-pro | 5/5 | 24/29 | +4 | 0.62 | $0.27 |
 | h/web-surfer-flash | 5/5 | 14/15 | +1 | 0.87 | $0.12 |
 
-Fresh honest runs under the no-shortcut rules: pro escaped L1–L5 once (13/9 effort on L5, $0.05) and trapped once (30/9, ran out of steps one click short of the escape link); flash escaped all five (L5 in 12/9, $0.03). The L5 escape path is real but buried: retention chat → "Go to my account" → paused page → the small "I asked to cancel, not pause" link → confirm. Agents that find both hidden elements win; the chat loop eats the step budget for the rest.
+With a raised step budget (50 for cancel/unsubscribe), pro escaped L5 twice more — 11/9 effort in 73s and 21/9 in 148s — and flash escaped it in 12/9. The L5 escape path is real but buried: retention chat → "Go to my account" → paused page → the small "I asked to cancel, not pause" link → confirm. Agents that find both hidden elements win; the chat loop eats the step budget for the rest.
 
 ## Testing
 
