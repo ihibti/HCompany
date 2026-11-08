@@ -30,7 +30,7 @@
         <span class="bl-title">{{ l.title }}</span>
         <span class="bl-right">
           {% if l.runs and l.runs > 1 %}<span class="bl-runs" title="{{ l.escapes or 0 }}/{{ l.runs }} runs escaped">{{ l.escapes or 0 }}/{{ l.runs }}</span>{% endif %}
-          <span class="verdict verdict-{{ l.verdict }}">{{ l.verdict }}</span>
+          <span class="verdict verdict-{{ l.verdict }}"{% if l.shortcut_reason %} title="{{ l.shortcut_reason }}"{% endif %}>{{ l.verdict }}</span>
           <span class="grade grade-{{ l.grade }}">{{ l.grade }}</span>
           {% if l.audit_id %}<a class="bl-link" href="/audits/{{ l.audit_id }}">evidence &rarr;</a>{% endif %}
         </span>

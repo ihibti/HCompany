@@ -20,6 +20,16 @@ ACCESS_BLOCKED_RE = re.compile(
 )
 
 
+def offsite_help_reason(journey: Journey) -> str | None:
+    """First off-site research detour in the journey, else None."""
+    for step in journey.steps:
+        if step.action in ("web_search", "web_fetch"):
+            args = step.args or {}
+            what = args.get("query") or args.get("url") or step.action
+            return f"{step.action}: {what}"
+    return None
+
+
 def answer_indicates_blocked(answer: AgentAnswer | None) -> bool:
     """True when the agent's obstacles/final_state describe an access block
     (CDN bot protection, captcha, error page) rather than a dark pattern."""
@@ -128,6 +138,7 @@ def journey_from_events(
     last_obs: dict[str, Any] | None = None
     cost_usd: float | None = None
     timestamps: list[datetime] = []
+    event_answer: dict | None = None
 
     for e in events:
         ts = _parse_ts(e.get("timestamp"))
@@ -147,15 +158,36 @@ def journey_from_events(
         kind = data.get("kind")
         if kind == "observation_event":
             last_obs = data
+        elif kind == "answer_event":
+            a = data.get("answer")
+            if isinstance(a, dict):
+                event_answer = a
         elif kind == "policy_event":
             steps.extend(step_from_policy_event(data, last_obs, len(steps), ts))
 
+    if answer is None:
+        answer = event_answer
+    if isinstance(answer, dict):
+        answer = {k: v for k, v in answer.items() if v is not None}
     parsed_answer: AgentAnswer | None = None
     if answer is not None:
         try:
             parsed_answer = AgentAnswer.model_validate(answer)
         except Exception:
             parsed_answer = None
+        if (
+            parsed_answer is None
+            and isinstance(answer, dict)
+            and "interactions_reported" not in answer
+        ):
+            try:
+                repaired = dict(answer)
+                repaired["interactions_reported"] = sum(
+                    1 for s in steps if ACTION_KIND.get(s.action) == "interaction"
+                )
+                parsed_answer = AgentAnswer.model_validate(repaired)
+            except Exception:
+                parsed_answer = None
 
     if session_status in TERMINAL_FAILURES or parsed_answer is None:
         outcome = Outcome.FAILED

@@ -378,6 +378,10 @@ code { font-family: var(--mono); font-size: 0.9em; color: var(--green); }
 .hall-site { font-weight: 700; font-size: 15px; }
 .hall-headline { font-size: 13.5px; color: var(--muted); }
 .hall-patterns { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+.detour-note {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  color: #b8a6e8; align-self: flex-start;
+}
 .pattern-chip {
   font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 6px; background: var(--panel-2);
@@ -410,6 +414,7 @@ code { font-family: var(--mono); font-size: 0.9em; color: var(--green); }
 .verdict-cancelled { color: var(--green); background: var(--green-dim); }
 .verdict-trapped { color: var(--red); background: rgba(248,113,113,.12); }
 .verdict-incomplete { color: var(--muted); background: var(--panel-2); }
+.verdict-shortcut { color: #b8a6e8; background: rgba(184,166,232,.12); }
 .bench-level .grade { min-width: 36px; height: 36px; font-size: 16px; border-radius: 9px; }
 .bl-stats { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
 .bl-stats b { color: var(--text); }

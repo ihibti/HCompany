@@ -141,6 +141,47 @@ def test_no_answer_is_failed():
     assert j.answer is None
 
 
+def test_answer_event_fallback_when_latest_answer_missing():
+    events = _synthetic_events([{"tool_name": "click_web", "args": {}, "id": "t"}])
+    events.append({
+        "type": "AgentEvent",
+        "timestamp": "2026-01-01T00:00:05Z",
+        "data": {"kind": "answer_event", "answer": dict(ANSWER)},
+    })
+    j = _journey(events, answer=None)
+    assert j.answer is not None and j.answer.completed is True
+    assert j.outcome == Outcome.SUCCESS
+
+
+def test_answer_event_missing_interactions_reported_recovers():
+    # real L5 rerun: answer_event lacked interactions_reported -> fill from steps
+    events = _synthetic_events([
+        {"tool_name": "click_web", "args": {}, "id": "t1"},
+        {"tool_name": "type_text_web", "args": {"text": "hi"}, "id": "t2"},
+    ])
+    partial = {k: v for k, v in dict(ANSWER).items() if k != "interactions_reported"}
+    events.append({
+        "type": "AgentEvent",
+        "timestamp": "2026-01-01T00:00:05Z",
+        "data": {"kind": "answer_event", "answer": partial},
+    })
+    j = _journey(events, answer=None)
+    assert j.answer is not None and j.answer.completed is True
+    assert j.outcome == Outcome.SUCCESS
+
+
+def test_explicit_answer_wins_over_answer_event():
+    events = _synthetic_events([])
+    events.append({
+        "type": "AgentEvent",
+        "timestamp": "2026-01-01T00:00:05Z",
+        "data": {"kind": "answer_event",
+                 "answer": dict(ANSWER, completed=False, impossible=True)},
+    })
+    j = _journey(events, answer=dict(ANSWER, completed=True))
+    assert j.outcome == Outcome.SUCCESS
+
+
 @pytest.mark.parametrize(
     "status", ["failed", "timed_out", "interrupted"]
 )

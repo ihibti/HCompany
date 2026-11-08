@@ -58,6 +58,7 @@
   .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
   .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
   .chip b { color: var(--text); font-weight: 600; }
+  .chip.detour { color: #b8a6e8; border-color: rgba(184,166,232,.4); }
   h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
   .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
@@ -152,6 +153,7 @@
         <span class="chip">outcome <b>{{ audit.leave.outcome.value }}</b></span>
         <span class="chip">agent <b>{{ audit.leave.agent }}</b></span>
         <span class="chip">{{ audit.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% if detour %}<span class="chip detour" title="{{ detour }}">agent used off-site help</span>{% endif %}
       </div>
     </div>
   </section>

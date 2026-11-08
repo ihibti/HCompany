@@ -22,6 +22,7 @@
     <span class="hall-main">
       <span class="hall-site">{{ a.site_url | replace("https://", "") | replace("http://", "") }}</span>
       <span class="hall-headline">{{ a.score.headline }}</span>
+      {% if row.detour %}<span class="detour-note" title="{{ row.detour }}">agent used off-site help</span>{% endif %}
       <span class="hall-patterns">
         {% for f in a.findings %}
         <span class="pattern-chip sev-{{ f.severity }}" title="{{ f.explanation }}">{{ f.pattern.replace("_", " ") }}</span>

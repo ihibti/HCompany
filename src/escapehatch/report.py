@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from escapehatch.events import offsite_help_reason
 from escapehatch.models import Audit, Step
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -76,7 +77,8 @@ def render_report_html(
     platform screenshot URL (or None) to a displayable URL/path (or None)."""
     template = _env().get_template("report.html")
     return template.render(
-        audit=audit, shot=screenshot_resolver, step_label=step_label, home_url=home_url,
+        audit=audit, shot=screenshot_resolver, step_label=step_label,
+        home_url=home_url, detour=offsite_help_reason(audit.leave),
     )
 
 

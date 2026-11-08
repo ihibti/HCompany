@@ -27,7 +27,8 @@ from sse_starlette.event import ServerSentEvent
 from sse_starlette.sse import EventSourceResponse
 
 from escapehatch.agent import JourneyRun
-from escapehatch.gauntlet import load_levels
+from escapehatch.events import offsite_help_reason
+from escapehatch.gauntlet import detect_shortcut, load_levels, verify_gauntlet
 from escapehatch.keys import KeyPool
 from escapehatch.models import Audit, Outcome
 from escapehatch.pipeline import run_audit
@@ -43,6 +44,7 @@ TEMPLATES_DIR = APP_DIR / "templates" / "app"
 STATIC_DIR = APP_DIR / "static"
 GAUNTLET_DIR = APP_DIR.parent.parent / "gauntlet"
 LEVELS_JSON = GAUNTLET_DIR / "levels.json"
+GAUNTLET_BASE = "https://ihibti.github.io/HCompany/"
 
 SHONG_HOSTS = {"agp.eu.hcompany.ai", "agp.hcompany.ai"}
 _SHOT_NAME_RE = re.compile(r"^[A-Za-z0-9._-]+$")
@@ -179,7 +181,11 @@ def _hall_rows(state: State, task: str | None = None) -> list[dict[str, Any]]:
             continue
         if task and audit.task.value != task:
             continue
-        rows.append({"audit": audit, "store": store.name if hasattr(store, "name") else str(store.root)})
+        rows.append({
+            "audit": audit,
+            "detour": offsite_help_reason(audit.leave),
+            "store": store.name if hasattr(store, "name") else str(store.root),
+        })
     # one row per (host, task): keep the most recent audit, older runs stay
     # reachable from their own audit pages
     best: dict[tuple[str, str], dict[str, Any]] = {}
@@ -780,7 +786,27 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
     per_level: dict[tuple[str, int], tuple[str, dict[str, Any]]] = {}
     audit_verdicts: dict[tuple[str, int], dict[str, str]] = {}
     level_runs: dict[tuple[str, int], dict[str, dict[str, Any]]] = {}
+    shortcut_reasons: dict[tuple[str, int], dict[str, str]] = {}
     meta: dict[str, dict[str, Any]] = {}
+    levels_by_num = {l.level: l for l in load_levels(LEVELS_JSON)}
+    audit_cache: dict[str, Any] = {}
+
+    def _recompute(aid: str, level_num: Any, base: str | None):
+        """Verdict + shortcut reason from the stored journey, not the row."""
+        if aid not in audit_cache:
+            audit_cache[aid] = _load_audit_any(state, aid)
+        found = audit_cache[aid]
+        lvl = levels_by_num.get(level_num)
+        if found is None or lvl is None:
+            return None, None
+        audit, _ = found
+        b = base or GAUNTLET_BASE
+        verdict = verify_gauntlet(audit.leave, lvl, b)
+        reason = (
+            detect_shortcut(audit.leave, lvl, b) if verdict == "shortcut" else None
+        )
+        return verdict, reason
+
     for store in (state.store, state.demo_store):
         if store is None:
             continue
@@ -794,6 +820,7 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
                 continue
             agent = data.get("agent", "?")
             file_ts = data.get("created_at", "")
+            file_base = data.get("base")
             meta.setdefault(agent, {"base": data.get("base"), "latest": ""})
             if file_ts > meta[agent]["latest"]:
                 meta[agent]["latest"] = file_ts
@@ -801,7 +828,12 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
                 k = (agent, row.get("level"))
                 aid = row.get("audit_id")
                 if aid:
-                    audit_verdicts.setdefault(k, {})[aid] = row.get("verdict")
+                    verdict, reason = _recompute(aid, row.get("level"), file_base)
+                    audit_verdicts.setdefault(k, {})[aid] = (
+                        verdict if verdict is not None else row.get("verdict")
+                    )
+                    if reason:
+                        shortcut_reasons.setdefault(k, {})[aid] = reason
                     level_runs.setdefault(k, {}).setdefault(aid, row)
                 cur = per_level.get(k)
                 if cur is None or file_ts > cur[0]:
@@ -817,10 +849,16 @@ def _load_benchmarks(state: State) -> list[dict[str, Any]]:
     for (agent, level), (_, row) in per_level.items():
         k = (agent, level)
         verdicts = audit_verdicts.get(k) or {}
+        reasons = shortcut_reasons.get(k) or {}
         n = max(1, len(verdicts))
         escapes = sum(1 for v in verdicts.values() if v == "cancelled")
         runs = list(level_runs.get(k, {}).values())
+        aid = row.get("audit_id")
         entry = {**row, "runs": n, "escapes": escapes if verdicts else None}
+        if aid and aid in verdicts:
+            entry["verdict"] = verdicts[aid]
+        if aid and aid in reasons:
+            entry["shortcut_reason"] = reasons[aid]
         if len(runs) > 1:
             entry["effort_spread"] = _spread(runs, "leave_effort")
             entry["cost_spread"] = _spread(runs, "cost_usd")
