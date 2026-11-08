@@ -214,7 +214,7 @@
       {% if src %}<img src="{{ src }}" alt="step {{ s.index }}" loading="lazy">{% else %}<div class="noimg">no screenshot</div>{% endif %}
     </div>
     <div>
-      <div class="act">#{{ s.index }} · {{ s.action }}</div>
+      <div class="act">#{{ s.index }} · {{ step_label(s) }}</div>
       {% if s.element %}<div class="el">{{ s.element }}</div>{% endif %}
       {% if s.url %}<div class="el" style="color:var(--muted)">{{ s.url }}</div>{% endif %}
       {% if s.reasoning or s.message %}

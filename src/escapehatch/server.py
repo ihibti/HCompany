@@ -331,8 +331,7 @@ async def _replay_one(state: State, batch: Batch, spec: dict[str, Any], delay: f
                       "status": journey.session_status, "session_id": journey.session_id,
                       "outcome": journey.outcome.value})
 
-    _emit(batch, {"type": "phase", "run": run_key, "phase": "classifying",
-                  "screenshots": 0})
+    _emit(batch, {"type": "phase", "run": run_key, "phase": "classifying"})
     await asyncio.sleep(delay)
     for f in audit.findings:
         _emit(batch, {"type": "finding", "run": run_key,
@@ -467,33 +466,42 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
             and a.task == audit.task
         ]
         prev.sort(key=lambda a: a.created_at, reverse=True)
+
+        def _grade_label(a: Audit) -> str:
+            g = a.score.grade
+            return "inconclusive" if g == "?" else g
+
         prev_links = "".join(
             f'<a href="/audits/{a.id}" style="color:#14c06a;text-decoration:none;'
             'margin-right:10px">'
-            f'{a.score.grade} · {a.created_at.strftime("%Y-%m-%d %H:%M")}</a>'
+            f'{_grade_label(a)} · {a.created_at.strftime("%Y-%m-%d %H:%M")}</a>'
             for a in prev[:5]
         )
-        prev_html = (
-            f'<span style="color:#8fa396;font:500 12px/1 -apple-system,sans-serif">'
-            f'previous runs: {prev_links}</span>' if prev_links else ""
+        prev_row = (
+            f'<div style="margin:14px 0 0;font:500 12px/1.6 -apple-system,sans-serif;'
+            f'color:#8fa396">previous runs: {prev_links}</div>'
+            if prev_links else ""
         )
         toolbar = (
             '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;'
-            'display:flex;align-items:center;gap:10px;padding:12px 18px;'
-            'background:rgba(11,13,12,.9);backdrop-filter:blur(10px);'
+            'display:flex;align-items:center;gap:10px;padding:10px 18px;'
+            'background:rgba(11,13,12,.92);backdrop-filter:blur(10px);'
             'border-bottom:1px solid rgba(255,255,255,.08)">'
-            '<a href="/" style="background:#14c06a;color:#06130c;padding:8px 14px;'
-            'border-radius:10px;text-decoration:none;font:700 13px/1 -apple-system,sans-serif">'
+            '<a href="/" style="background:#14c06a;color:#06130c;padding:7px 13px;'
+            'border-radius:10px;text-decoration:none;font:700 12.5px/1 -apple-system,sans-serif">'
             "&larr; Escape Hatch</a>"
-            '<span style="color:#8fa396;font:500 12px/1 -apple-system,sans-serif">friction audit</span>'
-            + prev_html +
             '<span style="flex:1"></span>'
             f'<a href="/api/audits/{audit.id}" download="audit.json" style="background:#18211c;color:#e9f2ec;'
-            'padding:8px 14px;border-radius:10px;text-decoration:none;font:600 13px/1 -apple-system,sans-serif;'
+            'padding:7px 13px;border-radius:10px;text-decoration:none;font:600 12.5px/1 -apple-system,sans-serif;'
             'border:1px solid rgba(255,255,255,.12)">'
             "Download JSON</a></div>"
+            '<style>.wrap{padding-top:84px !important}</style>'
         )
         html = html.replace("</body>", toolbar + "</body>")
+        # previous runs as a small row right after the hero card
+        marker = '<h2>Effort to leave vs enter</h2>'
+        if prev_row and marker in html:
+            html = html.replace(marker, prev_row + marker, 1)
         return HTMLResponse(html)
 
     @app.get("/api/audits/{audit_id}")

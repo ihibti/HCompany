@@ -8,7 +8,7 @@
   </div>
   <div class="race-meta" id="raceMeta"></div>
 </div>
-<div class="race-grid" id="raceGrid">
+<div class="race-grid n{{ audits|length }}" id="raceGrid" style="grid-template-columns: repeat({{ audits|length }}, minmax(0, 1fr));">
   {% for a in audits %}
   <section class="race-col" data-run="{{ a.run }}">
     <header class="race-col-head">
@@ -26,11 +26,17 @@
       <img class="screen-img" data-role="img" alt="" hidden>
       <div class="click-marker" data-role="marker" hidden></div>
       <div class="screen-caption" data-role="caption"></div>
+      <div class="done-badge" data-role="grade" hidden></div>
     </div>
 
     <div class="counters">
       <div class="counter way-out"><span class="counter-label">Way out</span><span class="counter-num" data-role="outEffort">0</span><span class="counter-unit">actions</span></div>
       <div class="counter way-in"><span class="counter-label">Way in</span><span class="counter-num" data-role="inEffort">–</span><span class="counter-unit">actions</span></div>
+    </div>
+
+    <div class="done-panel" data-role="done" hidden>
+      <p class="done-headline" data-role="headline"></p>
+      <a class="report-link" data-role="report" href="#">Open full report &rarr;</a>
     </div>
 
     <div class="phase-line" data-role="phase" hidden></div>
@@ -54,11 +60,6 @@
       </form>
     </div>
 
-    <div class="done-panel" data-role="done" hidden>
-      <div class="grade-badge" data-role="grade"></div>
-      <p class="done-headline" data-role="headline"></p>
-      <a class="report-link" data-role="report" href="#">Open full report &rarr;</a>
-    </div>
   </section>
   {% endfor %}
 </div>

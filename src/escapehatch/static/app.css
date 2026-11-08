@@ -1,4 +1,5 @@
 /* Escape Hatch — signage-green dark theme */
+[hidden] { display: none !important; }
 :root {
   --bg: #0b0d0c;
   --bg-2: #101412;
@@ -410,3 +411,22 @@ code { font-family: var(--mono); font-size: 0.9em; color: var(--green); }
 .confirm-modal.replay-auto { border-color: rgba(20,192,106,.4); }
 .bl-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .bl-runs { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line-2); border-radius: 6px; padding: 2px 6px; }
+
+/* ---------- race polish ---------- */
+.race-grid.n3 .race-col { padding: 14px; gap: 10px; }
+.race-grid.n3 .screen { aspect-ratio: 16/9.2; }
+.race-grid.n3 .counter-num { font-size: 20px; }
+.race-grid.n3 .counter { padding: 8px 12px; }
+.race-grid.n3 .ticker-list { max-height: 150px; }
+.race-grid.n3 .ticker-list li { font-size: 11.5px; padding: 5px 8px; }
+.race-grid.n3 .done-headline { font-size: 13px; }
+.race-grid.n3 .finding-card { padding: 8px 10px; }
+.done-badge {
+  position: absolute; top: 10px; right: 10px; z-index: 6;
+  min-width: 54px; height: 54px; padding: 0 12px; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;
+  background: rgba(7, 10, 9, 0.78); backdrop-filter: blur(6px);
+  border: 1px solid var(--line-2);
+  animation: pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+}

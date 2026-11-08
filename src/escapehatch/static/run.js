@@ -95,6 +95,37 @@
     return `${verb}${el}`;
   }
 
+  function stepLabel(step) {
+    const a = step.args || {};
+    const el = step.element || "";
+    switch (step.action) {
+      case "click_web": return `Click · '${el || "element"}'`;
+      case "write":
+      case "fill_secret_at": return `Type · '${a.text || a.value || el}'`;
+      case "go_to_web": {
+        const u = a.url || "";
+        try { const p = new URL(u); return `Go to · ${p.host}${p.pathname}`; }
+        catch { return `Go to · ${u}`; }
+      }
+      case "scroll_web": return "Scroll";
+      case "wait_web": return "Wait";
+      case "press_keys_web": return `Press · ${a.keys || ""}`;
+      case "web_search": return `Search the web · ${a.query || ""}`;
+      case "request_confirmation": return "Asked for confirmation";
+      case "go_back_web": return "Go back";
+      case "refresh_web": return "Reload";
+      case "drag_and_drop_web": return `Drag · '${el}'`;
+      case "select_option": return `Select · '${el || a.option || ""}'`;
+      case "ctrl_f_web":
+      case "find_in_page": return `Find · ${a.query || a.text || ""}`;
+      case "switch_tab_web": return "Switch tab";
+      case "close_tab_web": return "Close tab";
+      case "move_mouse_web": return "Move mouse";
+      case "answer": return "Answered";
+      default: return step.action || "step";
+    }
+  }
+
   function addStep(c, msg) {
     const step = msg.step || {};
     const journey = msg.journey;
@@ -113,7 +144,7 @@
     const li = document.createElement("li");
     li.innerHTML =
       `<span class="t-idx">#${step.index ?? ""}</span>` +
-      `<span class="t-action">${escapeHtml(step.action || "")}</span>` +
+      `<span class="t-action">${escapeHtml(stepLabel(step))}</span>` +
       `<span class="t-el">${escapeHtml(step.element || step.args?.url || "")}</span>`;
     if (step.reasoning || step.message) {
       const det = document.createElement("details");
@@ -143,7 +174,8 @@
     c.phase.hidden = true;
     const g = c.grade;
     g.textContent = msg.grade || "?";
-    g.className = "grade-badge grade-" + (msg.grade || "?");
+    g.className = "done-badge grade-" + (msg.grade || "?");
+    g.hidden = false;
     if (msg.outcome === "impossible") {
       c.headline.textContent = "Impossible — the site blocks the exit (cookie wall / paywall / no refuse path).";
       c.headline.classList.add("impossible");
@@ -246,7 +278,9 @@
         if (msg.journey === "audit") {
           if (msg.status === "classifying") {
             c.phase.hidden = false;
-            c.phase.textContent = `Reviewing ${msg.screenshots ?? ""} screenshots for dark patterns…`;
+            c.phase.textContent = msg.screenshots
+              ? `Reviewing ${msg.screenshots} screenshots for dark patterns…`
+              : "Reviewing screenshots for dark patterns…";
             setStatus(c, "classifying");
           }
         } else if (msg.journey === "enter") {
@@ -260,7 +294,9 @@
       case "phase":
         if (msg.phase === "classifying") {
           c.phase.hidden = false;
-          c.phase.textContent = `Reviewing ${msg.screenshots ?? ""} screenshots for dark patterns…`;
+          c.phase.textContent = msg.screenshots
+            ? `Reviewing ${msg.screenshots} screenshots for dark patterns…`
+            : "Reviewing screenshots for dark patterns…";
           setStatus(c, "classifying");
         }
         break;
