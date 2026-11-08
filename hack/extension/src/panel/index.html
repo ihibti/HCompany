@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"><title>Tomate</title>
+<style>
+@font-face{font-family:"Fredoka";src:url("/fonts/fredoka-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Nunito Sans";src:url("/fonts/nunito-sans-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Nunito Sans";src:url("/fonts/nunito-sans-latin-800-normal.woff2") format("woff2");font-weight:800;font-display:swap}
+:root{--t-red:oklch(.62 .19 38);--t-green:oklch(.55 .13 145);--t-surface:oklch(.97 .02 90);--t-ink:oklch(.32 .03 60);--t-mut:oklch(.55 .03 60);--t-line:oklch(.85 .02 80);--t-sh:0 4px 14px oklch(.3 .02 60/.14)}
+body { margin:0; font-family:"Nunito Sans",system-ui,sans-serif; font-size:14px; color:var(--t-ink); background:var(--t-surface); }
+h1{font-family:"Fredoka",system-ui,sans-serif;font-size:22px;display:flex;align-items:center;gap:8px}
+h2{color:var(--t-mut)}button{background:var(--t-red);box-shadow:var(--t-sh)}button.ghost{background:#fff;color:var(--t-ink);border:1px solid var(--t-line)}
+.chip.inc{background:oklch(.93 .05 140);border:1px solid var(--t-green)}.chip.exc{background:oklch(.94 .04 40);border:1px solid var(--t-red)}
+.app { padding: 14px; display:flex; flex-direction:column; gap:14px; }
+h1 { font-size: 19px; margin:0; } h2 { font-size: 13px; margin:0 0 6px; color:#555; text-transform:uppercase; letter-spacing:.04em; }
+textarea { width:100%; min-height:80px; border:1px solid #ddd; border-radius:8px; padding:8px; font:inherit; resize:vertical; }
+button { font:inherit; border:0; border-radius:8px; padding:8px 12px; background:#c0392b; color:#fff; cursor:pointer; font-weight:600; }
+button.ghost { background:#eee; color:#222; }
+button:disabled { opacity:.5; }
+.chip { display:inline-block; border-radius:99px; padding:2px 10px; margin:2px; font-size:12px; }
+.chip.inc { background:#e8f6e8; border:1px solid #9c9; } .chip.exc { background:#fde8e8; border:1px solid #e99; }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.job { border-top:1px solid #eee; padding:6px 0; }
+.job a { font-weight:700; color:#c0392b; }
+small.mut { color:#777; }
+input[type=text] { font:inherit; border:1px solid #ddd; border-radius:8px; padding:6px 8px; width:100%; }
+.scout { border-top:1px solid #eee; padding:6px 0; }
+</style></head>
+<body><div id="root"></div><script type="module" src="./main.tsx"></script></body>
+</html>
