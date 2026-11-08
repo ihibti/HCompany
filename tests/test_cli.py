@@ -1,8 +1,62 @@
 import argparse
+import json
+from datetime import datetime, timezone
+from unittest.mock import AsyncMock
 
 import pytest
 
 from escapehatch.cli import build_parser, parse_levels
+import escapehatch.cli as cli
+from escapehatch.models import Audit
+from escapehatch.prompts import Task, build_task_prompt
+from escapehatch.scoring import score
+
+from conftest import make_journey
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("selection,expected", [
+    ([], [1, 2, 3, 4, 5]),
+    (["--task", "unsubscribe"], [6, 7]),
+    (["--levels", "6"], [6]),
+    (["--levels", "6", "--task", "cancel_subscription"], []),
+    (["--levels", "99"], []),
+])
+async def test_gauntlet_task_wiring(tmp_path, monkeypatch, selection, expected):
+    calls = []
+
+    async def fake_audit(**kw):
+        calls.append(kw)
+        leave = make_journey(["click_web"], task=kw["task"])
+        enter = make_journey(["click_web"], task=Task.SUBSCRIBE) if kw["with_enter"] else None
+        return Audit(id="test", created_at=datetime.now(timezone.utc),
+                     site_url=kw["site_url"], task=kw["task"],
+                     leave=leave, enter=enter, score=score(leave, enter, []))
+
+    monkeypatch.setattr(cli, "run_audit", fake_audit)
+    monkeypatch.setattr(cli, "KeyPool", lambda: AsyncMock())
+    args = build_parser().parse_args(["gauntlet", "--store", str(tmp_path), *selection])
+    result = await args.func(args)
+    assert result == (0 if expected else 1)
+    assert len(calls) == len(expected)
+    if not expected:
+        assert not list(tmp_path.rglob("*.json"))
+        return
+    rows = json.loads(next(tmp_path.rglob("*.json")).read_text())["levels"]
+    assert [r["level"] for r in rows] == expected
+    for call, row in zip(calls, rows):
+        if row["level"] >= 6:
+            assert call["task"] == Task.UNSUBSCRIBE
+            assert call["with_enter"] is False
+            assert call["enter_url"] is None
+            assert row["enter_effort"] is None
+            assert row["task"] == "unsubscribe"
+            prompt = build_task_prompt(call["task"], call["site_url"], call["credentials"])
+            assert "demo@netflux.test" in prompt
+            assert "unsubscribe this email address from all marketing emails" in prompt
+        else:
+            assert call["task"] == Task.CANCEL_SUBSCRIPTION
+            assert call["with_enter"] is True
 
 
 class TestParseLevels:
@@ -48,7 +102,8 @@ class TestParser:
 
     def test_gauntlet_defaults(self):
         args = build_parser().parse_args(["gauntlet"])
-        assert args.levels == "1-5"
+        assert args.levels is None
+        assert args.task is None
         assert args.base == "https://ihibti.github.io/HCompany/"
 
     def test_report(self):

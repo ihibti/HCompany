@@ -18,7 +18,7 @@ from escapehatch.gauntlet import (
 from escapehatch.keys import KeyPool
 from escapehatch.models import Audit, Outcome
 from escapehatch.pipeline import run_audit, shot_resolver
-from escapehatch.prompts import Task
+from escapehatch.prompts import ENTER_COUNTERPART, Task
 from escapehatch.report import render_report_html
 from escapehatch.scoring import score
 from escapehatch.store import RunStore
@@ -126,8 +126,13 @@ async def _cmd_audit(args: argparse.Namespace) -> int:
 async def _cmd_gauntlet(args: argparse.Namespace) -> int:
     store = RunStore(args.store)
     levels_all = load_levels(LEVELS_JSON)
-    wanted = set(parse_levels(args.levels))
-    levels = [l for l in levels_all if l.level in wanted]
+    wanted = set(parse_levels(args.levels)) if args.levels else None
+    selected_task = Task(args.task) if args.task else None
+    if wanted is None and selected_task is None:
+        selected_task = Task.CANCEL_SUBSCRIPTION
+    levels = [l for l in levels_all
+              if (wanted is None or l.level in wanted)
+              and (selected_task is None or l.task == selected_task)]
     if not levels:
         print("no matching levels", file=sys.stderr)
         return 1
@@ -141,17 +146,18 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
     rows: list[dict[str, Any]] = []
     for level in levels:
         leave_url = urljoin(base, level.start_path)
-        signup_url = urljoin(base, level.signup_path)
+        signup_url = urljoin(base, level.signup_path) if level.signup_path else None
         print(f"[L{level.level}] {level.title}: leave {leave_url}", file=sys.stderr)
         t0 = time.monotonic()
         collected: dict[str, Any] = {}
         audit = await run_audit(
             site_url=leave_url,
-            task=Task.CANCEL_SUBSCRIPTION,
+            task=level.task,
             store=store,
             agent=args.agent,
-            with_enter=True,
-            credentials=GAUNTLET_CREDENTIALS,
+            with_enter=level.task in ENTER_COUNTERPART,
+            credentials=("email demo@netflux.test" if level.task == Task.UNSUBSCRIBE
+                         else GAUNTLET_CREDENTIALS),
             enter_url=signup_url,
             on_update=_progress_printer(args.verbose, collected),
             pool=pool,
@@ -167,6 +173,7 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
         leave_eff = audit.score.leave_effort.total
         row = {
             "level": level.level,
+            "task": level.task.value,
             "title": level.title,
             "audit_id": audit.id,
             "verdict": verdict,
@@ -310,7 +317,9 @@ def build_parser() -> argparse.ArgumentParser:
     pa.set_defaults(func=_cmd_audit)
 
     pg = sub.add_parser("gauntlet", help="Run the Netflux benchmark levels")
-    pg.add_argument("--levels", default="1-5", help="e.g. 1-5, 2, 1,3,5")
+    pg.add_argument("--levels", default=None, help="e.g. 1-5, 6-7; defaults to cancel levels")
+    pg.add_argument("--task", choices=[Task.CANCEL_SUBSCRIPTION.value, Task.UNSUBSCRIBE.value],
+                    help="filter levels by task (unsubscribe: levels 6-7)")
     pg.add_argument("--agent", default="h/web-surfer-pro")
     pg.add_argument("--base", default="https://ihibti.github.io/HCompany/")
     pg.add_argument("--store", default="runs")

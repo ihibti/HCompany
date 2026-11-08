@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Before you go — Netflux</title>
+<link rel="stylesheet" href="../assets/netflux.css">
+</head>
+<body>
+<div data-nf-nav data-active="home"></div>
+<main>
+  <div class="acct-card">
+    <h1>Tell us why you're leaving</h1>
+    <p>Before we stop marketing emails to <strong>demo@netflux.test</strong>, you must give a reason.</p>
+    <form action="unsubscribed.html">
+      <label for="reason">Reason (required)</label>
+      <select id="reason" name="reason" required>
+        <option value="">Select a reason</option>
+        <option value="too-many">Too many emails</option>
+        <option value="not-needed">I no longer need these emails</option>
+      </select>
+      <p><button type="submit" class="btn btn-secondary">Unsubscribe from all marketing emails</button></p>
+    </form>
+  </div>
+</main>
+<div data-nf-footer></div>
+<script src="../assets/app.js" defer></script>
+</body>
+</html>

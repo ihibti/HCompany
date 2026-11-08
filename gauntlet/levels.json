@@ -54,6 +54,26 @@
       "min_leave_interactions": 9,
       "min_enter_interactions": 1,
       "patterns": ["obstruction", "nagging", "sneaking", "misdirection"]
+    },
+    {
+      "level": 6,
+      "task": "unsubscribe",
+      "title": "Honest email unsubscribe",
+      "start_path": "level6/index.html",
+      "success_path": "level6/unsubscribed.html",
+      "trap_paths": [],
+      "min_leave_interactions": 1,
+      "patterns": []
+    },
+    {
+      "level": 7,
+      "task": "unsubscribe",
+      "title": "Hostile email unsubscribe",
+      "start_path": "level7/index.html",
+      "success_path": "level7/unsubscribed.html",
+      "trap_paths": ["level7/reduced.html"],
+      "min_leave_interactions": 4,
+      "patterns": ["preselection", "confirmshaming", "hidden_option", "asymmetric_choice", "obstruction", "sneaking"]
     }
   ]
 }

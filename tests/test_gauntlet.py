@@ -8,7 +8,7 @@ from escapehatch.gauntlet import (
     GauntletLevel, detect_shortcut, load_levels, pattern_recall, verify_gauntlet,
 )
 from escapehatch.models import Finding
-from escapehatch.prompts import PATTERN_DEFINITIONS
+from escapehatch.prompts import PATTERN_DEFINITIONS, Task
 
 from conftest import make_journey, make_step
 
@@ -22,9 +22,16 @@ def levels() -> list[GauntletLevel]:
 
 
 class TestLoadLevels:
-    def test_five_levels_load(self, levels):
-        assert len(levels) == 5
-        assert [l.level for l in levels] == [1, 2, 3, 4, 5]
+    def test_levels_load_with_task_defaults(self, levels):
+        assert [l.level for l in levels] == list(range(1, 8))
+        assert all(l.task == Task.CANCEL_SUBSCRIPTION for l in levels[:5])
+        assert all(l.task == Task.UNSUBSCRIBE for l in levels[5:])
+        assert all(l.signup_path is None and l.min_enter_interactions is None
+                   for l in levels[5:])
+
+    def test_invalid_task_rejected(self, levels):
+        with pytest.raises(ValueError):
+            GauntletLevel.model_validate({**levels[0].model_dump(), "task": "unknown"})
 
     def test_patterns_are_known_ids(self, levels):
         for level in levels:
@@ -34,6 +41,8 @@ class TestLoadLevels:
     def test_required_paths_exist(self, levels):
         for level in levels:
             for rel in [level.start_path, level.signup_path, level.success_path, *level.trap_paths]:
+                if rel is None:
+                    continue
                 assert (GAUNTLET_DIR / rel).is_file(), f"level {level.level}: missing {rel}"
 
 
@@ -90,6 +99,29 @@ def _level(levels, n) -> GauntletLevel:
 
 class TestVerifyGauntlet:
     BASE = "http://localhost:8080"
+
+    @pytest.mark.parametrize("n", [6, 7])
+    def test_unsubscribe_success_and_incomplete(self, levels, n):
+        level = _level(levels, n)
+        for path, verdict in [(level.success_path, "cancelled"),
+                              (level.start_path, "incomplete"), ("missing.html", "incomplete")]:
+            j = make_journey([], task=Task.UNSUBSCRIBE, final_url=f"{self.BASE}/{path}")
+            assert verify_gauntlet(j, level, self.BASE) == verdict
+        j = make_journey(steps=[make_step("click_web", url=f"{self.BASE}/{level.success_path}")],
+                         task=Task.UNSUBSCRIBE)
+        assert verify_gauntlet(j, level, self.BASE) == "cancelled"
+
+    def test_unsubscribe_frequency_trap(self, levels):
+        level = _level(levels, 7)
+        j = make_journey([], task=Task.UNSUBSCRIBE,
+                         final_url=f"{self.BASE}/level7/reduced.html")
+        assert verify_gauntlet(j, level, self.BASE) == "trapped"
+
+    def test_unsubscribe_shortcut(self, levels):
+        level = _level(levels, 7)
+        j = make_journey(steps=[make_step("web_fetch")], task=Task.UNSUBSCRIBE,
+                         final_url=f"{self.BASE}/{level.success_path}")
+        assert verify_gauntlet(j, level, self.BASE) == "shortcut"
 
     def test_cancelled_via_final_url(self, levels):
         j = make_journey([], final_url=f"{self.BASE}/level1/cancelled.html")

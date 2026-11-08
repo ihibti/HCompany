@@ -33,6 +33,9 @@ uv run escapehatch audit https://www.lemonde.fr --task refuse_cookies --agent h/
 # Run the Netflux gauntlet (cancel subscription, levels 1–5)
 uv run escapehatch gauntlet --levels 1-5 --agent h/web-surfer-pro
 
+# Marketing-email unsubscribe (honest + hostile, no enter counterpart)
+uv run escapehatch gauntlet --task unsubscribe --agent h/web-surfer-pro
+
 # Re-render a stored report from audit.json + shots (no API)
 uv run escapehatch report <audit_id> --store runs
 

@@ -8,19 +8,21 @@ from urllib.parse import urlparse
 from pydantic import BaseModel, Field
 
 from escapehatch.models import Finding, Journey
+from escapehatch.prompts import Task
 
 VerifyResult = Literal["cancelled", "trapped", "incomplete", "shortcut"]
 
 
 class GauntletLevel(BaseModel):
     level: int
+    task: Task = Task.CANCEL_SUBSCRIPTION
     title: str
     start_path: str
-    signup_path: str
+    signup_path: str | None = None
     success_path: str
     trap_paths: list[str] = Field(default_factory=list)
     min_leave_interactions: int
-    min_enter_interactions: int
+    min_enter_interactions: int | None = None
     patterns: list[str] = Field(default_factory=list)
 
 
@@ -107,6 +109,7 @@ def verify_gauntlet(
 
     A run that reached the success page via a shortcut (off-site tools or a
     direct URL jump) is reported as ``shortcut``, not ``cancelled``.
+    The legacy ``cancelled`` verdict also denotes a verified email unsubscribe.
     """
     hit = _classify_url(journey.final_url, level)
     if hit is None:

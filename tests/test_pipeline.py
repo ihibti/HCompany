@@ -171,6 +171,26 @@ async def test_run_audit_end_to_end_with_fakes(tmp_path, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_unsubscribe_skips_enter_and_asymmetry(tmp_path, monkeypatch):
+    fake_rj = _make_fake_run_journey()
+    monkeypatch.setattr(pipeline, "run_journey", fake_rj)
+    audit = await pipeline.run_audit(
+        site_url="https://site.test/email",
+        task=Task.UNSUBSCRIBE,
+        store=RunStore(tmp_path / "runs"),
+        with_enter=True,
+        classify=False,
+        client=_FakeAgentClient(),
+        openai_client=object(),
+    )
+    assert [c["task"] for c in fake_rj.calls] == [Task.UNSUBSCRIBE]
+    assert audit.enter is None
+    assert audit.score.enter_effort is None
+    assert audit.score.asymmetry_ratio is None
+    assert not (tmp_path / "runs" / audit.id / "events_enter.json").exists()
+
+
+@pytest.mark.asyncio
 async def test_run_audit_no_enter_and_classify_off(tmp_path, monkeypatch):
     fake_rj = _make_fake_run_journey()
     monkeypatch.setattr(pipeline, "run_journey", fake_rj)
