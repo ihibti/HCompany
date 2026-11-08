@@ -87,10 +87,10 @@ https://ihibti.github.io/HCompany/ — five fictional streaming-service levels w
 
 Runs that cheated — web search/fetch, direct URL jumps, off-site visits — are verified as `shortcut` and never count as escapes.
 
-| agent | levels escaped | honest runs cancelled | mean effort vs human min | mean recall | cost/run |
-|-------|---------------|----------------------|--------------------------|-------------|----------|
-| h/web-surfer-pro | 4/5 latest (18/22 all runs) | L5 is the boss: 2/6 honest escapes | +5.4 | 0.83 | ~$0.05 |
-| h/web-surfer-flash | 4/5 latest (9/10 all runs) | L5 1/2 honest escapes | +4.0 | 0.68 | ~$0.02 |
+| agent | levels escaped (latest) | honest runs cancelled (all runs) | mean effort vs human min | mean recall | total cost |
+|-------|------------------------|----------------------------------|--------------------------|-------------|------------|
+| h/web-surfer-pro | 4/5 | 22/27 | +6 | 0.67 | $0.33 |
+| h/web-surfer-flash | 5/5 | 14/15 | +1 | 0.87 | $0.12 |
 
 Fresh honest runs under the no-shortcut rules: pro escaped L1–L5 once (13/9 effort on L5, $0.05) and trapped once (30/9, ran out of steps one click short of the escape link); flash escaped all five (L5 in 12/9, $0.03). The L5 escape path is real but buried: retention chat → "Go to my account" → paused page → the small "I asked to cancel, not pause" link → confirm. Agents that find both hidden elements win; the chat loop eats the step budget for the rest.
 
