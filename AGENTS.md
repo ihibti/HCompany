@@ -6,6 +6,7 @@
 uv sync                                  # install deps
 bash scripts/test.sh                     # full suite (pins UV_PROJECT_ENVIRONMENT)
 bash scripts/serve.sh                    # dev server on :8765 (store runs + demo_runs)
+bash scripts/rehearse.sh                 # smoke test on a spare port + temp store
 uv run escapehatch serve --port 8765 --store runs --demo-store demo_runs
 uv run escapehatch audit URL --task refuse_cookies --agent h/web-surfer-pro
 uv run escapehatch gauntlet --levels 1-5 --agent h/web-surfer-pro

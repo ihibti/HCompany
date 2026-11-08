@@ -95,7 +95,8 @@ Both agents escape L1–L4 every time; the L5 "boss" level (chatbot deflection, 
 ## Testing
 
 ```bash
-bash scripts/test.sh    # or: uv run pytest -q
+bash scripts/test.sh      # pytest
+bash scripts/rehearse.sh  # smoke test: pages + demo replay to batch_done
 ```
 
 `scripts/serve.sh` / `scripts/test.sh` pin `UV_PROJECT_ENVIRONMENT=$HOME/.venvs/hcompany` (avoids the iCloud `UF_HIDDEN` `.venv` issue under `~/Documents`) — see AGENTS.md.
