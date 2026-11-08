@@ -18,6 +18,7 @@ LEAVE_TASKS = {Task.REFUSE_COOKIES, Task.CANCEL_SUBSCRIPTION, Task.UNSUBSCRIBE}
 
 COMMON_RULES = """Rules:
 - Work only on the website given. Do not log in with any account unless credentials are provided below. Never enter payment details.
+- Behave like a regular visitor using the screen: do not use web search, do not fetch page source code or files, do not visit other websites (including code repositories), and do not type URLs you have not seen as links on the site, except the starting URL. The user is measuring the path the site offers, so shortcuts make the audit worthless.
 - Count every click, key press and form submission you make; the user is measuring how much effort this site demands.
 - Read the screen carefully. Sites may use misleading button colors, swapped button positions, double negatives, fake close buttons and pre-checked boxes. Do what the goal says, not what the design nudges you toward.
 - If you get stuck in a loop or the goal is impossible on this site, stop and report it honestly instead of guessing.
