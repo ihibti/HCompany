@@ -15,15 +15,21 @@
   </section>
 
   <div class="acct-card">
+    <h2>What is Escape Hatch?</h2>
+    <p style="color:var(--muted);font-size:14px">Escape Hatch is a computer-use agent that tries to <em>leave</em> websites for you — refusing cookies, cancelling subscriptions — and measures every dark pattern standing in the way, with screenshot evidence and a friction grade. This gauntlet is its benchmark: five fictional Netflux flows where an agent must find the exit while we score effort and pattern detection against ground truth (<a href="levels.json" style="color:#7db4ff">levels.json</a>).</p>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px">Netflux is a fictional demo service — all flows, prices and characters are invented for this benchmark.</p>
+  </div>
+
+  <div class="acct-card">
     <h2>Levels</h2>
     <p style="color:var(--muted);font-size:14px">Leave flow starts at <code>levelN/index.html</code> (logged-in account). Enter flow starts at <code>levelN/signup.html</code>. Ground truth: <a href="levels.json" style="color:#7db4ff">levels.json</a>.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:10px">
       <tr style="color:var(--muted);text-align:left"><th style="padding:8px 0">#</th><th style="padding:8px 0">Level</th><th style="padding:8px 0">Traps</th><th style="padding:8px 0"></th></tr>
       <tr><td style="padding:8px 0">1</td><td><a href="level1/">Honest</a></td><td style="color:var(--muted)">none — clear cancel button</td><td><a href="level1/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level1/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
-      <tr><td style="padding:8px 0">2</td><td><a href="level2/">Confirmshaming</a></td><td style="color:var(--muted)">big keep-offer, swapped buttons</td><td><a href="level2/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level2/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
-      <tr><td style="padding:8px 0">3</td><td><a href="level3/">Hidden option</a></td><td style="color:var(--muted)">buried help link, fake close ×, cookie banner</td><td><a href="level3/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level3/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
-      <tr><td style="padding:8px 0">4</td><td><a href="level4/">Obstruction</a></td><td style="color:var(--muted)">survey, countdown, pre-ticked box, trick question</td><td><a href="level4/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level4/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
-      <tr><td style="padding:8px 0">5</td><td><a href="level5/">Boss</a></td><td style="color:var(--muted)">password re-entry, 3-intent chatbot, fake pause</td><td><a href="level5/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level5/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">2</td><td><a href="level2/">Confirmshaming</a></td><td style="color:var(--muted)">big keep-offer, swapped buttons<br><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9db8d2">asymmetric_choice confirmshaming misdirection</span></td><td><a href="level2/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level2/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">3</td><td><a href="level3/">Hidden option</a></td><td style="color:var(--muted)">buried help link, fake close ×, cookie banner<br><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9db8d2">hidden_option misdirection asymmetric_choice obstruction</span></td><td><a href="level3/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level3/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">4</td><td><a href="level4/">Obstruction</a></td><td style="color:var(--muted)">survey, countdown, pre-ticked box, trick question<br><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9db8d2">obstruction preselection false_urgency trick_question misdirection sneaking</span></td><td><a href="level4/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level4/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
+      <tr><td style="padding:8px 0">5</td><td><a href="level5/">Boss</a></td><td style="color:var(--muted)">password re-entry, 3-intent chatbot, fake pause<br><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9db8d2">obstruction nagging sneaking misdirection</span></td><td><a href="level5/index.html" style="color:#7db4ff;font-size:13px">leave</a> · <a href="level5/signup.html" style="color:#7db4ff;font-size:13px">enter</a></td></tr>
     </table>
   </div>
 
