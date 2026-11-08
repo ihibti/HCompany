@@ -281,6 +281,12 @@
     if (!run) return;
     const c = col(run);
     if (!c) return;
+    if (c.status.textContent === "queued" && (
+      msg.type === "step" || msg.type === "confirm_request" ||
+      (msg.type === "status" && msg.status && msg.status !== "queued")
+    )) {
+      setStatus(c, "running");
+    }
     if (msg.type === "step" || msg.type === "status") clearReplayConfirms(c);
     switch (msg.type) {
       case "step": addStep(c, msg); break;
