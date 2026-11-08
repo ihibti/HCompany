@@ -79,7 +79,7 @@ def detect_shortcut(journey: Journey, level: GauntletLevel, base_url: str) -> st
     URL outside the gauntlet base.
     """
     start_seen = False
-    for step in journey.steps:
+    for i, step in enumerate(journey.steps):
         act = step.action
         args = step.args or {}
         if act in ("web_search", "web_fetch"):
@@ -94,7 +94,8 @@ def detect_shortcut(journey: Journey, level: GauntletLevel, base_url: str) -> st
                     return f"navigated outside gauntlet: {target}"
                 if not _matches(_norm_path(target), level.start_path):
                     return f"direct jump to {_norm_path(target)}"
-        if step.url and not _within_base(step.url, base_url):
+        launchpad = i == 0 and act == "go_to_web"
+        if step.url and not launchpad and not _within_base(step.url, base_url):
             return f"visited outside gauntlet: {step.url}"
     return None
 

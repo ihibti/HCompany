@@ -233,6 +233,30 @@ class TestDetectShortcut:
         j = self._j(steps, final_url=f"{self.BASE}/level1/cancelled.html")
         assert detect_shortcut(j, lvl, self.BASE) is None
 
+    def test_initial_browser_page_is_not_a_visit(self, levels):
+        # real run: browser opens on bing.com, first go_to_web launches to start
+        lvl = _level(levels, 1)
+        start = f"{self.BASE}/level1/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url="https://www.bing.com/"),
+            make_step("click_web", index=1, args={"element": "Cancel"}, url=start),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level1/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is None
+        assert verify_gauntlet(j, lvl, self.BASE) == "cancelled"
+
+    def test_later_outside_visit_still_flagged(self, levels):
+        lvl = _level(levels, 1)
+        start = f"{self.BASE}/level1/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url="https://www.bing.com/"),
+            make_step("click_web", index=1, args={"element": "x"}, url=start),
+            make_step("click_web", index=2, args={"element": "y"}, url="https://other.example/"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level1/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is not None
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
     def test_no_base_url_keeps_legacy_verdict(self, levels):
         lvl = _level(levels, 5)
         steps = [
