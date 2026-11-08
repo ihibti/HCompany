@@ -4,6 +4,9 @@ import argparse
 import asyncio
 import json
 import logging
+import os
+import re
+import shlex
 import sys
 import time
 from datetime import datetime, timezone
@@ -28,6 +31,26 @@ logger = logging.getLogger("escapehatch")
 GAUNTLET_DIR = Path(__file__).resolve().parent.parent.parent / "gauntlet"
 LEVELS_JSON = GAUNTLET_DIR / "levels.json"
 GAUNTLET_CREDENTIALS = "email demo@netflux.test, password Hatch-2026"
+
+
+def _load_env(path: Path = Path(".env")) -> None:
+    """Load single-line KEY=value entries, without shell expansion or overrides."""
+    if not path.is_file():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, sep, value = line.partition("=")
+        key = key.strip()
+        if not sep or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
+            continue
+        try:
+            parts = shlex.split(value, comments=True)
+        except ValueError:
+            continue
+        if len(parts) <= 1:
+            os.environ.setdefault(key, parts[0] if parts else "")
 
 
 def parse_levels(spec: str) -> list[int]:
@@ -351,6 +374,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
+    _load_env()
     args = build_parser().parse_args()
     try:
         code = asyncio.run(args.func(args))

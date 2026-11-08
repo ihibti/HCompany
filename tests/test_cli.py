@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock
 
@@ -12,6 +13,68 @@ from escapehatch.prompts import Task, build_task_prompt
 from escapehatch.scoring import score
 
 from conftest import make_journey
+
+
+def test_load_env_formats_and_existing_values(tmp_path, monkeypatch):
+    values = {
+        "EH_TEST_BARE": "plain-value",
+        "EH_TEST_SINGLE": "value with spaces # literal",
+        "EH_TEST_DOUBLE": "another quoted value",
+        "EH_TEST_EXPORT": "exported",
+        "EH_TEST_EMPTY": "",
+        "EH_TEST_EXISTING": "from-environment",
+        "EH_TEST_EXISTING_EMPTY": "",
+        "EH_TEST_LITERAL": "$(echo not-executed)",
+    }
+    for key in values:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("EH_TEST_EXISTING", "from-environment")
+    monkeypatch.setenv("EH_TEST_EXISTING_EMPTY", "")
+    path = tmp_path / ".env"
+    path.write_text("""# comment
+EH_TEST_BARE = plain-value # inline comment
+EH_TEST_SINGLE='value with spaces # literal'
+EH_TEST_DOUBLE="another quoted value"
+export EH_TEST_EXPORT=exported
+EH_TEST_EMPTY=
+EH_TEST_EXISTING=from-file
+EH_TEST_EXISTING_EMPTY=from-file
+EH_TEST_LITERAL='$(echo not-executed)'
+""")
+    cli._load_env(path)
+    assert {key: os.environ.get(key) for key in values} == values
+
+
+def test_load_env_missing_and_malformed(tmp_path, monkeypatch):
+    monkeypatch.delenv("EH_TEST_BAD", raising=False)
+    cli._load_env(tmp_path / "missing")
+    path = tmp_path / ".env"
+    path.write_text("EH_TEST_BAD='unterminated\nnot an assignment\n9INVALID=x\n")
+    cli._load_env(path)
+    assert "EH_TEST_BAD" not in os.environ
+    assert "9INVALID" not in os.environ
+
+
+@pytest.mark.parametrize("command", ["serve", "audit", "gauntlet"])
+def test_main_loads_cwd_env_before_dispatch(tmp_path, monkeypatch, capsys, command):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("HAI_API_KEY", raising=False)
+    (tmp_path / ".env").write_text("HAI_API_KEY=offline-test-placeholder\n")
+
+    async def fake_command(args):
+        assert os.environ["HAI_API_KEY"] == "offline-test-placeholder"
+        return 0
+
+    monkeypatch.setattr(cli, f"_cmd_{command}", fake_command)
+    argv = ["escapehatch", command]
+    if command == "audit":
+        argv.append("https://example.test")
+    monkeypatch.setattr(cli.sys, "argv", argv)
+    with pytest.raises(SystemExit) as exc:
+        cli.main()
+    assert exc.value.code == 0
+    captured = capsys.readouterr()
+    assert "offline-test-placeholder" not in captured.out + captured.err
 
 
 @pytest.mark.asyncio
