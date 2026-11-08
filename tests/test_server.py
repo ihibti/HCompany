@@ -79,7 +79,8 @@ def _make_fake_run_audit(registry: dict, confirm_result_probe: dict):
         await on_update({"type": "status", "journey": "leave",
                          "status": "completed", "outcome": "success"})
         await on_update({"type": "done", "audit_id": audit_id, "grade": "A",
-                         "friction": 5, "headline": "easy"})
+                         "friction": 5, "headline": "easy",
+                         "screenshot_url": "https://shots/final-leave.png"})
         return None
 
     return fake_run_audit
@@ -144,6 +145,9 @@ async def test_batch_flow_and_sse(app_and_state):
         assert "batch" in types and "step" in types and "done" in types and "batch_done" in types
         steps = [m for m in msgs if m["type"] == "step"]
         assert steps[0]["journey"] == "leave" and steps[0]["run"].endswith("-00")
+        dones = [m for m in msgs if m["type"] == "done"]
+        assert len(dones) == 2
+        assert all(m["screenshot_url"] == "https://shots/final-leave.png" for m in dones)
         seqs = [m["seq"] for m in msgs if "seq" in m]
         assert seqs == sorted(seqs)
         # batch meta endpoint

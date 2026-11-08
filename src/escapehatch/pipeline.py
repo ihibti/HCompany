@@ -413,5 +413,6 @@ async def run_audit(
         "friction": audit_score.friction,
         "headline": audit_score.headline,
         "outcome": leave.outcome.value,
+        "screenshot_url": leave.final_screenshot_url,
     })
     return audit

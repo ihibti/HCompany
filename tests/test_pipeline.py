@@ -168,6 +168,37 @@ async def test_run_audit_end_to_end_with_fakes(tmp_path, monkeypatch):
     done = updates[-1]
     assert done["audit_id"] == audit.id
     assert done["grade"] == audit.score.grade
+    assert done["screenshot_url"] == audit.leave.final_screenshot_url
+    assert done["screenshot_url"] != audit.leave.steps[-1].screenshot_url
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("final_shot", ["https://shots/final-leave.png", None])
+async def test_live_done_uses_final_leave_screenshot(tmp_path, monkeypatch, final_shot):
+    async def fake_run_journey(client, *, task, **kwargs):
+        return make_journey(
+            steps=[make_step("click_web", screenshot_url="https://shots/before-click.png")],
+            task=task,
+            final_screenshot_url=(final_shot if task == Task.CANCEL_SUBSCRIPTION
+                                  else "https://shots/final-enter.png"),
+        ), []
+
+    monkeypatch.setattr(pipeline, "run_journey", fake_run_journey)
+    updates = []
+
+    async def on_update(msg):
+        updates.append(msg)
+
+    await pipeline.run_audit(
+        site_url="https://site.test/manage",
+        task=Task.CANCEL_SUBSCRIPTION,
+        store=RunStore(tmp_path / "runs"),
+        client=_FakeAgentClient(),
+        classify=False,
+        on_update=on_update,
+    )
+    assert updates[-1]["type"] == "done"
+    assert updates[-1]["screenshot_url"] == final_shot
 
 
 @pytest.mark.asyncio
