@@ -12,7 +12,9 @@ from typing import Any
 from urllib.parse import urljoin
 
 from escapehatch.events import answer_indicates_blocked
-from escapehatch.gauntlet import load_levels, pattern_recall, verify_gauntlet
+from escapehatch.gauntlet import (
+    detect_shortcut, load_levels, pattern_recall, verify_gauntlet,
+)
 from escapehatch.keys import KeyPool
 from escapehatch.models import Audit, Outcome
 from escapehatch.pipeline import run_audit, shot_resolver
@@ -157,7 +159,10 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
             max_time_s=args.max_time,
         )
         wall = time.monotonic() - t0
-        verdict = verify_gauntlet(audit.leave, level)
+        verdict = verify_gauntlet(audit.leave, level, base)
+        shortcut_reason = (
+            detect_shortcut(audit.leave, level, base) if verdict == "shortcut" else None
+        )
         precision, recall = pattern_recall(audit.findings, level)
         leave_eff = audit.score.leave_effort.total
         row = {
@@ -165,6 +170,7 @@ async def _cmd_gauntlet(args: argparse.Namespace) -> int:
             "title": level.title,
             "audit_id": audit.id,
             "verdict": verdict,
+            "shortcut_reason": shortcut_reason,
             "leave_effort": leave_eff,
             "min_leave_interactions": level.min_leave_interactions,
             "enter_effort": audit.score.enter_effort.total if audit.score.enter_effort else None,

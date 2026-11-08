@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from escapehatch.models import Finding, Journey
 
-VerifyResult = Literal["cancelled", "trapped", "incomplete"]
+VerifyResult = Literal["cancelled", "trapped", "incomplete", "shortcut"]
 
 
 class GauntletLevel(BaseModel):
@@ -62,16 +62,62 @@ def _classify_url(url: str | None, level: GauntletLevel) -> VerifyResult | None:
     return None
 
 
-def verify_gauntlet(journey: Journey, level: GauntletLevel) -> VerifyResult:
-    """Latest known page wins: final_url first, then step urls newest to oldest."""
+def _within_base(url: str | None, base: str) -> bool:
+    if not url:
+        return True
+    b, u = urlparse(base), urlparse(url)
+    if (u.scheme, u.netloc) != (b.scheme, b.netloc):
+        return False
+    return u.path.startswith(b.path.rstrip("/") + "/")
+
+
+def detect_shortcut(journey: Journey, level: GauntletLevel, base_url: str) -> str | None:
+    """Reason the leave journey took an off-path shortcut, else None.
+
+    Flags off-site research tools (web_search/web_fetch), direct URL jumps to
+    non-start pages inside the gauntlet (e.g. confirm.html), and any visited
+    URL outside the gauntlet base.
+    """
+    start_seen = False
+    for step in journey.steps:
+        act = step.action
+        args = step.args or {}
+        if act in ("web_search", "web_fetch"):
+            what = args.get("query") or args.get("url") or act
+            return f"{act}: {what}"
+        if act == "go_to_web":
+            target = args.get("url")
+            if not start_seen:
+                start_seen = True
+            elif target:
+                if not _within_base(target, base_url):
+                    return f"navigated outside gauntlet: {target}"
+                if not _matches(_norm_path(target), level.start_path):
+                    return f"direct jump to {_norm_path(target)}"
+        if step.url and not _within_base(step.url, base_url):
+            return f"visited outside gauntlet: {step.url}"
+    return None
+
+
+def verify_gauntlet(
+    journey: Journey, level: GauntletLevel, base_url: str | None = None
+) -> VerifyResult:
+    """Latest known page wins: final_url first, then step urls newest to oldest.
+
+    A run that reached the success page via a shortcut (off-site tools or a
+    direct URL jump) is reported as ``shortcut``, not ``cancelled``.
+    """
     hit = _classify_url(journey.final_url, level)
-    if hit:
-        return hit
-    for step in reversed(journey.steps):
-        hit = _classify_url(step.url, level)
-        if hit:
-            return hit
-    return "incomplete"
+    if hit is None:
+        for step in reversed(journey.steps):
+            hit = _classify_url(step.url, level)
+            if hit:
+                break
+    if hit == "cancelled" and base_url:
+        reason = detect_shortcut(journey, level, base_url)
+        if reason:
+            return "shortcut"
+    return hit or "incomplete"
 
 
 def pattern_recall(findings: list[Finding], level: GauntletLevel) -> tuple[float, float]:

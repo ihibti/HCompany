@@ -4,7 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from escapehatch.gauntlet import GauntletLevel, load_levels, pattern_recall, verify_gauntlet
+from escapehatch.gauntlet import (
+    GauntletLevel, detect_shortcut, load_levels, pattern_recall, verify_gauntlet,
+)
 from escapehatch.models import Finding
 from escapehatch.prompts import PATTERN_DEFINITIONS
 
@@ -132,6 +134,113 @@ class TestVerifyGauntlet:
         # a url cannot be both; verify success takes precedence in _classify_url order
         j = make_journey([], final_url=f"{self.BASE}/level1/cancelled.html")
         assert verify_gauntlet(j, _level(levels, 1)) == "cancelled"
+
+
+class TestDetectShortcut:
+    BASE = "http://localhost:8080"
+    L5_START = f"{BASE}/level5/index.html"
+
+    def _j(self, steps, final_url=None):
+        return make_journey(steps=steps, final_url=final_url)
+
+    def test_honest_flow_has_no_shortcut(self, levels):
+        lvl = _level(levels, 5)
+        steps = [
+            make_step("go_to_web", index=0, args={"url": self.L5_START}, url=self.L5_START),
+            make_step("click_web", index=1, args={"element": "No thanks"},
+                      url=f"{self.BASE}/level5/chat.html"),
+            make_step("click_web", index=2, args={"element": "Go to my account"},
+                      url=f"{self.BASE}/level5/chat.html"),
+            make_step("click_web", index=3, args={"element": "Confirm cancellation"},
+                      url=f"{self.BASE}/level5/cancelled.html"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level5/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is None
+        assert verify_gauntlet(j, lvl, self.BASE) == "cancelled"
+
+    def test_web_search_is_shortcut(self, levels):
+        lvl = _level(levels, 5)
+        steps = [
+            make_step("go_to_web", index=0, args={"url": self.L5_START}, url=self.L5_START),
+            make_step("web_search", index=1, args={"query": "netflux cancel subscription"}),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level5/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) == "web_search: netflux cancel subscription"
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
+    def test_github_web_fetch_fixture(self, levels):
+        # modeled on the real run that fetched the level source from GitHub
+        lvl = _level(levels, 5)
+        steps = [
+            make_step("go_to_web", index=0, args={"url": self.L5_START}, url=self.L5_START),
+            make_step("web_fetch", index=1,
+                      args={"url": "https://github.com/ihibti/HCompany/blob/main/gauntlet/level5/chat.html"}),
+            make_step("go_to_web", index=2,
+                      args={"url": f"{self.BASE}/level5/confirm.html"},
+                      url=f"{self.BASE}/level5/confirm.html"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level5/cancelled.html")
+        reason = detect_shortcut(j, lvl, self.BASE)
+        assert reason is not None and reason.startswith("web_fetch:")
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
+    def test_direct_jump_to_confirm_is_shortcut(self, levels):
+        lvl = _level(levels, 1)
+        start = f"{self.BASE}/level1/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url=start),
+            make_step("go_to_web", index=1,
+                      args={"url": f"{self.BASE}/level1/confirm.html"},
+                      url=f"{self.BASE}/level1/confirm.html"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level1/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is not None
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
+    def test_go_to_web_outside_base_is_shortcut(self, levels):
+        lvl = _level(levels, 2)
+        start = f"{self.BASE}/level2/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url=start),
+            make_step("go_to_web", index=1,
+                      args={"url": "https://evil.example/phish"},
+                      url="https://evil.example/phish"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level2/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is not None
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
+    def test_visited_url_outside_base_is_shortcut(self, levels):
+        lvl = _level(levels, 3)
+        start = f"{self.BASE}/level3/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url=start),
+            make_step("click_web", index=1, args={"element": "link"},
+                      url="https://other.example/x"),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level3/cancelled.html")
+        reason = detect_shortcut(j, lvl, self.BASE)
+        assert reason is not None and "outside gauntlet" in reason
+        assert verify_gauntlet(j, lvl, self.BASE) == "shortcut"
+
+    def test_repeated_start_page_navigation_ok(self, levels):
+        lvl = _level(levels, 1)
+        start = f"{self.BASE}/level1/index.html"
+        steps = [
+            make_step("go_to_web", index=0, args={"url": start}, url=start),
+            make_step("go_to_web", index=1, args={"url": start}, url=start),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level1/cancelled.html")
+        assert detect_shortcut(j, lvl, self.BASE) is None
+
+    def test_no_base_url_keeps_legacy_verdict(self, levels):
+        lvl = _level(levels, 5)
+        steps = [
+            make_step("go_to_web", index=0, args={"url": self.L5_START}, url=self.L5_START),
+            make_step("web_fetch", index=1, args={"url": "https://github.com/x"}),
+        ]
+        j = self._j(steps, final_url=f"{self.BASE}/level5/cancelled.html")
+        assert verify_gauntlet(j, lvl) == "cancelled"
 
 
 class TestPatternRecall:
