@@ -9,7 +9,7 @@ A computer-use agent that tries to *leave* websites for you — refusing cookies
 ```bash
 uv sync
 # create .env with HAI_API_KEY (+ optional HCOMPANY_KEY for a second org quota)
-uv run escapehatch serve --port 8765
+bash scripts/serve.sh          # or: uv run escapehatch serve --port 8765
 ```
 
 Open http://127.0.0.1:8765 — launch audits live, replay curated demos, browse the Hall of Shame and the Netflux benchmark. Demo mode replays stored runs with no API spend (venue-wifi fallback).
@@ -87,5 +87,7 @@ Both agents escape every level; pro is more consistent on pattern recall, flash 
 ## Testing
 
 ```bash
-uv run pytest -q
+bash scripts/test.sh    # or: uv run pytest -q
 ```
+
+`scripts/serve.sh` / `scripts/test.sh` pin `UV_PROJECT_ENVIRONMENT=$HOME/.venvs/hcompany` (avoids the iCloud `UF_HIDDEN` `.venv` issue under `~/Documents`) — see AGENTS.md.
