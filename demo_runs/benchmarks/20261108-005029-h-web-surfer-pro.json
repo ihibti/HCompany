@@ -1,0 +1,175 @@
+{
+  "created_at": "2026-11-08T00:55:48.203906+00:00",
+  "agent": "h/web-surfer-pro",
+  "base": "https://ihibti.github.io/HCompany/",
+  "levels": [
+    {
+      "level": 1,
+      "title": "Honest",
+      "audit_id": "20261108-005029-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 2,
+      "min_leave_interactions": 2,
+      "enter_effort": 1,
+      "grade": "A",
+      "friction": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "patterns_found": [],
+      "patterns_truth": [],
+      "cost_usd": 0.0178,
+      "wall_seconds": 37.2,
+      "leave_duration_s": 31.2,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the red \"Confirm cancellation\" button on the \"Cancel your subscription?\" confirmation page to permanently cancel the Netflux Premium subscription."
+        }
+      ],
+      "shortcut_reason": null
+    },
+    {
+      "level": 2,
+      "title": "Confirmshaming",
+      "audit_id": "20261108-005106-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 4,
+      "min_leave_interactions": 3,
+      "enter_effort": 1,
+      "grade": "D",
+      "friction": 56,
+      "precision": 0.667,
+      "recall": 0.667,
+      "patterns_found": [
+        "asymmetric_choice",
+        "confirmshaming",
+        "false_urgency"
+      ],
+      "patterns_truth": [
+        "asymmetric_choice",
+        "confirmshaming",
+        "misdirection"
+      ],
+      "cost_usd": 0.0252,
+      "wall_seconds": 44.5,
+      "leave_duration_s": 40.9,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the \"Confirm cancellation\" button on the \"Are you sure?\" confirmation page to permanently cancel the Netflux Premium subscription ($15.99/month) for demo@netflux.test."
+        }
+      ],
+      "shortcut_reason": null
+    },
+    {
+      "level": 3,
+      "title": "Hidden option",
+      "audit_id": "20261108-005151-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 8,
+      "min_leave_interactions": 6,
+      "enter_effort": 2,
+      "grade": "F",
+      "friction": 92,
+      "precision": 0.75,
+      "recall": 0.75,
+      "patterns_found": [
+        "misdirection",
+        "confirmshaming",
+        "hidden_option",
+        "obstruction"
+      ],
+      "patterns_truth": [
+        "hidden_option",
+        "misdirection",
+        "asymmetric_choice",
+        "obstruction"
+      ],
+      "cost_usd": 0.0488,
+      "wall_seconds": 71.9,
+      "leave_duration_s": 67.9,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the red \"Confirm cancellation\" button on the \"Cancel your subscription?\" confirmation page, which cancels the Netflix Premium subscription (stays active until end of billing period, then will not renew)."
+        }
+      ],
+      "shortcut_reason": null
+    },
+    {
+      "level": 4,
+      "title": "Obstruction",
+      "audit_id": "20261108-005303-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 12,
+      "min_leave_interactions": 5,
+      "enter_effort": 1,
+      "grade": "F",
+      "friction": 100,
+      "precision": 0.8,
+      "recall": 0.667,
+      "patterns_found": [
+        "asymmetric_choice",
+        "false_urgency",
+        "misdirection",
+        "obstruction",
+        "preselection"
+      ],
+      "patterns_truth": [
+        "obstruction",
+        "preselection",
+        "false_urgency",
+        "trick_question",
+        "misdirection",
+        "sneaking"
+      ],
+      "cost_usd": 0.0658,
+      "wall_seconds": 84.8,
+      "leave_duration_s": 80.8,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the \"Confirm\" button on the Netflux retention offer page to fully cancel the paid Premium subscription (checkbox for free Basic downgrade is unchecked)"
+        }
+      ],
+      "shortcut_reason": null
+    },
+    {
+      "level": 5,
+      "title": "Boss",
+      "audit_id": "20261108-005427-ihibti-github-io-cancel_subscription",
+      "verdict": "cancelled",
+      "leave_effort": 13,
+      "min_leave_interactions": 9,
+      "enter_effort": 1,
+      "grade": "F",
+      "friction": 100,
+      "precision": 0.667,
+      "recall": 1.0,
+      "patterns_found": [
+        "sneaking",
+        "asymmetric_choice",
+        "confirmshaming",
+        "nagging",
+        "obstruction",
+        "misdirection"
+      ],
+      "patterns_truth": [
+        "obstruction",
+        "nagging",
+        "sneaking",
+        "misdirection"
+      ],
+      "cost_usd": 0.064,
+      "wall_seconds": 80.3,
+      "leave_duration_s": 73.7,
+      "confirmations": [
+        {
+          "journey": "leave",
+          "action": "Click the red \"Confirm cancellation\" button on the \"Cancel your subscription?\" page to permanently cancel the Netflux Premium subscription (it will stay active until end of billing period, then not renew)."
+        }
+      ],
+      "shortcut_reason": null
+    }
+  ]
+}

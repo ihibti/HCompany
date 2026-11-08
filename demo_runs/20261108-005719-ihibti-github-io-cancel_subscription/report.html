@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch — https://ihibti.github.io/HCompany/level3/index.html</title>
+<style>
+  :root {
+    --bg: #0b0d0c;
+    --panel: #131a16;
+    --panel2: #18211c;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #e9f2ec;
+    --muted: #8fa396;
+    --accent: #14c06a;
+    --green: #14c06a;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --grey: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20, 192, 106, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20, 192, 106, 0.05), transparent 55%),
+      var(--bg);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,192,106,0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20,192,106,0.05), transparent 55%);
+    background-size: 44px 44px, 44px 44px, auto, auto;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo svg { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(20,192,106,.35)); }
+  .logo span { color: var(--accent); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
+  .grade {
+    width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; flex-shrink: 0;
+  }
+  .g-A { background: rgba(20,192,106,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
+  .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
+  .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
+  .g-F { background: rgba(248,113,113,.12); color: var(--red); border: 2px solid var(--red); }
+  .g-NA, .g-Q { background: rgba(100,116,139,.12); color: var(--grey); border: 2px solid var(--grey); }
+  .hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  .hero .sub { color: var(--muted); font-size: 14px; }
+  .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+  .chip.detour { color: #b8a6e8; border-color: rgba(184,166,232,.4); }
+  h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
+  .effort-row .lbl { font-size: 13px; color: var(--muted); }
+  .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 7px; }
+  .bar.leave > div { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .bar.enter > div { background: linear-gradient(90deg, #14c06a, #a3e635); }
+  .bar.impossible > div { background: linear-gradient(90deg, #f87171, #ef4444); }
+  .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
+  .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .impossible-note { color: var(--red); font-size: 13px; margin-top: 4px; }
+  .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+  .sev-3 { background: rgba(248,113,113,.15); color: var(--red); }
+  .sev-2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .sev-1 { background: rgba(139,150,171,.15); color: var(--muted); }
+  .pname { font-weight: 700; font-size: 14px; }
+  .pdesc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .ev { border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--text); font-size: 13px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .ex { font-size: 13px; color: var(--muted); }
+  .finding img { width: 180px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .finding .noimg { width: 180px; height: 100px; border-radius: 10px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .step { display: grid; grid-template-columns: 140px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .step img { width: 140px; border-radius: 8px; border: 1px solid var(--line); }
+  .step .noimg { width: 140px; height: 80px; border-radius: 8px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; }
+  .step .act { font-weight: 700; font-size: 14px; }
+  .step .el { color: var(--accent); font-size: 13px; margin-top: 2px; word-break: break-word; }
+  .step .rs { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; }
+  summary:hover { color: var(--text); }
+  .legal { display: grid; gap: 10px; }
+  .legal .ref { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .legal .code { font-weight: 700; font-size: 14px; }
+  .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .legal .sum { font-size: 13px; margin-top: 6px; }
+  .legal a { color: var(--green); text-decoration: none; font-size: 12px; }
+  .legal a:hover { text-decoration: underline; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .obstacles li { margin: 3px 0; }
+  a.logo { text-decoration: none; color: inherit; }
+  @media print {
+    :root {
+      --bg: #ffffff; --panel: #ffffff; --panel2: #f4f6f5;
+      --line: #d8ddd9; --text: #141a17; --muted: #5a665f;
+    }
+    body { background: #fff; }
+    .eh-toolbar { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .hero, .card, .finding, .step { break-inside: avoid; }
+    .finding img, .step img { max-height: 180px; width: auto; max-width: 180px; }
+    a { color: #0a6e3f; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+        <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+        <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+        <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+        <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+      </svg>
+      <span>Escape<span>Hatch</span></span>
+    </div>
+    <div class="tag">friction audit</div>
+    <div class="tag">cancel_subscription</div>
+  </header>
+
+  <section class="hero">
+    
+    <div class="grade g-F">F</div>
+    <div>
+      <h1>https://ihibti.github.io/HCompany/level3/index.html</h1>
+      <div class="sub">Leaving takes 7 actions. Subscribing takes 1.</div>
+      <div class="meta">
+        <span class="chip">friction <b>80</b>/100</span>
+        <span class="chip">patterns <b>3</b></span>
+        <span class="chip">steps <b>11</b></span>
+        <span class="chip">outcome <b>success</b></span>
+        <span class="chip">agent <b>h/web-surfer-pro</b></span>
+        <span class="chip">2026-11-08 00:58</span>
+        
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Obstacles reported by the agent</h2>
+    <ul class="obstacles">
+      <li>Retention dark pattern: the only cancellation entry point was buried in the Help Center FAQ and framed as going to a &#39;retention team&#39;</li><li>Free-month retention modal with the &#39;Claim my free month&#39; action styled as the prominent red button while the actual &#39;Continue to cancel instead&#39; was a small text link — declined as instructed</li>
+    </ul>
+  </div>
+  
+
+  <h2>Effort to leave vs enter</h2>
+  <div class="card">
+    
+    
+    
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Leave (cancel subscription)</div>
+        <div class="bar leave"><div style="width: 100.0%"></div></div>
+        <div class="num">7</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        7 interactions · 0 navigations · 0 detours
+        · leave/enter ratio 7.0
+      </div>
+      
+    </div>
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Enter (subscribe)</div>
+        <div class="bar enter"><div style="width: 14.285714285714286%"></div></div>
+        <div class="num">1</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        1 interactions · 0 navigations · 0 detours
+        
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <h2>Dark patterns detected</h2>
+  
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">asymmetric choice</span>
+          <span class="chip">step 8</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Claim my free month&#39; button is a large, prominent red button, while the &#39;Continue to cancel instead&#39; option is a small, unobtrusive text link below it. This visual hierarchy makes the cancellation option significantly harder to find and select compared to the retention offer.&rdquo;</div>
+        <div class="ex">The design makes the business-preferred action (claiming the free month) visually dominant while the user&#39;s intended action (cancellation) is de-emphasized, creating an imbalance that works against the user&#39;s goal.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/b3d1c0f04ff3314b4a395e7215258ca5cf159227.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">confirmshaming</span>
+          <span class="chip">step 7</span>
+        </div>
+        <div class="ev">&ldquo;Looking to make changes to your membership? If you wish to end your membership, our retention team would love to help — click here to see how.&rdquo;</div>
+        <div class="ex">The phrase &#39;our retention team would love to help&#39; uses guilt-tripping language to discourage cancellation by framing the company&#39;s desire to retain the user as a positive action, making the user feel bad for wanting to cancel.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/4c0b0ad1d86d91bd9b4f4a6f7626d1e7228c221a.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">obstruction</span>
+          <span class="chip">step 2</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Your plan&#39; section displays subscription details but only provides a &#39;Help Center&#39; button and a text link to &#39;Visit our Help Center&#39; for questions, with no direct &#39;Cancel&#39; or &#39;Manage&#39; button visible on the page. This forces the user to navigate through additional steps to find the cancellation option.&rdquo;</div>
+        <div class="ex">The absence of a direct cancellation option on the main account page forces the user to seek help through the Help Center, adding unnecessary steps to the cancellation process. This is a clear obstruction that hinders the user&#39;s goal of canceling their subscription.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/ac6825788259d3f9c179285f192ecb13e8a328e4.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+  
+
+  <h2>Step timeline — leave journey</h2>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/104d02be0635c9d362866dec9a8e2e58d8743526.jpg" alt="step 0" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#0 · Go to · ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <div class="el" style="color:var(--muted)">https://www.bing.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Let me start by navigating to the target URL.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/43e1e05ba1bffd86d53a80adeb50e75793f7becc.jpg" alt="step 1" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#1 · Click · &#39;Accept all cookies button&#39;</div>
+      <div class="el">Accept all cookies button</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I&#39;m logged in as Demo. Let me dismiss the cookie banner and find the account settings.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The page loaded and I&#39;m already logged in as &#34;Demo&#34;. I see a subscription plan (Netflux Premium, $15.99/month). I need to find a way to cancel. Let me first dismiss the cookie banner, then look for account settings. I&#39;ll click &#34;Accept all&#34; to dismiss the cookie banner (or &#34;Settings&#34; - but accept all is fine for a test site). Actually, let me just accept cookies to clear the overlay, then find the account menu. The &#34;DU&#34; avatar in top right is likely the account menu.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/ac6825788259d3f9c179285f192ecb13e8a328e4.jpg" alt="step 2" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#2 · Click · &#39;DU account avatar in top right&#39;</div>
+      <div class="el">DU account avatar in top right</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Cookie banner dismissed. Let me click the account avatar to find cancellation options.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Cookie banner dismissed. Now I need to find the cancellation path. Let me click the &#34;DU&#34; avatar in the top right to see account options.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/75ede6ae432850efbbe89dc4029ec0fab4703fea.jpg" alt="step 3" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#3 · Scroll</div>
+      
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The avatar didn&#39;t open a menu. Let me scroll down to see the full account page for cancellation options.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The avatar click didn&#39;t open a dropdown. Maybe it needs a hover, or maybe the account page is accessed differently. The page title says &#34;Account — Netflux&#34; so this IS the account page. Let me scroll down to see if there&#39;s a cancel option below the trending section.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/6ae9059b77f9eb0ebd008677c94e2d6d9b4981df.jpg" alt="step 4" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#4 · Scroll</div>
+      
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">No cancel button on this page. The plan section points to the Help Center. Let me scroll up and click it.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">This page doesn&#39;t have a cancel button. The &#34;Your plan&#34; section only has &#34;Help Center&#34; and &#34;Visit our Help Center&#34; links. The cancellation path is likely through the Help Center. Let me scroll back up and click &#34;Help Center&#34; or &#34;Visit our Help Center&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/0b46b7ffa9d0bfb065c2513d586cf6b50e5dbfdd.jpg" alt="step 5" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#5 · Click · &#39;Help Center button in Your plan card&#39;</div>
+      <div class="el">Help Center button in Your plan card</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Let me click the &#34;Help Center&#34; button to find cancellation options.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The &#34;Your plan&#34; card only has &#34;Help Center&#34; button and &#34;Visit our Help Center&#34; link. The cancellation path is likely through the Help Center. Let me click &#34;Help Center&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/564aa8353a853a5fee96ec0bb479ff0dab680825.jpg" alt="step 6" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#6 · Click · &#39;Billing &amp; membership accordion item&#39;</div>
+      <div class="el">Billing &amp; membership accordion item</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/help.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Help Center loaded. Let me expand &#34;Billing &amp; membership&#34;.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Help Center with FAQ accordion. &#34;Billing &amp; membership&#34; is the most likely to contain cancellation. Let me expand it.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/4c0b0ad1d86d91bd9b4f4a6f7626d1e7228c221a.jpg" alt="step 7" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#7 · Click · &#39;&#34;end your membership&#34; link in billing section&#39;</div>
+      <div class="el">&#34;end your membership&#34; link in billing section</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/help.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The cancellation path is the &#34;end your membership&#34; link. Let me click it.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The &#34;Billing &amp; membership&#34; section says: &#34;Your subscription renews automatically each month. To review charges, open Account → Billing history.&#34; And then: &#34;Looking to make changes to your membership? If you wish to end your membership, our retention team would love to help — click here to see how.&#34;
+
+The &#34;end your membership&#34; link is the cancellation path, but it&#39;s framed as a retention team. This is a dark pattern - they&#39;re routing cancellation through a &#34;retention team&#34;. But this is the only cancellation path offered. Let me click &#34;end your membership&#34; link.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/b3d1c0f04ff3314b4a395e7215258ca5cf159227.jpg" alt="step 8" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#8 · Click · &#39;&#34;Continue to cancel instead&#34; link in the free month modal&#39;</div>
+      <div class="el">&#34;Continue to cancel instead&#34; link in the free month modal</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/help.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Retention offer appeared. I&#39;ll decline the free month and continue to cancel.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">A retention offer modal appeared: &#34;Wait! Here&#39;s a FREE month&#34; with a big red &#34;Claim my free month&#34; button and a small &#34;Continue to cancel instead&#34; link. I must decline the free month and click &#34;Continue to cancel instead&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/55b6a555aa67a8e4d1e1c621c6c892a160bb9780.jpg" alt="step 9" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#9 · Asked for confirmation</div>
+      
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/confirm.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">This is the final confirmation page. Let me request confirmation before clicking &#34;Confirm cancellation&#34;.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Now I&#39;m on the &#34;Cancel your subscription?&#34; confirmation page. It says &#34;Netflux Premium will stay active until the end of your current billing period, then it will not renew.&#34; There&#39;s a red &#34;Confirm cancellation&#34; button and a &#34;Go back&#34; button. This is the final irreversible step. I need to call request_confirmation before clicking.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/55b6a555aa67a8e4d1e1c621c6c892a160bb9780.jpg" alt="step 10" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#10 · Click · &#39;Red &#34;Confirm cancellation&#34; button&#39;</div>
+      <div class="el">Red &#34;Confirm cancellation&#34; button</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level3/confirm.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Approved. Clicking &#34;Confirm cancellation&#34;.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Approved. Now I&#39;ll click &#34;Confirm cancellation&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+
+  <h2>Legal references</h2>
+  <div class="legal">
+    
+    <div class="ref">
+      <div><span class="code">Code de la consommation L215-1-1</span><span class="jur">FR</span></div>
+      <div class="title">Résiliation en trois clics</div>
+      <div class="sum">Since 1 June 2023 (loi n° 2022-1158), a contract that can be concluded online must be cancellable online through a free, easily accessible feature.</div>
+      <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046190107" target="_blank" rel="noopener">https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046190107</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">ROSCA, 15 U.S.C. § 8403</span><span class="jur">US</span></div>
+      <div class="title">Simple mechanism to stop recurring charges</div>
+      <div class="sum">The Restore Online Shoppers&#39; Confidence Act requires online negative-option sellers to provide simple mechanisms to stop recurring charges. (The FTC&#39;s 2024 click-to-cancel rule was vacated in July 2025; ROSCA still applies.)</div>
+      <a href="https://www.law.cornell.edu/uscode/text/15/8403" target="_blank" rel="noopener">https://www.law.cornell.edu/uscode/text/15/8403</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Cal. Bus. &amp; Prof. Code § 17602</span><span class="jur">US-CA</span></div>
+      <div class="title">California Automatic Renewal Law</div>
+      <div class="sum">Consumers who sign up online must be able to cancel online, without obstruction.</div>
+      <a href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&amp;sectionNum=17602" target="_blank" rel="noopener">https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&amp;sectionNum=17602</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">DSA Art. 25</span><span class="jur">EU</span></div>
+      <div class="title">Ban on deceptive interface design by online platforms</div>
+      <div class="sum">Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2022/2065/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2022/2065/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Directive 2005/29/EC</span><span class="jur">EU</span></div>
+      <div class="title">Unfair Commercial Practices Directive</div>
+      <div class="sum">Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2005/29/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2005/29/oj</a>
+    </div>
+    
+  </div>
+
+  <footer>
+    <span>session <b>deef2505-7f5e-410c-b69d-9825bed77a0f</b></span>
+    <span>status <b>completed</b></span>
+    <span>cost <b>$0.0348</b></span>
+    <span>duration <b>62s</b></span>
+    <span>enter session <b>0e8863df-97c0-4c9e-9f2e-c1cb83aa2420</b></span>
+    <span>Escape Hatch · evidence-backed friction report</span>
+  </footer>
+</div>
+</body>
+</html>

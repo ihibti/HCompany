@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Hatch — https://ihibti.github.io/HCompany/level4/index.html</title>
+<style>
+  :root {
+    --bg: #0b0d0c;
+    --panel: #131a16;
+    --panel2: #18211c;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #e9f2ec;
+    --muted: #8fa396;
+    --accent: #14c06a;
+    --green: #14c06a;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --red: #f87171;
+    --grey: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20, 192, 106, 0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20, 192, 106, 0.05), transparent 55%),
+      var(--bg);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,192,106,0.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(20,192,106,0.05), transparent 55%);
+    background-size: 44px 44px, 44px 44px, auto, auto;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo svg { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(20,192,106,.35)); }
+  .logo span { color: var(--accent); }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .hero { display: flex; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 24px; flex-wrap: wrap; }
+  .grade {
+    width: 110px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; font-weight: 800; flex-shrink: 0;
+  }
+  .g-A { background: rgba(20,192,106,.12); color: var(--green); border: 2px solid var(--green); }
+  .g-B { background: rgba(163,230,53,.10); color: var(--lime); border: 2px solid var(--lime); }
+  .g-C { background: rgba(251,191,36,.10); color: var(--amber); border: 2px solid var(--amber); }
+  .g-D { background: rgba(251,146,60,.10); color: var(--orange); border: 2px solid var(--orange); }
+  .g-F { background: rgba(248,113,113,.12); color: var(--red); border: 2px solid var(--red); }
+  .g-NA, .g-Q { background: rgba(100,116,139,.12); color: var(--grey); border: 2px solid var(--grey); }
+  .hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  .hero .sub { color: var(--muted); font-size: 14px; }
+  .hero .meta { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+  .chip.detour { color: #b8a6e8; border-color: rgba(184,166,232,.4); }
+  h2 { font-size: 17px; margin: 32px 0 12px; letter-spacing: -0.2px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .effort-row { display: grid; grid-template-columns: 110px 1fr 60px; gap: 12px; align-items: center; margin: 10px 0; }
+  .effort-row .lbl { font-size: 13px; color: var(--muted); }
+  .bar { height: 14px; background: var(--panel2); border-radius: 7px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 7px; }
+  .bar.leave > div { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .bar.enter > div { background: linear-gradient(90deg, #14c06a, #a3e635); }
+  .bar.impossible > div { background: linear-gradient(90deg, #f87171, #ef4444); }
+  .effort-row .num { font-size: 14px; font-weight: 700; text-align: right; }
+  .effort-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .impossible-note { color: var(--red); font-size: 13px; margin-top: 4px; }
+  .finding { display: grid; grid-template-columns: 1fr 180px; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sev { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+  .sev-3 { background: rgba(248,113,113,.15); color: var(--red); }
+  .sev-2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .sev-1 { background: rgba(139,150,171,.15); color: var(--muted); }
+  .pname { font-weight: 700; font-size: 14px; }
+  .pdesc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .ev { border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--text); font-size: 13px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .ex { font-size: 13px; color: var(--muted); }
+  .finding img { width: 180px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .finding .noimg { width: 180px; height: 100px; border-radius: 10px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .step { display: grid; grid-template-columns: 140px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .step img { width: 140px; border-radius: 8px; border: 1px solid var(--line); }
+  .step .noimg { width: 140px; height: 80px; border-radius: 8px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11px; }
+  .step .act { font-weight: 700; font-size: 14px; }
+  .step .el { color: var(--accent); font-size: 13px; margin-top: 2px; word-break: break-word; }
+  .step .rs { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; }
+  summary:hover { color: var(--text); }
+  .legal { display: grid; gap: 10px; }
+  .legal .ref { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .legal .code { font-weight: 700; font-size: 14px; }
+  .legal .jur { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .legal .title { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .legal .sum { font-size: 13px; margin-top: 6px; }
+  .legal a { color: var(--green); text-decoration: none; font-size: 12px; }
+  .legal a:hover { text-decoration: underline; }
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
+  .obstacles { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  .obstacles li { margin: 3px 0; }
+  a.logo { text-decoration: none; color: inherit; }
+  @media print {
+    :root {
+      --bg: #ffffff; --panel: #ffffff; --panel2: #f4f6f5;
+      --line: #d8ddd9; --text: #141a17; --muted: #5a665f;
+    }
+    body { background: #fff; }
+    .eh-toolbar { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .hero, .card, .finding, .step { break-inside: avoid; }
+    .finding img, .step img { max-height: 180px; width: auto; max-width: 180px; }
+    a { color: #0a6e3f; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="#0e1512" stroke="#14c06a" stroke-width="2"/>
+        <path d="M5 15h7M5 24h9M5 33h7" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+        <circle cx="17" cy="13.5" r="3.1" fill="#eafff3"/>
+        <path d="M16.8 17l1.6 8.5" stroke="#eafff3" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16.6 18.5L12 23M16.8 18.8L21 22.5" stroke="#eafff3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18.4 25.5l5.5 6M18.2 25.8l-4.5 7" stroke="#eafff3" stroke-width="2.3" stroke-linecap="round"/>
+        <path d="M31 9v30" stroke="#14c06a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M31 9h8.5a2.5 2.5 0 0 1 2.5 2.5v25a2.5 2.5 0 0 1-2.5 2.5H31" stroke="#14c06a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="37.5" cy="24" r="1.4" fill="#14c06a"/>
+      </svg>
+      <span>Escape<span>Hatch</span></span>
+    </div>
+    <div class="tag">friction audit</div>
+    <div class="tag">cancel_subscription</div>
+  </header>
+
+  <section class="hero">
+    
+    <div class="grade g-F">F</div>
+    <div>
+      <h1>https://ihibti.github.io/HCompany/level4/index.html</h1>
+      <div class="sub">Leaving takes 12 actions. Subscribing takes 1.</div>
+      <div class="meta">
+        <span class="chip">friction <b>100</b>/100</span>
+        <span class="chip">patterns <b>5</b></span>
+        <span class="chip">steps <b>14</b></span>
+        <span class="chip">outcome <b>success</b></span>
+        <span class="chip">agent <b>h/web-surfer-pro</b></span>
+        <span class="chip">2026-11-08 00:54</span>
+        
+      </div>
+    </div>
+  </section>
+
+  
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Obstacles reported by the agent</h2>
+    <ul class="obstacles">
+      <li>Pre-checked checkbox on retention offer page defaulted to accepting a free Basic downgrade instead of full cancellation — first &#39;Confirm&#39; click resulted in downgrade, not cancellation</li><li>Inverted button prominence: &#39;Stay&#39; (keep paying) was red/prominent while &#39;Confirm&#39; (cancel) was gray/de-emphasized</li><li>Countdown timer (00:59) creating artificial urgency pressure</li>
+    </ul>
+  </div>
+  
+
+  <h2>Effort to leave vs enter</h2>
+  <div class="card">
+    
+    
+    
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Leave (cancel subscription)</div>
+        <div class="bar leave"><div style="width: 100.0%"></div></div>
+        <div class="num">12</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        12 interactions · 0 navigations · 0 detours
+        · leave/enter ratio 12.0
+      </div>
+      
+    </div>
+    
+    <div>
+      
+      <div class="effort-row">
+        <div class="lbl">Enter (subscribe)</div>
+        <div class="bar enter"><div style="width: 8.333333333333334%"></div></div>
+        <div class="num">1</div>
+      </div>
+      <div class="effort-detail" style="margin: -6px 0 8px 122px;">
+        1 interactions · 0 navigations · 0 detours
+        
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <h2>Dark patterns detected</h2>
+  
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">asymmetric choice</span>
+          <span class="chip">step 3</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Continue&#39; button is a prominent red button while &#39;Never mind, take me back&#39; is a plain text link, making the option to reverse the cancellation decision visually weaker than the option to proceed with the cancellation flow.&rdquo;</div>
+        <div class="ex">The design makes it harder for users to easily reverse their decision to cancel by styling the &#39;take me back&#39; option as a less prominent text link compared to the primary &#39;Continue&#39; button.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/0cd86a8d9dca675c2514b9c5a14338dca2a52a4b.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">false urgency</span>
+          <span class="chip">step 5</span>
+        </div>
+        <div class="ev">&ldquo;This offer expires in 00:59 countdown timer creates artificial time pressure to accept the offer before the user can make a considered decision about cancellation.&rdquo;</div>
+        <div class="ex">The countdown timer pressures the user to make a quick decision about accepting the retention offer rather than proceeding with cancellation, which is a common dark pattern to prevent users from completing their intended action.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/24fea716ceb27457950667c0a5b71a5865f50e88.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">misdirection</span>
+          <span class="chip">step 10</span>
+        </div>
+        <div class="ev">&ldquo;The &#39;Continue&#39; button is styled as a prominent red button while the &#39;Never mind, take me back&#39; option is a plain text link, creating a visual hierarchy that emphasizes continuing the cancellation process over reversing the decision.&rdquo;</div>
+        <div class="ex">The visual prominence of the &#39;Continue&#39; button over the &#39;Never mind&#39; option misdirects users toward continuing the cancellation process rather than easily reversing their decision, which is a misdirection pattern.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/b9f2feea7c42c7514c8ad651a41b5e656fea8578.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">obstruction</span>
+          <span class="chip">step 3</span>
+        </div>
+        <div class="ev">&ldquo;The page requires users to answer &#39;What is the main reason you are leaving?&#39; with radio button options before they can proceed with the cancellation process.&rdquo;</div>
+        <div class="ex">This adds an unnecessary step to the cancellation process by forcing users to complete a survey before they can continue with their intended action of canceling the subscription.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/0cd86a8d9dca675c2514b9c5a14338dca2a52a4b.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+    <div class="finding">
+      <div>
+        <div class="head">
+          <span class="sev sev-2">severity 2</span>
+          <span class="pname">preselection</span>
+          <span class="chip">step 5</span>
+        </div>
+        <div class="ev">&ldquo;The checkbox &#39;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end&#39; is pre-checked by default.&rdquo;</div>
+        <div class="ex">The pre-selected checkbox favors the business by defaulting to a retention option, requiring the user to actively uncheck it to proceed with cancellation, which adds friction to the cancellation process.</div>
+      </div>
+      <div>
+        
+        <img src="../shots/24fea716ceb27457950667c0a5b71a5865f50e88.jpg" alt="evidence screenshot" loading="lazy">
+      </div>
+    </div>
+    
+  
+
+  <h2>Step timeline — leave journey</h2>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/f8528a02869d0b376df0ec988653891a123d7408.jpg" alt="step 0" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#0 · Go to · ihibti.github.io/HCompany/level4/index.html</div>
+      
+      <div class="el" style="color:var(--muted)">https://www.bing.com/</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The user wants me to navigate to a specific URL and cancel a paid subscription. Let me start by navigating to the URL.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/15c8068b4a8f643322ed5e0699c450d3fc259b4c.jpg" alt="step 1" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#1 · Click · &#39;Cancel subscription button in the &#34;Your plan&#34; section&#39;</div>
+      <div class="el">Cancel subscription button in the &#34;Your plan&#34; section</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I can see the account page with a &#34;Cancel subscription&#34; button. Let me click it.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">I can see the Netflux account page with a &#34;Cancel subscription&#34; button. The plan is Netflux Premium at $15.99/month. Let me click the &#34;Cancel subscription&#34; button.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/0a0e7cad1ed401f985e844ab4d5e624f9b995767.jpg" alt="step 2" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#2 · Click · &#39;Radio button for &#34;No, I do not want to keep my subscription&#34;&#39;</div>
+      <div class="el">Radio button for &#34;No, I do not want to keep my subscription&#34;</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I see a survey page. I need to select &#34;No, I do not want to keep my subscription&#34; and a neutral reason. Let me select the first option.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">This is a survey page asking me to confirm my decision and give a reason for leaving. I need to:
+1. Select &#34;No, I do not want to keep my subscription&#34;
+2. Select a reason - &#34;Other&#34; would be most neutral, or I could pick one of the options. The instructions say to give a short neutral answer like &#34;I no longer need the service&#34; - so &#34;Other&#34; seems most appropriate, but let me think... Actually the options are &#34;It&#39;s too expensive&#34;, &#34;Not enough content I like&#34;, or &#34;Other&#34;. &#34;Other&#34; is the most neutral choice. Let me select &#34;No, I do not want to keep my subscription&#34; first, then &#34;Other&#34; for the reason.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/0cd86a8d9dca675c2514b9c5a14338dca2a52a4b.jpg" alt="step 3" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#3 · Click · &#39;Radio button for &#34;Other&#34; reason&#39;</div>
+      <div class="el">Radio button for &#34;Other&#34; reason</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Good, &#34;No, I do not want to keep my subscription&#34; is selected. Now I&#39;ll select &#34;Other&#34; as the reason since it&#39;s the most neutral option.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">I can see the &#34;No, I do not want to keep my subscription&#34; option is now selected (the radio button appears to be selected/filled). Now I need to select a reason. The most neutral option would be &#34;Other&#34; - but the instructions say to give a short neutral answer like &#34;I no longer need the service&#34;. Since there&#39;s no text field visible, &#34;Other&#34; seems like the most neutral choice. Let me click &#34;Other&#34;.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/2a168441f3a1d28ae4ca073d0c0564313aba70c6.jpg" alt="step 4" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#4 · Click · &#39;Continue button (red) to proceed with cancellation&#39;</div>
+      <div class="el">Continue button (red) to proceed with cancellation</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Both selections look good - &#34;No, I do not want to keep my subscription&#34; and &#34;Other&#34; are selected. Now I&#39;ll click &#34;Continue&#34; to proceed with the cancellation.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">I can see &#34;No, I do not want to keep my subscription&#34; is selected (red filled radio button), and &#34;Other&#34; appears to be in the process of being selected (it shows a partial/filled state). Let me wait a moment and check if &#34;Other&#34; is fully selected, or I might need to click it more precisely. Looking at the screenshot, the &#34;Other&#34; radio button appears to be partially selected (it looks like it&#39;s in a transition state). Let me click it again to make sure it&#39;s selected.
+
+Actually, looking more carefully, the &#34;Other&#34; radio button appears to be selected (it has a red outline/fill). The &#34;No, I do not want to keep my subscription&#34; is clearly selected with a red filled circle. The &#34;Other&#34; one looks like it&#39;s being selected too. Let me proceed to click &#34;Continue&#34;.
+
+Wait - I need to be careful. The &#34;Continue&#34; button is red and prominent, while &#34;Never mind, take me back&#34; is just text. The &#34;Continue&#34; button is the right one to click to proceed with cancellation. Let me click it.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/24fea716ceb27457950667c0a5b71a5865f50e88.jpg" alt="step 5" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#5 · Click · &#39;Confirm button (gray) to confirm cancellation&#39;</div>
+      <div class="el">Confirm button (gray) to confirm cancellation</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/offer.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">This is a retention offer page with a pre-checked checkbox. The &#34;Confirm&#34; button (gray) is the cancellation confirmation, while &#34;Stay&#34; (red) is the dark pattern designed to keep me subscribed. The checkbox is an acknowledgment that my Premium plan will end. I&#39;ll click &#34;Confirm&#34; to proceed with cancellation.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">This is a retention offer page. It says &#34;Hold on — we have something for you&#34; with a countdown timer. There&#39;s a pre-checked checkbox that says &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34;
+
+The two buttons are:
+1. &#34;Confirm&#34; (gray/dark button) - this appears to be the one that confirms the cancellation
+2. &#34;Stay&#34; (red button) - this is the one that accepts the retention offer
+
+Wait, I need to be careful here. The &#34;Confirm&#34; button is gray and &#34;Stay&#34; is red. This is a classic dark pattern where the &#34;Stay&#34; button is made more prominent (red) while the &#34;Confirm&#34; (cancellation) button is de-emphasized (gray).
+
+But wait - the checkbox is pre-checked and says &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34; This is a tricky checkbox. If I click &#34;Confirm&#34; with this checkbox checked, it might mean I&#39;m confirming that I want to stay on Basic (free) rather than fully cancel.
+
+Actually, re-reading: &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34; This checkbox seems to be saying &#34;I understand what&#39;s happening&#34; - it&#39;s an acknowledgment checkbox, not an acceptance of the offer. The &#34;Confirm&#34; button likely confirms the cancellation, while &#34;Stay&#34; accepts the retention offer.
+
+But I need to be careful. The checkbox says &#34;stay on Netflix Basic (free)&#34; - this could be the retention offer itself. If I check this and click &#34;Confirm&#34;, I might be accepting the downgrade to Basic rather than fully cancelling.
+
+Actually, looking at this more carefully:
+- The page title is &#34;Hold on — we have something for you&#34;
+- The offer is to &#34;stay on Netflix Basic (free)&#34;
+- The checkbox is pre-checked: &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end&#34;
+- &#34;Confirm&#34; button (gray) - confirms the offer/downgrade
+- &#34;Stay&#34; button (red) - this is confusing... &#34;Stay&#34; could mean &#34;stay with the Premium plan&#34;
+
+Wait, I&#39;m overthinking this. Let me re-read:
+- &#34;Before your subscription ends, how about a better deal?&#34; - This is offering a deal
+- The checkbox says &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end&#34;
+- &#34;Confirm&#34; would confirm this deal (downgrade to free Basic)
+- &#34;Stay&#34; would mean &#34;stay with Premium&#34; (reject the offer)
+
+So neither button is &#34;cancel&#34; - &#34;Confirm&#34; is &#34;accept the downgrade to free Basic&#34; and &#34;Stay&#34; is &#34;keep Premium&#34;. 
+
+Hmm, but the goal says &#34;fully cancel the paid subscription so that it will not be billed again.&#34; A downgrade to free Basic would technically mean the paid subscription is cancelled. But the instructions say &#34;downgrading... is NOT cancelling.&#34;
+
+So I need to find a way to fully cancel, not just downgrade. Let me look for another option...
+
+Actually, I don&#39;t see a &#34;No thanks, cancel my subscription&#34; option on this page. The only options are &#34;Confirm&#34; (accept the free Basic downgrade) and &#34;Stay&#34; (keep Premium).
+
+Wait - maybe I&#39;m misreading the buttons. Let me reconsider:
+- &#34;Confirm&#34; could mean &#34;Confirm my cancellation&#34; (the gray button is intentionally de-emphasized as a dark pattern)
+- &#34;Stay&#34; could mean &#34;Stay with the offer&#34; (i.e., accept the retention offer)
+
+The checkbox &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end&#34; - if this is a pre-checked box that I need to UNCHECK to proceed with full cancellation, then clicking &#34;Confirm&#34; without unchecking it would be accepting the downgrade.
+
+Actually, I think the most likely interpretation is:
+- The offer is: &#34;Instead of cancelling, stay on free Basic&#34;
+- &#34;Confirm&#34; = &#34;Yes, I&#39;ll take the free Basic deal&#34; (accept retention offer)
+- &#34;Stay&#34; = &#34;No, I want to stay with Premium&#34; (reject the offer, keep paying)
+
+Neither of these is &#34;fully cancel.&#34; This is a dark pattern where the cancellation option is hidden.
+
+But wait - maybe &#34;Confirm&#34; actually does mean &#34;confirm cancellation&#34; and the checkbox is just an acknowledgment that says &#34;I understand my Premium plan will end&#34; (which is what cancellation means). The &#34;Keep my profile and stay on Netflix Basic (free)&#34; part might be describing what happens after cancellation - your profile is kept and you get free Basic access.
+
+Hmm, this is genuinely ambiguous. Let me think about what makes sense from a UX perspective:
+
+If &#34;Confirm&#34; means &#34;confirm cancellation&#34;:
+- The checkbox is a required acknowledgment: &#34;I understand I&#39;m keeping my profile on free Basic and my Premium plan will end&#34;
+- This makes sense as a final confirmation step before the irreversible action
+
+If &#34;Confirm&#34; means &#34;accept the downgrade offer&#34;:
+- The checkbox is agreeing to the terms of the downgrade
+- &#34;Stay&#34; would mean &#34;I&#39;ll stay with Premium&#34;
+
+Given the page title &#34;Hold on — we have something for you&#34; and &#34;how about a better deal?&#34;, I think this is offering a downgrade to free Basic as a retention strategy. The &#34;Confirm&#34; button is for accepting this deal.
+
+But then where is the &#34;No, I still want to cancel&#34; option? That&#39;s the dark pattern - the site is trying to make you accept the downgrade instead of fully cancelling.
+
+Actually, I think I need to UNCHECK the checkbox and then click &#34;Confirm&#34; - the checkbox might be saying &#34;I agree to the terms of staying on Basic&#34; and unchecking it + clicking Confirm might lead to full cancellation.
+
+No wait, that doesn&#39;t make sense either. If the checkbox is pre-checked and I uncheck it, what would &#34;Confirm&#34; mean?
+
+Let me reconsider the whole flow:
+1. User clicks &#34;Cancel subscription&#34;
+2. Survey page: &#34;Do you want to keep your subscription?&#34; → &#34;No&#34; + reason
+3. Offer page: &#34;How about a better deal?&#34; with a free Basic option
+
+The &#34;Confirm&#34; button on this offer page most likely means &#34;Confirm the cancellation&#34; (i.e., &#34;Yes, I understand the offer but I still want to cancel&#34;). The checkbox is an acknowledgment that says &#34;I understand what will happen - my profile stays on free Basic and my Premium plan ends.&#34;
+
+Actually, I think the checkbox IS the key here. It says &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34; This is NOT an acceptance of the offer - it&#39;s an acknowledgment of what happens when you cancel: your profile is kept on free Basic, and your paid Premium plan ends.
+
+So &#34;Confirm&#34; = &#34;Yes, I confirm I want to cancel (and I understand my profile will stay on free Basic)&#34;
+&#34;Stay&#34; = &#34;No, I&#39;ll stay with Premium&#34;
+
+This interpretation makes more sense! The checkbox is pre-checked as a required acknowledgment, and &#34;Confirm&#34; is the actual cancellation button.
+
+But I&#39;m still not 100% sure. The instructions say &#34;downgrading... is NOT cancelling.&#34; If &#34;Confirm&#34; leads to a free Basic plan, that could be considered a downgrade.
+
+However, the checkbox says &#34;I understand my Premium plan will end&#34; - this clearly states the paid plan is ending. Free Basic is not a paid subscription. So &#34;Confirm&#34; here means the paid subscription is being cancelled.
+
+I think &#34;Confirm&#34; is the right button to click. The &#34;Stay&#34; button (red, prominent) is the dark pattern - it&#39;s designed to make you think &#34;Confirm&#34; is the wrong button because it&#39;s gray/de-emphasized, while &#34;Stay&#34; (red) looks like the &#34;primary action.&#34; But &#34;Stay&#34; would mean staying with the paid Premium plan, which is the opposite of what we want.
+
+Let me click &#34;Confirm&#34; - but first, I should check if the checkbox needs to be unchecked. The checkbox says &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34; This sounds like an acknowledgment, not an acceptance. I&#39;ll leave it checked and click &#34;Confirm.&#34;
+
+Actually, I realize I should be more careful. Let me re-read the checkbox: &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34;
+
+This could be interpreted as:
+1. An acknowledgment: &#34;I understand that after cancellation, my profile will remain on free Basic and my Premium plan will end&#34;
+2. An acceptance: &#34;I agree to keep my profile and stay on Netflix Basic (free)&#34;
+
+If it&#39;s interpretation 2, then clicking &#34;Confirm&#34; with this checked means I&#39;m accepting the free Basic downgrade, not fully cancelling.
+
+The instructions say &#34;downgrading... is NOT cancelling.&#34; A free Basic plan is technically a downgrade from Premium.
+
+But then what does &#34;Stay&#34; mean? &#34;Stay&#34; with what? The Premium plan? That makes &#34;Stay&#34; the &#34;keep paying&#34; button.
+
+I&#39;m going to go with my best interpretation: &#34;Confirm&#34; is the cancellation confirmation button, and the checkbox is an acknowledgment of what happens post-cancellation. The &#34;Stay&#34; button is the dark pattern designed to make you keep paying.
+
+Let me click &#34;Confirm.&#34;
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/8d7675169e7f11b89080fcb78662553171c8f77e.jpg" alt="step 6" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#6 · Click · &#39;Back to account button&#39;</div>
+      <div class="el">Back to account button</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/downgraded.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The subscription was downgraded to free Basic, not fully cancelled. The pre-checked checkbox was the dark pattern - it made me accept the downgrade. I need to go back to the account page and try again, this time unchecking that box before confirming.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The page says &#34;You&#39;re now on Netflix Basic&#34; and &#34;Your profile was kept and your account switched to the free Basic plan. Your subscription is still active — you were not fully cancelled.&#34;
+
+This confirms my concern - clicking &#34;Confirm&#34; with the pre-checked box accepted the downgrade to free Basic, NOT a full cancellation. The subscription is still active. I need to go back to the account page and try to fully cancel.
+
+The pre-checked checkbox was the dark pattern - it was pre-checked to make me accept the free Basic downgrade instead of fully cancelling. I should have unchecked it before clicking &#34;Confirm.&#34;
+
+Let me go back to the account page and try again. This time I need to uncheck that checkbox before clicking &#34;Confirm.&#34;
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/c72a42fe4a78f06e4351b1032faf72acb4e7f8dc.jpg" alt="step 7" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#7 · Click · &#39;Cancel subscription button&#39;</div>
+      <div class="el">Cancel subscription button</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/index.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The account page still shows Premium. Let me click &#34;Cancel subscription&#34; again and this time uncheck the pre-checked box on the offer page.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Interesting - the account page still shows &#34;Netflix Premium · 4K · 2 screens&#34; at $15.99/month. It seems like the downgrade to Basic didn&#39;t actually take effect on the account page, or the page is showing a cached version. Let me scroll down to see if there&#39;s more information, or I should click &#34;Cancel subscription&#34; again.
+
+Wait, the page says &#34;Netflix Premium&#34; still. This is confusing. The previous page said &#34;You&#39;re now on Netflix Basic&#34; but the account page still shows Premium. This might be a bug in the demo site, or the page might not have refreshed properly.
+
+Let me click &#34;Cancel subscription&#34; again and this time, when I get to the offer page, I&#39;ll UNCHECK the pre-checked checkbox before clicking &#34;Confirm.&#34;
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/c4fc3993ebcf5086ffa79ae31797d15a686b0af8.jpg" alt="step 8" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#8 · Click · &#39;Radio button for &#34;No, I do not want to keep my subscription&#34;&#39;</div>
+      <div class="el">Radio button for &#34;No, I do not want to keep my subscription&#34;</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Back at the survey page. Let me select &#34;No, I do not want to keep my subscription&#34; and &#34;Other&#34; again.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Good, I&#39;m back at the survey page. I need to select &#34;No, I do not want to keep my subscription&#34; and &#34;Other&#34; again, then continue. Let me do both selections.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/8aed5f533e6d193ea465a523595d37af01991138.jpg" alt="step 9" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#9 · Click · &#39;Radio button for &#34;Other&#34; reason&#39;</div>
+      <div class="el">Radio button for &#34;Other&#34; reason</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Good, &#34;No&#34; is selected. Now selecting &#34;Other&#34; as the reason.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">&#34;No, I do not want to keep my subscription&#34; is selected. Now I need to select &#34;Other&#34; for the reason.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/b9f2feea7c42c7514c8ad651a41b5e656fea8578.jpg" alt="step 10" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#10 · Click · &#39;Continue button (red)&#39;</div>
+      <div class="el">Continue button (red)</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/survey.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Both selections are made. Clicking &#34;Continue&#34; to proceed to the offer page.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">Both &#34;No, I do not want to keep my subscription&#34; and &#34;Other&#34; are now selected (red filled radio buttons). Now I&#39;ll click &#34;Continue&#34; to proceed to the offer page, where I&#39;ll need to uncheck the pre-checked checkbox before confirming.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/5b19678f9cc9faf185ec96ed0d6d176446a7c66e.jpg" alt="step 11" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#11 · Click · &#39;Pre-checked checkbox &#34;Keep my profile and stay on Netflix Basic (free)&#34;&#39;</div>
+      <div class="el">Pre-checked checkbox &#34;Keep my profile and stay on Netflix Basic (free)&#34;</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/offer.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">I&#39;m back at the offer page. The checkbox is pre-checked with the &#34;stay on Netflix Basic (free)&#34; retention offer. I need to UNCHECK it this time before clicking &#34;Confirm&#34; to get a full cancellation.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">I&#39;m back at the offer page. The checkbox is pre-checked: &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end.&#34;
+
+Last time I clicked &#34;Confirm&#34; with this checkbox checked and it resulted in a downgrade to Basic, not a full cancellation. The page said &#34;Your subscription is still active — you were not fully cancelled.&#34;
+
+So the checkbox is the key dark pattern here. I need to UNCHECK it before clicking &#34;Confirm.&#34; The checkbox is saying &#34;stay on Netflix Basic (free)&#34; - this is the retention offer. If I uncheck it, &#34;Confirm&#34; should mean &#34;fully cancel without the free Basic option.&#34;
+
+Let me uncheck the checkbox first.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/c1f433bada0ced80f81647128688887422858afd.jpg" alt="step 12" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#12 · Asked for confirmation</div>
+      
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/offer.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">The checkbox is now unchecked. Now I need to confirm the final cancellation. This is the irreversible step, so I&#39;ll call request_confirmation first.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The checkbox is now unchecked (I can see it&#39;s empty/unchecked now). The checkbox &#34;Keep my profile and stay on Netflix Basic (free) — I understand my Premium plan will end&#34; is now unchecked.
+
+Now I need to click &#34;Confirm&#34; to proceed with the full cancellation. This is the irreversible action that will actually cancel the subscription. I need to call request_confirmation first before clicking.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+  <div class="step">
+    <div>
+      
+      <img src="../shots/c1f433bada0ced80f81647128688887422858afd.jpg" alt="step 13" loading="lazy">
+    </div>
+    <div>
+      <div class="act">#13 · Click · &#39;Confirm button (gray) to fully cancel subscription&#39;</div>
+      <div class="el">Confirm button (gray) to fully cancel subscription</div>
+      <div class="el" style="color:var(--muted)">https://ihibti.github.io/HCompany/level4/offer.html</div>
+      
+      <details>
+        <summary>agent reasoning</summary>
+        <div class="rs" style="margin-top:6px">Approved. Clicking &#34;Confirm&#34; to fully cancel the subscription.</div>
+        <div class="rs" style="margin-top:6px;white-space:pre-wrap">The user approved the action. Now I&#39;ll click the &#34;Confirm&#34; button to fully cancel the subscription.
+</div>
+      </details>
+      
+    </div>
+  </div>
+  
+
+  <h2>Legal references</h2>
+  <div class="legal">
+    
+    <div class="ref">
+      <div><span class="code">Code de la consommation L215-1-1</span><span class="jur">FR</span></div>
+      <div class="title">Résiliation en trois clics</div>
+      <div class="sum">Since 1 June 2023 (loi n° 2022-1158), a contract that can be concluded online must be cancellable online through a free, easily accessible feature.</div>
+      <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046190107" target="_blank" rel="noopener">https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046190107</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">ROSCA, 15 U.S.C. § 8403</span><span class="jur">US</span></div>
+      <div class="title">Simple mechanism to stop recurring charges</div>
+      <div class="sum">The Restore Online Shoppers&#39; Confidence Act requires online negative-option sellers to provide simple mechanisms to stop recurring charges. (The FTC&#39;s 2024 click-to-cancel rule was vacated in July 2025; ROSCA still applies.)</div>
+      <a href="https://www.law.cornell.edu/uscode/text/15/8403" target="_blank" rel="noopener">https://www.law.cornell.edu/uscode/text/15/8403</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Cal. Bus. &amp; Prof. Code § 17602</span><span class="jur">US-CA</span></div>
+      <div class="title">California Automatic Renewal Law</div>
+      <div class="sum">Consumers who sign up online must be able to cancel online, without obstruction.</div>
+      <a href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&amp;sectionNum=17602" target="_blank" rel="noopener">https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&amp;sectionNum=17602</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">DSA Art. 25</span><span class="jur">EU</span></div>
+      <div class="title">Ban on deceptive interface design by online platforms</div>
+      <div class="sum">Regulation (EU) 2022/2065 forbids online platforms from designing interfaces that deceive or manipulate users, including giving more prominence to certain choices, repeatedly requesting a choice already made, and making termination harder than subscribing.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2022/2065/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2022/2065/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">Directive 2005/29/EC</span><span class="jur">EU</span></div>
+      <div class="title">Unfair Commercial Practices Directive</div>
+      <div class="sum">Prohibits misleading and aggressive commercial practices, including non-contractual barriers to terminating a contract.</div>
+      <a href="https://eur-lex.europa.eu/eli/dir/2005/29/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/dir/2005/29/oj</a>
+    </div>
+    
+    <div class="ref">
+      <div><span class="code">GDPR Art. 7(3)</span><span class="jur">EU</span></div>
+      <div class="title">Withdrawing consent must be as easy as giving it</div>
+      <div class="sum">Regulation (EU) 2016/679 requires that it be as easy to withdraw consent as to give it.</div>
+      <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2016/679/oj</a>
+    </div>
+    
+  </div>
+
+  <footer>
+    <span>session <b>900915fb-90e8-425b-ba3f-ff91d9a232d5</b></span>
+    <span>status <b>completed</b></span>
+    <span>cost <b>$0.0596</b></span>
+    <span>duration <b>81s</b></span>
+    <span>enter session <b>33e60c3a-f7f5-451d-b75d-4f64c003b6a0</b></span>
+    <span>Escape Hatch · evidence-backed friction report</span>
+  </footer>
+</div>
+</body>
+</html>
