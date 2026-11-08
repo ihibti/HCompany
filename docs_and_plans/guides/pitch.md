@@ -1,7 +1,7 @@
 # Escape Hatch: pitch (3 minutes)
 
 ## 0:00 Hook (20s)
-"How many clicks does it take to subscribe to a streaming service? One. How many to cancel? Last night our agent counted twelve, plus a password, a chatbot that 'paused' instead of cancelling, and a link in 9-pixel grey text."
+"How many clicks does it take to subscribe to a streaming service? One. How many to cancel? Last night our agent counted more than ten, plus a password, a chatbot that 'paused' instead of cancelling, and a link in 9-pixel grey text."
 
 ## 0:20 Problem (25s)
 - Exit flows are the one part of the web that companies *want* to break: cookie walls, retention mazes, confirmshaming.
@@ -10,12 +10,12 @@
 
 ## 0:45 Live demo (90s)
 1. Home → "French media" preset → three agents race in parallel on lemonde.fr, lefigaro.fr and allocine.fr, refusing cookies. Watch the click markers and the live effort counter.
-2. Report cards land: **3 of 6 major French sites we audited make refusing cookies impossible without paying.** Each verdict comes with screenshot evidence (e.g. Le Figaro's "continue without accepting" redirects to the subscription page) and the law it touches.
+2. Report cards land: **7 of the 19 popular French sites we audited make refusing cookies impossible without paying.** Each verdict comes with screenshot evidence (e.g. Le Figaro's "continue without accepting" redirects to the subscription page) and the law it touches.
 3. Consumer mode: "Cancel my Netflux, Level 5". The agent re-enters the password, insists three times with the retention chatbot, refuses the fake "pause", and *asks you before the irreversible click*. Approve → cancelled.
 
 ## 2:15 Reliability and tech (25s)
 - Built on H's Agents API (Holo, cloud browser, structured answers, custom tools for human approval) and the Models API (Holo vision classifying every key screenshot into an 11-pattern dark-pattern taxonomy with strict JSON schema).
-- Netflux gauntlet benchmark: 5 levels of escalating dark patterns with ground truth. 5/5 cancelled; effort within a few actions of the human minimum; pattern precision/recall measured against the ground truth.
+- Netflux gauntlet benchmark: 5 levels of escalating dark patterns with ground truth. Both Holo agents escape all 5 levels (pro: 24 of 29 honest runs). Runs where the agent fetched page source or jumped URLs are detected and do not count. Pattern precision/recall is measured against the ground truth.
 - Every run is stored and replayable; the pure scoring core is unit-tested.
 
 ## 2:40 Business (20s)
