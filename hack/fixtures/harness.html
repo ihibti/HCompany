@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tomate harness</title>
+<style>
+body{margin:0;font-family:system-ui}
+body.dark{background:#0f0f0f}
+.card{position:fixed;left:120px;top:220px;width:300px;height:200px;background:#fff;border:1px solid #ddd;border-radius:8px}
+body.dark .card{background:#212121;border-color:#333}
+</style></head><body>
+<ytd-rich-item-renderer class="card"><a id="thumbnail" href="/watch?v=demo1"><img></a><a id="video-title-link" href="/watch?v=demo1"><h3 id="video-title">drama gaming</h3></a><ytd-channel-name>X</ytd-channel-name></ytd-rich-item-renderer>
+<script>
+window.__tomateDebug = {
+  setState: (s) => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'state',arg:s}})),
+  sleep: () => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'sleep'}})),
+  wake: () => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'state',arg:'wake'}})),
+  aim: () => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'aim',arg:'.card'}})),
+  throwAt: () => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'throw',arg:'.card'}})),
+  celebrate: () => document.dispatchEvent(new CustomEvent('tomate:debug', {detail:{cmd:'celebrate'}})),
+  setTheme: (t) => document.body.classList.toggle('dark', t==='dark'),
+  pauseAt: (t) => document.getAnimations().forEach(a=>{a.pause();a.currentTime=t;}),
+  play: () => document.getAnimations().forEach(a=>a.play()),
+  animCount: () => document.getAnimations().length,
+};
+</script></body></html>

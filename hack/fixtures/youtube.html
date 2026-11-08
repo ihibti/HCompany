@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><title>YouTube — fixture</title>
+<style>body{font-family:Arial;background:#f9f9f9}ytd-rich-item-renderer{display:block;width:300px;margin:12px;padding:10px;background:#fff;border:1px solid #ddd}h3{margin:4px 0}</style></head><body>
+<h2>YouTube (fixture)</h2>
+<div id="grid">
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=esc01"><img></a><a id="video-title-link" href="/watch?v=esc01"><h3 id="video-title">Escalade : mon premier 7A en bloc</h3></a><ytd-channel-name>GrimpeurFR</ytd-channel-name></ytd-rich-item-renderer>
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=drm01"><img></a><a id="video-title-link" href="/watch?v=drm01"><h3 id="video-title">Drama : la dispute qui secoue les célébrités</h3></a><ytd-channel-name>PeopleTV</ytd-channel-name></ytd-rich-item-renderer>
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=cui01"><img></a><a id="video-title-link" href="/watch?v=cui01"><h3 id="video-title">Recette de ramen maison — cuisine japonaise</h3></a><ytd-channel-name>CuisineZen</ytd-channel-name></ytd-rich-item-renderer>
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=gam01"><img></a><a id="video-title-link" href="/watch?v=gam01"><h3 id="video-title">Gaming : top 10 kills Fortnite</h3></a><ytd-channel-name>GameZ</ytd-channel-name></ytd-rich-item-renderer>
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=esc02"><img></a><a id="video-title-link" href="/watch?v=esc02"><h3 id="video-title">Boulder session — escalade en salle</h3></a><ytd-channel-name>BlocLife</ytd-channel-name></ytd-rich-item-renderer>
+<ytd-rich-item-renderer><a id="thumbnail" href="/watch?v=zzz01"><img></a><a id="video-title-link" href="/watch?v=zzz01"><h3 id="video-title">Documentaire sur les phares bretons</h3></a><ytd-channel-name>DocuBZH</ytd-channel-name></ytd-rich-item-renderer>
+</div>
+<script>
+// simulate infinite scroll after 2s
+setTimeout(() => {
+  const el = document.createElement('ytd-rich-item-renderer');
+  el.innerHTML = `<a id="thumbnail" href="/watch?v=gam02"><img></a><a id="video-title-link" href="/watch?v=gam02"><h3 id="video-title">Gaming : speedrun record</h3></a><ytd-channel-name>SpeedZ</ytd-channel-name>`;
+  document.getElementById('grid').appendChild(el);
+}, 2000);
+</script>
+</body></html>

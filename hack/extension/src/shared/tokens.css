@@ -1,0 +1,20 @@
+:root {
+  --t-red: oklch(0.62 0.19 38); --t-red-deep: oklch(0.50 0.16 38);
+  --t-green: oklch(0.55 0.13 145); --t-green-deep: oklch(0.44 0.11 145);
+  --t-surface: oklch(0.97 0.02 90); --t-surface-2: oklch(0.93 0.03 90);
+  --t-ink: oklch(0.32 0.03 60); --t-ink-mut: oklch(0.55 0.03 60);
+  --t-line: oklch(0.85 0.02 80);
+  --t-font-display: "Fredoka", system-ui, sans-serif;
+  --t-font-ui: "Nunito Sans", system-ui, sans-serif;
+  --t-r-sm: 6px; --t-r-md: 10px; --t-r-lg: 16px; --t-r-pill: 999px;
+  --t-sh-1: 0 1px 3px oklch(0.3 0.02 60 / .14);
+  --t-sh-2: 0 4px 14px oklch(0.3 0.02 60 / .16), 0 1px 4px oklch(0.3 0.02 60 / .1);
+  --t-sh-3: 0 10px 30px oklch(0.3 0.02 60 / .2), 0 2px 8px oklch(0.3 0.02 60 / .12);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --t-surface: oklch(0.26 0.02 60); --t-surface-2: oklch(0.32 0.02 60);
+    --t-ink: oklch(0.93 0.01 80); --t-ink-mut: oklch(0.7 0.02 70);
+    --t-line: oklch(0.42 0.02 60);
+  }
+}
