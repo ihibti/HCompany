@@ -206,7 +206,12 @@ def _home_stats(state: State) -> dict[str, Any]:
     benches = _load_benchmarks(state)
     pro = next((b for b in benches if b["agent"] == "h/web-surfer-pro"), None) \
         or (benches[0] if benches else None)
-    netflux = f"{pro['escaped']}/{pro['level_count']}" if pro else "–"
+    if pro:
+        esc_runs = sum(l.get("escapes") or 0 for l in pro["levels"])
+        tot_runs = sum(l.get("runs") or 1 for l in pro["levels"])
+        netflux = f"{esc_runs}/{tot_runs}"
+    else:
+        netflux = "–"
     costs = []
     for audit, _ in _all_audits(state):
         if _is_gauntlet(audit) or audit.score.grade in {"?", "N/A"}:
@@ -404,11 +409,24 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
     @app.get("/", response_class=HTMLResponse)
     async def home(request: Request):
         audits = _all_audits(state)
-        max_effort = max(
-            (a.score.leave_effort.total for a, _ in audits
-             if a.leave.outcome == Outcome.SUCCESS),
-            default=0,
+        # hero number: hardest REAL site (gauntlet excluded), conclusive outcomes only
+        hero_pick = max(
+            ((a.score.leave_effort.total, a) for a, _ in audits
+             if not _is_gauntlet(a)
+             and a.score.grade not in {"?", "N/A"}
+             and a.leave.outcome in {Outcome.SUCCESS, Outcome.IMPOSSIBLE}),
+            key=lambda t: t[0],
+            default=(0, None),
         )
+        max_effort, hero_audit = hero_pick
+        hero = None
+        if hero_audit is not None and max_effort > 0:
+            hero = {
+                "id": hero_audit.id,
+                "site": urlparse(hero_audit.site_url).netloc.removeprefix("www."),
+                "effort": max_effort,
+                "impossible": hero_audit.leave.outcome == Outcome.IMPOSSIBLE,
+            }
         hall = _hall_rows(state)[:6]
         demo_runs = []
         if state.demo_store is not None:
@@ -425,6 +443,7 @@ def create_app(store: RunStore, demo_store: RunStore | None = None) -> FastAPI:
         return templates.TemplateResponse(request, "home.html", {
             "request": request,
             "max_effort": max_effort,
+            "hero": hero,
             "stats": _home_stats(state),
             "hall": hall,
             "demo_runs": demo_runs,

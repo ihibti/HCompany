@@ -4,6 +4,9 @@
   <p class="hero-kicker">Computer-use agents vs. dark patterns</p>
   <h1 class="hero-title">Signing up takes 1 click.<br>Leaving takes <em>{{ max_effort }}</em>.</h1>
   <p class="hero-sub">Escape Hatch sends an agent to leave websites for you — refusing cookies, cancelling subscriptions, unsubscribing — and measures every dark pattern standing in the way.</p>
+  {% if hero %}
+  <p class="hero-source">Hardest exit on record: <a href="/audits/{{ hero.id }}">{{ hero.site }}</a> — {{ hero.effort }} {{ 'action' if hero.effort == 1 else 'actions' }}{% if hero.impossible %}, then a paywall{% endif %}.</p>
+  {% endif %}
 </section>
 
 <section class="stats-band">
@@ -14,7 +17,7 @@
     <b>{{ stats.walls }}</b><span>make refusing cookies impossible</span>
   </a>
   <a class="stat-cell" href="/benchmark">
-    <b>{{ stats.netflux }}</b><span>Netflux levels escaped</span>
+    <b>{{ stats.netflux }}</b><span>Netflux runs escaped (pro)</span>
   </a>
   <a class="stat-cell" href="/hall">
     <b>${{ "%.3f" | format(stats.avg_cost) }}</b><span>avg cost per audit</span>

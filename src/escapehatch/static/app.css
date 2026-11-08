@@ -83,6 +83,9 @@ code { font-family: var(--mono); font-size: 0.9em; color: var(--green); }
 }
 .hero-title em { font-style: normal; color: var(--green); text-shadow: 0 0 34px var(--green-glow); }
 .hero-sub { margin-top: 20px; font-size: 18px; color: var(--muted); max-width: 640px; }
+.hero-source { margin-top: 14px; font-size: 13px; color: var(--muted); }
+.hero-source a { color: var(--green); text-decoration: none; font-weight: 600; }
+.hero-source a:hover { text-decoration: underline; }
 
 .stats-band {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
