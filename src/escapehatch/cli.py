@@ -304,8 +304,8 @@ def build_parser() -> argparse.ArgumentParser:
     pa.set_defaults(enter=True)
     pa.add_argument("--store", default="runs")
     pa.add_argument("--credentials", default=None)
-    pa.add_argument("--max-steps", type=int, default=35)
-    pa.add_argument("--max-time", type=int, default=480)
+    pa.add_argument("--max-steps", type=int, default=None, help="default: 35 (50 for cancel/unsubscribe)")
+    pa.add_argument("--max-time", type=int, default=None, help="default: 480s (600 for cancel/unsubscribe)")
     pa.add_argument("-v", "--verbose", action="store_true")
     pa.set_defaults(func=_cmd_audit)
 
@@ -314,8 +314,8 @@ def build_parser() -> argparse.ArgumentParser:
     pg.add_argument("--agent", default="h/web-surfer-pro")
     pg.add_argument("--base", default="https://ihibti.github.io/HCompany/")
     pg.add_argument("--store", default="runs")
-    pg.add_argument("--max-steps", type=int, default=35)
-    pg.add_argument("--max-time", type=int, default=480)
+    pg.add_argument("--max-steps", type=int, default=None, help="default: 50 for cancel_subscription")
+    pg.add_argument("--max-time", type=int, default=None, help="default: 600s for cancel_subscription")
     pg.add_argument("-v", "--verbose", action="store_true")
     pg.set_defaults(func=_cmd_gauntlet)
 

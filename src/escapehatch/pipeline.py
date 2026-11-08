@@ -37,6 +37,11 @@ ConfirmRequestFn = Callable[[str, str], Awaitable[str]]
 
 _MODELS_BASE_URL = "https://api.hcompany.ai/v1"
 _CLASSIFY_MODEL = "holo4-27b"
+_DEFAULT_BUDGET = (35, 480)
+_TASK_BUDGETS = {
+    Task.CANCEL_SUBSCRIPTION: (50, 600),
+    Task.UNSUBSCRIBE: (50, 600),
+}
 
 
 class _Emitter:
@@ -227,10 +232,13 @@ async def run_audit(
     client: AsyncClient | None = None,
     openai_client: AsyncOpenAI | None = None,
     pool: KeyPool | None = None,
-    max_steps: int = 35,
-    max_time_s: int = 480,
+    max_steps: int | None = None,
+    max_time_s: int | None = None,
 ) -> Audit:
     """Run leave (+enter counterpart) journeys, classify, score and persist an Audit."""
+    default_steps, default_time = _TASK_BUDGETS.get(task, _DEFAULT_BUDGET)
+    max_steps = max_steps if max_steps is not None else default_steps
+    max_time_s = max_time_s if max_time_s is not None else default_time
     emitter = _Emitter(on_update)
     audit_id = audit_id or _audit_id(site_url, task, store)
 
